@@ -44,22 +44,35 @@ class EntityList extends StatelessWidget {
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: DataTable(
-          columns: entities.properties
-              .map((e) => DataColumn(
-                  label: Text(e.name),
-                  numeric: (e.type is int) || (e.type is double),
-                  tooltip: e.name))
-              .toList(),
+          columns: _createColumns(entities.properties),
           rows: entities.entities.map((entity) => _createRow(entity)).toList()),
     );
   }
 
+  List<DataColumn> _createColumns(Iterable<Property> properties) {
+    var columns = [
+      DataColumn(label: Text('Key'), numeric: false, tooltip: 'Key')
+    ];
+    columns.addAll(properties
+        .map((p) => DataColumn(
+            label: Text(p.name),
+            numeric: (p.type is int) || (p.type is double),
+            tooltip: p.name))
+        .toList());
+    return columns;
+  }
+
   DataRow _createRow(Entity entity) {
-    return DataRow(
-        cells: entity.propertyValuesMapEntries
-                ?.map((entry) => _createDataCell(entry))
-                .toList() ??
-            <DataCell>[]);
+    var rowCells = [
+      DataCell(Text('Key( ${entity.key?.kind}, ${entity.key?.id} )'))
+    ];
+    var valueCells = entity.propertyValuesMapEntries
+            ?.map((entry) => _createDataCell(entry))
+            .toList() ??
+        <DataCell>[];
+    rowCells.addAll(valueCells);
+
+    return DataRow(cells: rowCells);
   }
 
   DataCell _createDataCell(MapEntry<String, PropertyValue> entry) {

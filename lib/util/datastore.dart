@@ -1,4 +1,3 @@
-import 'package:googleapis/servicedirectory/v1.dart';
 import 'package:http/http.dart' as http;
 import 'package:googleapis/datastore/v1.dart' as v1Api;
 
@@ -17,6 +16,9 @@ class Key with PartitionMixin {
   final String _projectId;
   final String _kind;
   final int _id;
+
+  String get kind => _kind;
+  int get id => _id;
 
   Key(String projectId, String kind, int id, {String namespace = ''})
       : _projectId = projectId,
@@ -123,6 +125,7 @@ class Entity with PartitionMixin {
   Key? _key;
   Map<String, PropertyValue>? _propertyValuesMap;
 
+  Key? get key => _key;
   PropertyValue? getProperty(String name) => _propertyValuesMap?[name];
   Iterable<MapEntry<String, PropertyValue>>? get propertyValuesMapEntries =>
       _propertyValuesMap?.entries;
