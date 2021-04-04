@@ -1,81 +1,60 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cloud_datastore_viewer/models/connection.dart';
-import 'package:flutter_cloud_datastore_viewer/util/datastore.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_cloud_datastore_viewer/patched_datastore/v1.dart'
+    as v1Api;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ordered_set/ordered_set.dart';
 
-class EntityList extends StatelessWidget {
+final connectionProvider = Provider((ref) => ConnectionModel());
+
+final entitiesProvider = FutureProvider((ref) async {
+  final connection = ref.read(connectionProvider);
+
+  return connection.runQuery();
+});
+
+class EntityDatatable extends StatelessWidget {
+  @override
   Widget build(BuildContext context) {
-    var client = context.read<ConnectionModel>().client;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Entity List'),
-      ),
-      body: FutureBuilder<Entities>(
-        future: client.runQuery('User', namespace: 'development'),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          if (snapshot.hasData) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              verticalDirection: VerticalDirection.down,
-              children: <Widget>[
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.all(5),
-                    child: dataBody(snapshot.data as Entities),
-                  ),
-                )
-              ],
-            );
-          }
-          return Center();
-        },
-      ),
-    );
+    return Consumer(builder: (context, watch, _) {
+      final result = watch(entitiesProvider);
+      if (result.data == null || result.data!.value == null) {
+        return Center(child: CircularProgressIndicator());
+      }
+      final model = result.data!.value!;
+      final columns = this._createColumns(model.columns);
+      final rows = model.entities
+          .where((e) => e != null)
+          .map((e) => this._createRow(model.columns, e!))
+          .toList();
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        verticalDirection: VerticalDirection.down,
+        children: <Widget>[
+          Expanded(
+              child: Container(
+                  padding: EdgeInsets.all(5),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: DataTable(columns: columns, rows: rows),
+                  )))
+        ],
+      );
+    });
   }
 
-  SingleChildScrollView dataBody(Entities entities) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: DataTable(
-          columns: _createColumns(entities.properties),
-          rows: entities.entities.map((entity) => _createRow(entity)).toList()),
-    );
+  List<DataColumn> _createColumns(OrderedSet<String> columns) {
+    return columns
+        .map((column) => DataColumn(label: Text(column), numeric: false))
+        .toList();
   }
 
-  List<DataColumn> _createColumns(Iterable<Property> properties) {
-    var columns = [
-      DataColumn(label: Text('Key'), numeric: false, tooltip: 'Key')
-    ];
-    columns.addAll(properties
-        .map((p) => DataColumn(
-            label: Text(p.name),
-            numeric: (p.type is int) || (p.type is double),
-            tooltip: p.name))
-        .toList());
-    return columns;
-  }
-
-  DataRow _createRow(Entity entity) {
-    var rowCells = [
-      DataCell(Text('Key( ${entity.key?.kind}, ${entity.key?.id} )'))
-    ];
-    var valueCells = entity.propertyValuesMapEntries
-            ?.map((entry) => _createDataCell(entry))
-            .toList() ??
-        <DataCell>[];
-    rowCells.addAll(valueCells);
-
-    return DataRow(cells: rowCells);
-  }
-
-  DataCell _createDataCell(MapEntry<String, PropertyValue> entry) {
-    return DataCell(Text(entry.value.get().toString()));
+  DataRow _createRow(OrderedSet<String> columns, v1Api.Entity entity) {
+    final cells = columns
+        .map((c) => DataCell(Text(entity.properties![c]!.toJson().toString())))
+        .toList();
+    return DataRow(cells: cells);
   }
 }
