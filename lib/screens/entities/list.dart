@@ -84,10 +84,12 @@ class EntityDatatable extends StatelessWidget {
   }
 
   DataRow _createRow(OrderedSet<ColumnModel> columns, v1Api.Entity entity) {
-    final cells = columns
-        .map((column) => DataCell(
-            Text(entity.properties![column.name]!.toJson().toString())))
-        .toList(growable: false);
+    final cells = <DataCell>[DataCell(Text(entity.key!.toJson().toString()))] +
+        columns
+            .where((e) => e.name != '__key__')
+            .map((column) => DataCell(
+                Text(entity.properties![column.name]!.toJson().toString())))
+            .toList(growable: false);
     return DataRow(cells: cells);
   }
 }

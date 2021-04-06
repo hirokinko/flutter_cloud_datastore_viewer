@@ -80,12 +80,19 @@ class ConnectionModel {
           ..columns = OrderedSet<ColumnModel>()
           ..entities = <v1Api.Entity>[], (previousValue, element) {
       final entity = element.entity;
-      if (entity == null || entity.properties == null) return previousValue;
+      if (entity == null) return previousValue;
 
-      for (final propertyEntry in entity.properties!.entries) {
+      if (!previousValue!.containsKey('__key__')) {
+        previousValue.columns.add(ColumnModel()
+          ..name = '__key__'
+          ..sortable = true);
+      }
+      for (final propertyEntry in entity.properties == null
+          ? <MapEntry<String, v1Api.Value>>[]
+          : entity.properties!.entries) {
         final key = propertyEntry.key;
         final value = propertyEntry.value;
-        if (!previousValue!.containsKey(key)) {
+        if (!previousValue.containsKey(key)) {
           previousValue.columns.add(ColumnModel()
             ..name = key
             ..sortable = (value.excludeFromIndexes == null)
@@ -93,7 +100,7 @@ class ConnectionModel {
                 : !(value.excludeFromIndexes!));
         }
       }
-      previousValue!.entities.add(entity);
+      previousValue.entities.add(entity);
       return previousValue;
     });
     return model;
