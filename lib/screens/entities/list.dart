@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cloud_datastore_viewer/models/connection.dart';
 import 'package:flutter_cloud_datastore_viewer/patched_datastore/v1.dart'
     as v1Api;
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ordered_set/ordered_set.dart';
 import 'package:styled_text/styled_text.dart';
 import 'dart:core' as core;
@@ -416,5 +418,12 @@ class FilterFormState extends State<FilterForm> {
       default:
         return v1Api.Value()..nullValue = null;
     }
+  }
+}
+
+class FilterWidget extends HookWidget {
+  @core.override
+  Widget build(BuildContext context) {
+    throw core.UnimplementedError();
   }
 }
