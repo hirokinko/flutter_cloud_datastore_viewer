@@ -4,21 +4,23 @@ import '../../lib/models/filters.dart';
 @immutable
 class OnChangePropertyValue {
   final Property? selectProperty;
-  final PropertySelector? propertySelector;
+  final List<Property> selectableProperties;
   final Property? expectedProperty;
-  final PropertySelector expectedPropertySelector;
+  final List<Property> expectedSelectableProperties;
+  final String? expectedSelectedPropertyError;
   final FilterTypeSelector expectedFilterTypeSelector;
 
   const OnChangePropertyValue(
     this.selectProperty,
-    this.propertySelector,
+    this.selectableProperties,
     this.expectedProperty,
-    this.expectedPropertySelector,
+    this.expectedSelectableProperties,
+    this.expectedSelectedPropertyError,
     this.expectedFilterTypeSelector,
   );
 }
 
-final selectableProps = [
+final selectableProps = <Property>[
   Property('stringProperty', String),
   Property('boolProperty', bool),
 ];
@@ -26,22 +28,18 @@ final selectableProps = [
 final onChangePropertyFixtures = <OnChangePropertyValue>[
   OnChangePropertyValue(
     null,
-    PropertySelector(selectableProps, null),
+    selectableProps,
     null,
-    PropertySelector(
-      selectableProps,
-      "プロパティを選択してください",
-    ),
+    selectableProps,
+    "プロパティを選択してください",
     FilterTypeSelector([FilterType.UNSPECIFIED], null),
   ),
   OnChangePropertyValue(
     Property('stringProperty', String),
-    PropertySelector(selectableProps, null),
+    selectableProps,
     Property('stringProperty', String),
-    PropertySelector(
-      selectableProps,
-      null,
-    ),
+    selectableProps,
+    null,
     FilterTypeSelector(
       [FilterType.UNSPECIFIED, FilterType.EQUALS, FilterType.RANGE],
       null,
@@ -49,12 +47,10 @@ final onChangePropertyFixtures = <OnChangePropertyValue>[
   ),
   OnChangePropertyValue(
     Property('boolProperty', bool),
-    PropertySelector(selectableProps, null),
+    selectableProps,
     Property('boolProperty', bool),
-    PropertySelector(
-      selectableProps,
-      null,
-    ),
+    selectableProps,
+    null,
     FilterTypeSelector(
       [FilterType.UNSPECIFIED, FilterType.EQUALS],
       null,
@@ -62,22 +58,18 @@ final onChangePropertyFixtures = <OnChangePropertyValue>[
   ),
   OnChangePropertyValue(
     Property('notExistsProperty', String),
-    PropertySelector(selectableProps, null),
+    selectableProps,
     null,
-    PropertySelector(
-      selectableProps,
-      "notExistsProperty[String]は存在しません",
-    ),
+    selectableProps,
+    "notExistsProperty[String]は存在しません",
     FilterTypeSelector([FilterType.UNSPECIFIED], null),
   ),
   OnChangePropertyValue(
     Property('notExistsProperty', String),
+    [],
     null,
-    null,
-    PropertySelector(
-      [],
-      "notExistsProperty[String]は存在しません",
-    ),
+    [],
+    "notExistsProperty[String]は存在しません",
     FilterTypeSelector([FilterType.UNSPECIFIED], null),
   ),
 ];

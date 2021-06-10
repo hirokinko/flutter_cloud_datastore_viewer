@@ -6,13 +6,22 @@ import '../models/filters.dart';
 final filterStateProvider = StateProvider.autoDispose((ref) {
   return Filter(
     null,
+    [],
     null,
     FilterType.UNSPECIFIED,
     FilterTypeSelector([FilterType.UNSPECIFIED], null),
+    null,
   );
 });
 final filterControllerProvider =
     Provider.autoDispose((ref) => FilterController(ref.read));
+const _FILTER_UNSELECTABLE = [FilterType.UNSPECIFIED];
+const _EQUALS_FILTER_ONLY = [FilterType.UNSPECIFIED, FilterType.EQUALS];
+const _WITH_RANGE_FILTER = [
+  FilterType.UNSPECIFIED,
+  FilterType.EQUALS,
+  FilterType.RANGE,
+];
 
 @immutable
 class FilterController {
@@ -21,38 +30,32 @@ class FilterController {
   FilterController(this.read);
 
   void onChangeProperty(Property? prop) {
-    late final Property? newProperty;
-    late final List<FilterType> selectableFilterType;
-    late final String? errorMessage;
+    late final Filter newFilter;
     final current = this.read(filterStateProvider).state;
 
-    if (prop == null) {
-      newProperty = null;
-      errorMessage = "プロパティを選択してください";
-      selectableFilterType = [FilterType.UNSPECIFIED];
-    } else if (current.propertySelector == null ||
-        !current.propertySelector!.selectableProps.contains(prop)) {
-      newProperty = null;
-      errorMessage = "${prop.name}[${prop.type}]は存在しません";
-      selectableFilterType = [FilterType.UNSPECIFIED];
-    } else {
-      newProperty = prop;
-      errorMessage = null;
-      selectableFilterType = prop.type == bool
-          ? [FilterType.UNSPECIFIED, FilterType.EQUALS]
-          : [FilterType.UNSPECIFIED, FilterType.EQUALS, FilterType.RANGE];
-    }
-
-    final newState = Filter(
-      newProperty,
-      PropertySelector(
-        current.propertySelector?.selectableProps ?? [],
+    String? errorMessage = current.validateSelectedProperty(prop);
+    if (errorMessage == null) {
+      newFilter = Filter(
+        prop,
+        current.selectableProperties,
         errorMessage,
-      ),
-      FilterType.UNSPECIFIED,
-      FilterTypeSelector(selectableFilterType, null),
-    );
-
-    this.read(filterStateProvider).state = newState;
+        FilterType.UNSPECIFIED,
+        FilterTypeSelector(
+          prop!.type == bool ? _EQUALS_FILTER_ONLY : _WITH_RANGE_FILTER,
+          null,
+        ),
+        null,
+      );
+    } else {
+      newFilter = Filter(
+        null,
+        current.selectableProperties,
+        errorMessage,
+        FilterType.UNSPECIFIED,
+        FilterTypeSelector(_FILTER_UNSELECTABLE, null),
+        null,
+      );
+    }
+    this.read(filterStateProvider).state = newFilter;
   }
 }

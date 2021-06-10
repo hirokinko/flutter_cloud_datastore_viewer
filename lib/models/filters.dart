@@ -22,36 +22,84 @@ class Property extends Equatable {
 }
 
 @immutable
-class PropertySelector extends Equatable {
-  final List<Property> selectableProps;
-  final String? error;
-
-  PropertySelector(this.selectableProps, this.error);
-
-  List<Object> get props => [this.selectableProps, this.error ?? '<null>'];
-}
-
-@immutable
 class FilterTypeSelector extends Equatable {
   final List<FilterType> selectableFilterType;
   final String? error;
 
   FilterTypeSelector(this.selectableFilterType, this.error);
 
-  List<Object> get props => [this.selectableFilterType, this.error ?? '<null>'];
+  List<Object?> get props => [this.selectableFilterType, this.error];
+}
+
+mixin FilterValue {
+  List<String> validate();
+}
+
+@immutable
+class EqualsFilterValue extends Equatable with FilterValue {
+  final String? value;
+  final Type? type;
+
+  EqualsFilterValue(this.value, this.type);
+
+  @override
+  List<String> validate() {
+    throw UnimplementedError();
+  }
+
+  @override
+  List<Object?> get props => [this.value, this.type];
+}
+
+@immutable
+class RangeFilterValue extends Equatable with FilterValue {
+  final String? maxValue;
+  final String? minValue;
+  final bool containsMaxValue;
+  final bool containsMinValue;
+
+  RangeFilterValue(this.maxValue, this.minValue,
+      {this.containsMaxValue = false, this.containsMinValue = false});
+
+  @override
+  List<String> validate() {
+    throw UnimplementedError();
+  }
+
+  @override
+  List<Object?> get props => [
+        this.maxValue,
+        this.minValue,
+        this.containsMaxValue,
+        this.containsMinValue,
+      ];
 }
 
 @immutable
 class Filter {
   final Property? selectedProperty;
-  final PropertySelector? propertySelector;
+  final List<Property> selectableProperties;
+  final String? selectedPropertyError;
   final FilterType filterType;
   final FilterTypeSelector filterTypeSelector;
+  final FilterValue? filterValue;
 
   Filter(
     this.selectedProperty,
-    this.propertySelector,
+    this.selectableProperties,
+    this.selectedPropertyError,
     this.filterType,
     this.filterTypeSelector,
+    this.filterValue,
   );
+
+  String? validateSelectedProperty(Property? prop) {
+    if (prop == null) {
+      return "プロパティを選択してください";
+    } else if (!this.selectableProperties.contains(prop)) {
+      return "$propは存在しません";
+    } else {
+      return null;
+    }
+  }
 }

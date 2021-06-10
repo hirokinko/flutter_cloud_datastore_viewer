@@ -10,19 +10,23 @@ void main() {
 
   setUp(() => {container = ProviderContainer()});
 
-  for (final fixture in onChangePropertyFixtures) {
+  onChangePropertyFixtures.asMap().forEach((index, fixture) {
     test(
+      'ケース $index\n'
       'onChangeProperty()に${fixture.selectProperty}を与えたとき、\n'
       '  - selectedPropertyには${fixture.expectedProperty}がセットされる\n'
-      '  - propertySelectorのerrorには"${fixture.expectedPropertySelector.error}"がセットされる\n'
+      '  - propertySelectorのerrorには"${fixture.expectedSelectedPropertyError}"がセットされる\n'
       '  - filterTypeには必ずFilterType.UNSPECIFIEDがセットされる\n'
-      '  - filterTypeSelectorのselectableFilterTypesには${fixture.expectedFilterTypeSelector.selectableFilterType}がセットされる',
+      '  - filterTypeSelectorのselectableFilterTypesには${fixture.expectedFilterTypeSelector.selectableFilterType}がセットされる\n'
+      '  - filterValueには必ずnullがセットされる',
       () {
         container.read(filterStateProvider).state = Filter(
           null,
-          fixture.propertySelector,
+          fixture.selectableProperties,
+          null,
           FilterType.UNSPECIFIED,
           FilterTypeSelector([FilterType.UNSPECIFIED], null),
+          null,
         );
 
         container
@@ -31,13 +35,21 @@ void main() {
 
         final actualFilter = container.read(filterStateProvider).state;
         expect(actualFilter.selectedProperty, fixture.expectedProperty);
-        expect(actualFilter.propertySelector, fixture.expectedPropertySelector);
+        expect(
+          actualFilter.selectableProperties,
+          fixture.expectedSelectableProperties,
+        );
+        expect(
+          actualFilter.selectedPropertyError,
+          fixture.expectedSelectedPropertyError,
+        );
         expect(actualFilter.filterType, FilterType.UNSPECIFIED);
         expect(
           actualFilter.filterTypeSelector,
           fixture.expectedFilterTypeSelector,
         );
+        expect(actualFilter.filterValue, null);
       },
     );
-  }
+  });
 }
