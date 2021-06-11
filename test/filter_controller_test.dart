@@ -28,6 +28,7 @@ void main() {
           FILTER_UNSELECTABLE,
           null,
           null,
+          [],
         );
 
         container
@@ -58,9 +59,9 @@ void main() {
     test(
       'ケース $index\n'
       'onChangeFilterType()に${fixture.selectedFilterType}を与えたとき、\n'
-      '  - filterTypeには${fixture.expectedFilterType}がセットされる'
-      '  - selectedFilterTypeErrorには${fixture.expectedErrorMessage}がセットされる'
-      '  - filterValueには${fixture.expectedFilterValue}ガセットされる',
+      '  - filterTypeには${fixture.expectedFilterType}がセットされる\n'
+      '  - selectedFilterTypeErrorには${fixture.expectedErrorMessage}がセットされる\n'
+      '  - filterValueには${fixture.expectedFilterValue}がセットされる',
       () {
         container.read(filterStateProvider).state = Filter(
           Property('stringProperty', String),
@@ -70,6 +71,7 @@ void main() {
           AVAILABLE_ALL_FILTERS,
           null,
           null,
+          [],
         );
         container
             .read(filterControllerProvider)
@@ -82,6 +84,37 @@ void main() {
           fixture.expectedErrorMessage,
         );
         expect(actualFilter.filterValue, fixture.expectedFilterValue);
+      },
+    );
+  });
+
+  onChangeEqualsFilterValueFixtures.asMap().forEach((index, fixture) {
+    test(
+      'ケース $index\n'
+      '${fixture.property}に${fixture.givenValue}を与えたとき、\n'
+      '  - filterValueには${fixture.expectedFilterValue}がセットされる\n'
+      '  - filterValueErrorsには${fixture.expectedFilterValueErrors}がセットされる',
+      () {
+        container.read(filterStateProvider).state = Filter(
+          fixture.property,
+          selectableProps,
+          null,
+          FilterType.EQUALS,
+          AVAILABLE_ALL_FILTERS,
+          null,
+          EqualsFilterValue(null),
+          [],
+        );
+        container
+            .read(filterControllerProvider)
+            .onChangeEqualsFilterValue(fixture.givenValue);
+
+        final actualFilter = container.read(filterStateProvider).state;
+        expect(actualFilter.filterValue, fixture.expectedFilterValue);
+        expect(
+          actualFilter.filterValueErrors,
+          fixture.expectedFilterValueErrors,
+        );
       },
     );
   });
