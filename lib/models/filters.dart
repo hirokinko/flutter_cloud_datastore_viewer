@@ -30,7 +30,26 @@ class Property extends Equatable {
 }
 
 mixin FilterValue {
-  List<String> validate(Property prop);
+  Set<String> validate(Property prop);
+
+  Set<String> _validateBooleanValue(Property prop, String inputValue) {
+    final String lowerValue = inputValue.toLowerCase();
+    return lowerValue == 'true' || lowerValue == 'false'
+        ? {}
+        : {"$propは'true'または'false'でないといけません"};
+  }
+
+  Set<String> _validateStringValue(Property prop, String inputValue) {
+    return inputValue != '' ? {} : {"値を入力してください"};
+  }
+
+  Set<String> _validateIntegerValue(Property prop, String inputValue) {
+    return int.tryParse(inputValue) != null ? {} : {"入力値は整数でないといけません"};
+  }
+
+  Set<String> _validateDoubleValue(Property prop, String inputValue) {
+    return double.tryParse(inputValue) != null ? {} : {"入力値は実数でないといけません"};
+  }
 }
 
 @immutable
@@ -40,20 +59,20 @@ class EqualsFilterValue extends Equatable with FilterValue {
   EqualsFilterValue(this.value);
 
   @override
-  List<String> validate(Property prop) {
+  Set<String> validate(Property prop) {
     if (this.value == null) {
-      return ["値を入力してください"];
+      return {"値を入力してください"};
     }
 
     switch (prop.type) {
       case bool:
-        return this._validateBooleanValue(prop);
+        return this._validateBooleanValue(prop, this.value!);
       case String:
-        return this._validateStringValue(prop);
+        return this._validateStringValue(prop, this.value!);
       case int:
-        return this._validateIntegerValue(prop);
+        return this._validateIntegerValue(prop, this.value!);
       case double:
-        return this._validateDoubleValue(prop);
+        return this._validateDoubleValue(prop, this.value!);
       default:
         throw UnimplementedError();
     }
@@ -61,25 +80,6 @@ class EqualsFilterValue extends Equatable with FilterValue {
 
   @override
   List<Object?> get props => [this.value];
-
-  List<String> _validateBooleanValue(Property prop) {
-    final String lowerValue = this.value!.toLowerCase();
-    return lowerValue == 'true' || lowerValue == 'false'
-        ? []
-        : ["$propは'true'または'false'でないといけません"];
-  }
-
-  List<String> _validateStringValue(Property prop) {
-    return this.value != '' ? [] : ["値を入力してください"];
-  }
-
-  List<String> _validateIntegerValue(Property prop) {
-    return int.tryParse(this.value!) != null ? [] : ["入力値は整数でないといけません"];
-  }
-
-  List<String> _validateDoubleValue(Property prop) {
-    return double.tryParse(this.value!) != null ? [] : ["入力値は実数でないといけません"];
-  }
 }
 
 @immutable
@@ -93,7 +93,7 @@ class RangeFilterValue extends Equatable with FilterValue {
       {this.containsMaxValue = false, this.containsMinValue = false});
 
   @override
-  List<String> validate(Property prop) {
+  Set<String> validate(Property prop) {
     throw UnimplementedError();
   }
 
@@ -115,7 +115,7 @@ class Filter {
   final List<FilterType> selectableFilterTypes;
   final String? selectedFilterTypeError;
   final FilterValue? filterValue;
-  final List<String> filterValueErrors;
+  final Set<String> filterValueErrors;
 
   Filter(
     this.selectedProperty,

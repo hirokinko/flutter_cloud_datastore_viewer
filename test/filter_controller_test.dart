@@ -28,7 +28,7 @@ void main() {
           FILTER_UNSELECTABLE,
           null,
           null,
-          [],
+          {},
         );
 
         container
@@ -71,7 +71,7 @@ void main() {
           AVAILABLE_ALL_FILTERS,
           null,
           null,
-          [],
+          {},
         );
         container
             .read(filterControllerProvider)
@@ -103,7 +103,7 @@ void main() {
           AVAILABLE_ALL_FILTERS,
           null,
           EqualsFilterValue(null),
-          [],
+          {},
         );
         container
             .read(filterControllerProvider)

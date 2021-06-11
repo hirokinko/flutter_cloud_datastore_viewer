@@ -12,7 +12,7 @@ final filterStateProvider = StateProvider.autoDispose((ref) {
     FILTER_UNSELECTABLE,
     null,
     null,
-    [],
+    {},
   );
 });
 final filterControllerProvider =
@@ -34,7 +34,7 @@ class FilterController {
       current.getSelectableFilterTypes(prop),
       null,
       null,
-      [],
+      {},
     );
   }
 
@@ -48,7 +48,7 @@ class FilterController {
       current.selectableFilterTypes,
       current.validateSelectedFilterType(filterType),
       current.generateDefaultFilterValue(filterType),
-      [],
+      {},
     );
   }
 
