@@ -1,6 +1,14 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
+const FILTER_UNSELECTABLE = [FilterType.UNSPECIFIED];
+const EQUALS_FILTER_ONLY = [FilterType.UNSPECIFIED, FilterType.EQUALS];
+const AVAILABLE_ALL_FILTERS = [
+  FilterType.UNSPECIFIED,
+  FilterType.EQUALS,
+  FilterType.RANGE,
+];
+
 enum FilterType {
   UNSPECIFIED,
   EQUALS,
@@ -94,12 +102,16 @@ class Filter {
   );
 
   String? validateSelectedProperty(Property? prop) {
+    return prop == null ? "プロパティを選択してください" : null;
+  }
+
+  List<FilterType> getSelectableFilterTypes(Property? prop) {
     if (prop == null) {
-      return "プロパティを選択してください";
-    } else if (!this.selectableProperties.contains(prop)) {
-      return "$propは存在しません";
+      return FILTER_UNSELECTABLE;
+    } else if (prop.type == bool) {
+      return EQUALS_FILTER_ONLY;
     } else {
-      return null;
+      return AVAILABLE_ALL_FILTERS;
     }
   }
 }

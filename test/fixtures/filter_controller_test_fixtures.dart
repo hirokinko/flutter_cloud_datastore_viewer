@@ -32,7 +32,7 @@ final onChangePropertyFixtures = <OnChangePropertyValue>[
     null,
     selectableProps,
     "プロパティを選択してください",
-    FilterTypeSelector([FilterType.UNSPECIFIED], null),
+    FilterTypeSelector(FILTER_UNSELECTABLE, null),
   ),
   OnChangePropertyValue(
     Property('stringProperty', String),
@@ -41,7 +41,7 @@ final onChangePropertyFixtures = <OnChangePropertyValue>[
     selectableProps,
     null,
     FilterTypeSelector(
-      [FilterType.UNSPECIFIED, FilterType.EQUALS, FilterType.RANGE],
+      AVAILABLE_ALL_FILTERS,
       null,
     ),
   ),
@@ -52,24 +52,8 @@ final onChangePropertyFixtures = <OnChangePropertyValue>[
     selectableProps,
     null,
     FilterTypeSelector(
-      [FilterType.UNSPECIFIED, FilterType.EQUALS],
+      EQUALS_FILTER_ONLY,
       null,
     ),
-  ),
-  OnChangePropertyValue(
-    Property('notExistsProperty', String),
-    selectableProps,
-    null,
-    selectableProps,
-    "notExistsProperty[String]は存在しません",
-    FilterTypeSelector([FilterType.UNSPECIFIED], null),
-  ),
-  OnChangePropertyValue(
-    Property('notExistsProperty', String),
-    [],
-    null,
-    [],
-    "notExistsProperty[String]は存在しません",
-    FilterTypeSelector([FilterType.UNSPECIFIED], null),
   ),
 ];
