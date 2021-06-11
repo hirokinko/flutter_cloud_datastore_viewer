@@ -53,4 +53,36 @@ void main() {
       },
     );
   });
+
+  onChangeFilterTypeFixtures.asMap().forEach((index, fixture) {
+    test(
+      'ケース $index\n'
+      'onChangeFilterType()に${fixture.selectedFilterType}を与えたとき、\n'
+      '  - filterTypeには${fixture.expectedFilterType}がセットされる'
+      '  - selectedFilterTypeErrorには${fixture.expectedErrorMessage}がセットされる'
+      '  - filterValueには${fixture.expectedFilterValue}ガセットされる',
+      () {
+        container.read(filterStateProvider).state = Filter(
+          Property('stringProperty', String),
+          selectableProps,
+          null,
+          FilterType.UNSPECIFIED,
+          AVAILABLE_ALL_FILTERS,
+          null,
+          null,
+        );
+        container
+            .read(filterControllerProvider)
+            .onChangeFilterType(fixture.selectedFilterType);
+
+        final actualFilter = container.read(filterStateProvider).state;
+        expect(actualFilter.filterType, fixture.expectedFilterType);
+        expect(
+          actualFilter.selectedFilterTypeError,
+          fixture.expectedErrorMessage,
+        );
+        expect(actualFilter.filterValue, fixture.expectedFilterValue);
+      },
+    );
+  });
 }

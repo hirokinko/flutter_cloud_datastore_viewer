@@ -35,4 +35,17 @@ class FilterController {
       null,
     );
   }
+
+  void onChangeFilterType(FilterType filterType) {
+    final current = this.read(filterStateProvider).state;
+    this.read(filterStateProvider).state = Filter(
+      current.selectedProperty,
+      current.selectableProperties,
+      null,
+      filterType,
+      current.selectableFilterTypes,
+      current.validateSelectedFilterType(filterType),
+      current.generateDefaultFilterValue(filterType),
+    );
+  }
 }

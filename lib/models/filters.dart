@@ -30,23 +30,22 @@ class Property extends Equatable {
 }
 
 mixin FilterValue {
-  List<String> validate();
+  List<String> validate(Type type);
 }
 
 @immutable
 class EqualsFilterValue extends Equatable with FilterValue {
   final String? value;
-  final Type? type;
 
-  EqualsFilterValue(this.value, this.type);
+  EqualsFilterValue(this.value);
 
   @override
-  List<String> validate() {
+  List<String> validate(Type type) {
     throw UnimplementedError();
   }
 
   @override
-  List<Object?> get props => [this.value, this.type];
+  List<Object?> get props => [this.value];
 }
 
 @immutable
@@ -60,7 +59,7 @@ class RangeFilterValue extends Equatable with FilterValue {
       {this.containsMaxValue = false, this.containsMinValue = false});
 
   @override
-  List<String> validate() {
+  List<String> validate(Type type) {
     throw UnimplementedError();
   }
 
@@ -104,6 +103,21 @@ class Filter {
       return EQUALS_FILTER_ONLY;
     } else {
       return AVAILABLE_ALL_FILTERS;
+    }
+  }
+
+  String? validateSelectedFilterType(FilterType filterType) {
+    return filterType == FilterType.UNSPECIFIED ? "フィルタータイプを選択してください" : null;
+  }
+
+  FilterValue? generateDefaultFilterValue(FilterType filterType) {
+    switch (filterType) {
+      case FilterType.UNSPECIFIED:
+        return null;
+      case FilterType.EQUALS:
+        return EqualsFilterValue(null);
+      case FilterType.RANGE:
+        return RangeFilterValue(null, null);
     }
   }
 }

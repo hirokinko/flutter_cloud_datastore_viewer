@@ -20,6 +20,21 @@ class OnChangePropertyValue {
   );
 }
 
+@immutable
+class OnChangeFilterTypeFixture {
+  final FilterType selectedFilterType;
+  final FilterType expectedFilterType;
+  final String? expectedErrorMessage;
+  final FilterValue? expectedFilterValue;
+
+  OnChangeFilterTypeFixture(
+    this.selectedFilterType,
+    this.expectedFilterType,
+    this.expectedErrorMessage,
+    this.expectedFilterValue,
+  );
+}
+
 final selectableProps = <Property>[
   Property('stringProperty', String),
   Property('boolProperty', bool),
@@ -49,5 +64,26 @@ final onChangePropertyFixtures = <OnChangePropertyValue>[
     selectableProps,
     null,
     EQUALS_FILTER_ONLY,
+  ),
+];
+
+final onChangeFilterTypeFixtures = <OnChangeFilterTypeFixture>[
+  OnChangeFilterTypeFixture(
+    FilterType.UNSPECIFIED,
+    FilterType.UNSPECIFIED,
+    "フィルタータイプを選択してください",
+    null,
+  ),
+  OnChangeFilterTypeFixture(
+    FilterType.EQUALS,
+    FilterType.EQUALS,
+    null,
+    EqualsFilterValue(null),
+  ),
+  OnChangeFilterTypeFixture(
+    FilterType.RANGE,
+    FilterType.RANGE,
+    null,
+    RangeFilterValue(null, null),
   ),
 ];
