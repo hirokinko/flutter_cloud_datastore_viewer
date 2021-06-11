@@ -17,7 +17,7 @@ void main() {
       '  - selectedPropertyには${fixture.expectedProperty}がセットされる\n'
       '  - propertySelectorのerrorには"${fixture.expectedSelectedPropertyError}"がセットされる\n'
       '  - filterTypeには必ずFilterType.UNSPECIFIEDがセットされる\n'
-      '  - filterTypeSelectorのselectableFilterTypesには${fixture.expectedFilterTypeSelector.selectableFilterType}がセットされる\n'
+      '  - selectableFilterTypesには${fixture.expectedSelectableFilterTypes}がセットされる\n'
       '  - filterValueには必ずnullがセットされる',
       () {
         container.read(filterStateProvider).state = Filter(
@@ -25,7 +25,8 @@ void main() {
           fixture.selectableProperties,
           null,
           FilterType.UNSPECIFIED,
-          FilterTypeSelector([FilterType.UNSPECIFIED], null),
+          FILTER_UNSELECTABLE,
+          null,
           null,
         );
 
@@ -45,8 +46,8 @@ void main() {
         );
         expect(actualFilter.filterType, FilterType.UNSPECIFIED);
         expect(
-          actualFilter.filterTypeSelector,
-          fixture.expectedFilterTypeSelector,
+          actualFilter.selectableFilterTypes,
+          fixture.expectedSelectableFilterTypes,
         );
         expect(actualFilter.filterValue, null);
       },

@@ -8,7 +8,7 @@ class OnChangePropertyValue {
   final Property? expectedProperty;
   final List<Property> expectedSelectableProperties;
   final String? expectedSelectedPropertyError;
-  final FilterTypeSelector expectedFilterTypeSelector;
+  final List<FilterType> expectedSelectableFilterTypes;
 
   const OnChangePropertyValue(
     this.selectProperty,
@@ -16,7 +16,7 @@ class OnChangePropertyValue {
     this.expectedProperty,
     this.expectedSelectableProperties,
     this.expectedSelectedPropertyError,
-    this.expectedFilterTypeSelector,
+    this.expectedSelectableFilterTypes,
   );
 }
 
@@ -32,7 +32,7 @@ final onChangePropertyFixtures = <OnChangePropertyValue>[
     null,
     selectableProps,
     "プロパティを選択してください",
-    FilterTypeSelector(FILTER_UNSELECTABLE, null),
+    FILTER_UNSELECTABLE,
   ),
   OnChangePropertyValue(
     Property('stringProperty', String),
@@ -40,10 +40,7 @@ final onChangePropertyFixtures = <OnChangePropertyValue>[
     Property('stringProperty', String),
     selectableProps,
     null,
-    FilterTypeSelector(
-      AVAILABLE_ALL_FILTERS,
-      null,
-    ),
+    AVAILABLE_ALL_FILTERS,
   ),
   OnChangePropertyValue(
     Property('boolProperty', bool),
@@ -51,9 +48,6 @@ final onChangePropertyFixtures = <OnChangePropertyValue>[
     Property('boolProperty', bool),
     selectableProps,
     null,
-    FilterTypeSelector(
-      EQUALS_FILTER_ONLY,
-      null,
-    ),
+    EQUALS_FILTER_ONLY,
   ),
 ];

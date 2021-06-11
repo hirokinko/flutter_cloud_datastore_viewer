@@ -29,16 +29,6 @@ class Property extends Equatable {
   }
 }
 
-@immutable
-class FilterTypeSelector extends Equatable {
-  final List<FilterType> selectableFilterType;
-  final String? error;
-
-  FilterTypeSelector(this.selectableFilterType, this.error);
-
-  List<Object?> get props => [this.selectableFilterType, this.error];
-}
-
 mixin FilterValue {
   List<String> validate();
 }
@@ -89,7 +79,8 @@ class Filter {
   final List<Property> selectableProperties;
   final String? selectedPropertyError;
   final FilterType filterType;
-  final FilterTypeSelector filterTypeSelector;
+  final List<FilterType> selectableFilterTypes;
+  final String? selectedFilterTypeError;
   final FilterValue? filterValue;
 
   Filter(
@@ -97,7 +88,8 @@ class Filter {
     this.selectableProperties,
     this.selectedPropertyError,
     this.filterType,
-    this.filterTypeSelector,
+    this.selectableFilterTypes,
+    this.selectedFilterTypeError,
     this.filterValue,
   );
 

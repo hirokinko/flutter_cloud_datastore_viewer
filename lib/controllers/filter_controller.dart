@@ -9,7 +9,8 @@ final filterStateProvider = StateProvider.autoDispose((ref) {
     [],
     null,
     FilterType.UNSPECIFIED,
-    FilterTypeSelector([FilterType.UNSPECIFIED], null),
+    FILTER_UNSELECTABLE,
+    null,
     null,
   );
 });
@@ -29,10 +30,8 @@ class FilterController {
       current.selectableProperties,
       current.validateSelectedProperty(prop),
       FilterType.UNSPECIFIED,
-      FilterTypeSelector(
-        current.getSelectableFilterTypes(prop),
-        null,
-      ),
+      current.getSelectableFilterTypes(prop),
+      null,
       null,
     );
   }
