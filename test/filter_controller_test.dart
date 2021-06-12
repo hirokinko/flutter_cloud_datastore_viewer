@@ -118,4 +118,32 @@ void main() {
       },
     );
   });
+
+  onChangeRangeFilterValueFixtures.asMap().forEach((index, fixture) {
+    test(
+        'ケース $index\n'
+        '${fixture.givenMinValue}から${fixture.givenMaxValue}までの${fixture.property}のクエリを作るとき、\n'
+        '  - filterValueには${fixture.expectedFilterValue}がセットされる'
+        '  - filterValueErrorsには${fixture.expectedFilterValueErrors}がセットされる',
+        () {
+      container.read(filterStateProvider).state = Filter(
+        fixture.property,
+        selectableProps,
+        null,
+        FilterType.RANGE,
+        AVAILABLE_ALL_FILTERS,
+        null,
+        RangeFilterValue(null, null),
+        {},
+      );
+      container.read(filterControllerProvider).onChangeRangeFilterValues(
+            fixture.givenMaxValue,
+            fixture.givenMinValue,
+          );
+
+      final actualFilter = container.read(filterStateProvider).state;
+      expect(actualFilter.filterValue, fixture.expectedFilterValue);
+      expect(actualFilter.filterValueErrors, fixture.expectedFilterValueErrors);
+    });
+  });
 }

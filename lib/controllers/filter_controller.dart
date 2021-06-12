@@ -66,4 +66,29 @@ class FilterController {
       newFilterValue.validate(current.selectedProperty!),
     );
   }
+
+  void onChangeRangeFilterValues(
+    String? maxValue,
+    String? minValue, {
+    bool containsMaxValue: false,
+    bool containsMinValue: false,
+  }) {
+    final current = this.read(filterStateProvider).state;
+    final newFilterValue = RangeFilterValue(
+      maxValue,
+      minValue,
+      containsMaxValue: containsMaxValue,
+      containsMinValue: containsMinValue,
+    );
+    this.read(filterStateProvider).state = Filter(
+      current.selectedProperty,
+      current.selectableProperties,
+      current.selectedPropertyError,
+      current.filterType,
+      current.selectableFilterTypes,
+      current.selectedFilterTypeError,
+      newFilterValue,
+      newFilterValue.validate(current.selectedProperty!),
+    );
+  }
 }

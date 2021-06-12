@@ -32,23 +32,40 @@ class Property extends Equatable {
 mixin FilterValue {
   Set<String> validate(Property prop);
 
-  Set<String> _validateBooleanValue(Property prop, String inputValue) {
+  Set<String> _validateBooleanValue(
+    String inputValue, {
+    String label: "入力値",
+  }) {
     final String lowerValue = inputValue.toLowerCase();
     return lowerValue == 'true' || lowerValue == 'false'
         ? {}
-        : {"$propは'true'または'false'でないといけません"};
+        : {"$labelは'true'または'false'でないといけません"};
   }
 
-  Set<String> _validateStringValue(Property prop, String inputValue) {
+  Set<String> _validateStringValue(String inputValue) {
     return inputValue != '' ? {} : {"値を入力してください"};
   }
 
-  Set<String> _validateIntegerValue(Property prop, String inputValue) {
-    return int.tryParse(inputValue) != null ? {} : {"入力値は整数でないといけません"};
+  Set<String> _validateIntegerValue(
+    String inputValue, {
+    String label: "入力値",
+  }) {
+    return int.tryParse(inputValue) != null
+        ? {}
+        : {
+            "$labelは整数でないといけません",
+          };
   }
 
-  Set<String> _validateDoubleValue(Property prop, String inputValue) {
-    return double.tryParse(inputValue) != null ? {} : {"入力値は実数でないといけません"};
+  Set<String> _validateDoubleValue(
+    String inputValue, {
+    String label: "入力値",
+  }) {
+    return double.tryParse(inputValue) != null
+        ? {}
+        : {
+            "$labelは実数でないといけません",
+          };
   }
 }
 
@@ -66,13 +83,13 @@ class EqualsFilterValue extends Equatable with FilterValue {
 
     switch (prop.type) {
       case bool:
-        return this._validateBooleanValue(prop, this.value!);
+        return this._validateBooleanValue(this.value!);
       case String:
-        return this._validateStringValue(prop, this.value!);
+        return this._validateStringValue(this.value!);
       case int:
-        return this._validateIntegerValue(prop, this.value!);
+        return this._validateIntegerValue(this.value!);
       case double:
-        return this._validateDoubleValue(prop, this.value!);
+        return this._validateDoubleValue(this.value!);
       default:
         throw UnimplementedError();
     }
@@ -94,7 +111,24 @@ class RangeFilterValue extends Equatable with FilterValue {
 
   @override
   Set<String> validate(Property prop) {
-    throw UnimplementedError();
+    final errors = <String>{};
+    if (prop.type == bool) {
+      errors.add("真理値型のプロパティに範囲フィルターは使用できません");
+    }
+    if ((this.maxValue == null || this.maxValue == '') &&
+        (this.minValue == null || this.minValue == '')) {
+      errors.add("最大値または最小値に値を入力してください");
+      return errors;
+    }
+    switch (prop.type) {
+      case int:
+        errors.addAll(this._validateIntegerValues());
+        break;
+      case double:
+        errors.addAll(this._validateDoubleValues());
+        break;
+    }
+    return errors;
   }
 
   @override
@@ -104,6 +138,42 @@ class RangeFilterValue extends Equatable with FilterValue {
         this.containsMaxValue,
         this.containsMinValue,
       ];
+
+  Set<String> _validateIntegerValues() {
+    final errors = <String>{};
+    if (this.maxValue != null && this.maxValue!.isNotEmpty) {
+      errors.addAll(this._validateIntegerValue(this.maxValue!, label: "最大値"));
+    }
+    if (this.minValue != null && this.minValue!.isNotEmpty) {
+      errors.addAll(this._validateIntegerValue(this.minValue!, label: "最小値"));
+    }
+    if (this.maxValue != null &&
+        this.minValue != null &&
+        int.tryParse(maxValue!) != null &&
+        int.tryParse(minValue!) != null &&
+        int.parse(this.maxValue!) < int.parse(this.minValue!)) {
+      errors.add("最大値は最小値以上でないといけません");
+    }
+    return errors;
+  }
+
+  Set<String> _validateDoubleValues() {
+    final errors = <String>{};
+    if (this.maxValue != null && this.maxValue!.isNotEmpty) {
+      errors.addAll(this._validateDoubleValue(this.maxValue!, label: "最大値"));
+    }
+    if (this.minValue != null && this.minValue!.isNotEmpty) {
+      errors.addAll(this._validateDoubleValue(this.minValue!, label: "最小値"));
+    }
+    if (this.maxValue != null &&
+        this.minValue != null &&
+        double.tryParse(maxValue!) != null &&
+        double.tryParse(minValue!) != null &&
+        double.parse(this.maxValue!) < double.parse(this.minValue!)) {
+      errors.add("最大値は最小値以上でないといけません");
+    }
+    return errors;
+  }
 }
 
 @immutable
