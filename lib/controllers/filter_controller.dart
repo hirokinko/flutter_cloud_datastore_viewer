@@ -91,4 +91,18 @@ class FilterController {
       newFilterValue.validate(current.selectedProperty!),
     );
   }
+
+  void onSubmitFilterClear() {
+    final current = this.read(filterStateProvider).state;
+    this.read(filterStateProvider).state = Filter(
+      null,
+      current.selectableProperties,
+      null,
+      FilterType.UNSPECIFIED,
+      FILTER_UNSELECTABLE,
+      null,
+      null,
+      {},
+    );
+  }
 }

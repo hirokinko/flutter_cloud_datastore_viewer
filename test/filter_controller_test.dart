@@ -146,4 +146,28 @@ void main() {
       expect(actualFilter.filterValueErrors, fixture.expectedFilterValueErrors);
     });
   });
+
+  test('clearボタンをsubmitしたとき、プロパティ、フィルタータイプ、値の入力をクリアする', () {
+    container.read(filterStateProvider).state = Filter(
+      Property('stringProperty', String),
+      selectableProps,
+      null,
+      FilterType.RANGE,
+      AVAILABLE_ALL_FILTERS,
+      null,
+      RangeFilterValue('ん', 'あ'),
+      {},
+    );
+    container.read(filterControllerProvider).onSubmitFilterClear();
+
+    final actualFilter = container.read(filterStateProvider).state;
+    expect(actualFilter.selectedProperty, null);
+    expect(actualFilter.selectableProperties, selectableProps);
+    expect(actualFilter.selectedPropertyError, null);
+    expect(actualFilter.filterType, FilterType.UNSPECIFIED);
+    expect(actualFilter.selectableFilterTypes, FILTER_UNSELECTABLE);
+    expect(actualFilter.selectedFilterTypeError, null);
+    expect(actualFilter.filterValue, null);
+    expect(actualFilter.filterValueErrors, <String>{});
+  });
 }
