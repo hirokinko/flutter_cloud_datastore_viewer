@@ -106,8 +106,12 @@ class RangeFilterValue extends Equatable with FilterValue {
   final bool containsMaxValue;
   final bool containsMinValue;
 
-  RangeFilterValue(this.maxValue, this.minValue,
-      {this.containsMaxValue = false, this.containsMinValue = false});
+  RangeFilterValue(
+    this.maxValue,
+    this.minValue, {
+    this.containsMaxValue = false,
+    this.containsMinValue = false,
+  });
 
   @override
   Set<String> validate(Property prop) {
@@ -141,14 +145,14 @@ class RangeFilterValue extends Equatable with FilterValue {
 
   Set<String> _validateIntegerValues() {
     final errors = <String>{};
-    if (this.maxValue != null && this.maxValue!.isNotEmpty) {
+    if (this.maxValueIsNotEmpty) {
       errors.addAll(this._validateIntegerValue(this.maxValue!, label: "最大値"));
     }
-    if (this.minValue != null && this.minValue!.isNotEmpty) {
+    if (this.minValueIsNotEmpty) {
       errors.addAll(this._validateIntegerValue(this.minValue!, label: "最小値"));
     }
-    if (this.maxValue != null &&
-        this.minValue != null &&
+    if (this.maxValueIsNotEmpty &&
+        this.minValueIsNotEmpty &&
         int.tryParse(maxValue!) != null &&
         int.tryParse(minValue!) != null &&
         int.parse(this.maxValue!) < int.parse(this.minValue!)) {
@@ -159,14 +163,14 @@ class RangeFilterValue extends Equatable with FilterValue {
 
   Set<String> _validateDoubleValues() {
     final errors = <String>{};
-    if (this.maxValue != null && this.maxValue!.isNotEmpty) {
+    if (this.maxValueIsNotEmpty) {
       errors.addAll(this._validateDoubleValue(this.maxValue!, label: "最大値"));
     }
-    if (this.minValue != null && this.minValue!.isNotEmpty) {
+    if (this.minValueIsNotEmpty) {
       errors.addAll(this._validateDoubleValue(this.minValue!, label: "最小値"));
     }
-    if (this.maxValue != null &&
-        this.minValue != null &&
+    if (this.maxValueIsNotEmpty &&
+        this.minValueIsNotEmpty &&
         double.tryParse(maxValue!) != null &&
         double.tryParse(minValue!) != null &&
         double.parse(this.maxValue!) < double.parse(this.minValue!)) {
@@ -174,6 +178,11 @@ class RangeFilterValue extends Equatable with FilterValue {
     }
     return errors;
   }
+
+  bool get maxValueIsEmpty => this.maxValue == null || this.maxValue == '';
+  bool get maxValueIsNotEmpty => this.maxValue != null && this.maxValue != '';
+  bool get minValueIsEmpty => this.minValue == null || this.minValue == '';
+  bool get minValueIsNotEmpty => this.minValue != null && this.minValue != '';
 }
 
 @immutable
