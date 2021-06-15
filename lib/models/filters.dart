@@ -208,6 +208,7 @@ class Filter {
   );
 
   String? validateSelectedProperty(Property? prop) {
+    print(prop);
     return prop == null ? "プロパティを選択してください" : null;
   }
 

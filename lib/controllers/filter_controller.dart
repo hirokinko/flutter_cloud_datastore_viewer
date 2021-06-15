@@ -3,10 +3,18 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../models/filters.dart';
 
+// for debug(TODO: remove after)
+final selectableProperties = <Property>[
+  Property('booleanProperty', bool),
+  Property('stringProperty', String),
+  Property('integerProperty', int),
+  Property('doubleProperty', double),
+];
+
 final filterStateProvider = StateProvider.autoDispose((ref) {
   return Filter(
     null,
-    [],
+    selectableProperties,
     null,
     FilterType.UNSPECIFIED,
     FILTER_UNSELECTABLE,
@@ -35,6 +43,9 @@ class FilterController {
       null,
       null,
       {},
+    );
+    print(
+      'プロパティ変更結果: ${this.read(filterStateProvider).state.selectedPropertyError}',
     );
   }
 
