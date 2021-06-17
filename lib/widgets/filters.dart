@@ -52,16 +52,7 @@ final createPropertyAutoCompleteField = (
     Autocomplete<Property>(
       displayStringForOption: (Property option) => option.toString(),
       optionsBuilder: (TextEditingValue textEditingValue) {
-        if (textEditingValue.text.isEmpty) {
-          return const Iterable<Property>.empty();
-        }
-        return state.selectableProperties.where(
-          (Property property) {
-            return property.name
-                .toLowerCase()
-                .contains(textEditingValue.text.toLowerCase());
-          },
-        );
+        return state.getSuggestedProperties(textEditingValue.text);
       },
       onSelected: (Property? property) {
         context.read(filterControllerProvider).onChangeProperty(property);
@@ -81,12 +72,7 @@ final createPropertyAutoCompleteField = (
             errorText: state.selectedPropertyError,
           ),
           onFieldSubmitted: (String value) {
-            final properties =
-                state.selectableProperties.where((Property property) {
-              return property.name
-                  .toLowerCase()
-                  .contains(textEditingController.text.toLowerCase());
-            }).toList(growable: false);
+            final properties = state.getSuggestedProperties(value);
             final selected = (properties.length == 1) ? properties[0] : null;
             context.read(filterControllerProvider).onChangeProperty(selected);
             if (selected != null) {

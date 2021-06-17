@@ -236,4 +236,10 @@ class Filter {
         return RangeFilterValue(null, null);
     }
   }
+
+  List<Property> getSuggestedProperties(String propertyName) {
+    return this.selectableProperties.where((Property property) {
+      return property.name.toLowerCase().contains(propertyName.toLowerCase());
+    }).toList(growable: false);
+  }
 }
