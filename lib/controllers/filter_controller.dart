@@ -65,7 +65,7 @@ class FilterController {
 
   void onChangeEqualsFilterValue(String? value) {
     final current = this.read(filterStateProvider).state;
-    final newFilterValue = EqualsFilterValue(value);
+    final newFilterValue = EqualsFilterValue(value, null);
     this.read(filterStateProvider).state = Filter(
       current.selectedProperty,
       current.selectableProperties,
@@ -73,7 +73,7 @@ class FilterController {
       current.filterType,
       current.selectableFilterTypes,
       current.selectedFilterTypeError,
-      newFilterValue,
+      createEqualsFilterValue(current.selectedProperty!, value),
       newFilterValue.validate(current.selectedProperty!),
     );
   }

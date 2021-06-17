@@ -102,7 +102,7 @@ void main() {
           FilterType.EQUALS,
           AVAILABLE_ALL_FILTERS,
           null,
-          EqualsFilterValue(null),
+          EqualsFilterValue(null, null),
           {},
         );
         container

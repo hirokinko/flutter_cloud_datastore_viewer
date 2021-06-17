@@ -112,7 +112,7 @@ final createFilterTypeDropdownButton = (
 final createValueFilterForm = (
   BuildContext context,
   Filter filter,
-  List<ValueNotifier> valueNotifiers,
+  List<TextEditingController> textEditingControllers,
 ) {
   switch (filter.filterType) {
     case FilterType.EQUALS:
@@ -121,20 +121,20 @@ final createValueFilterForm = (
           : createEqualsFilterValueTextEditField(
               context,
               filter,
-              valueNotifiers[0] as TextEditingController,
+              textEditingControllers[0],
             );
     case FilterType.RANGE:
       return createRangeValueFilterForm(
         context,
         filter,
-        valueNotifiers[1] as TextEditingController,
-        valueNotifiers[2] as TextEditingController,
+        textEditingControllers[1],
+        textEditingControllers[2],
       );
     default:
       return createDummyTextEditField(
         context,
         filter,
-        valueNotifiers[0] as TextEditingController,
+        textEditingControllers[0],
       );
   }
 };
@@ -172,25 +172,25 @@ final createDummyTextEditField = (
       ),
     );
 
-final createEqualsFilterValueTextEditField = (
+Widget createEqualsFilterValueTextEditField(
   BuildContext context,
   Filter filter,
   TextEditingController textEditingController,
-) =>
-    TextFormField(
-      controller: textEditingController,
-      decoration: InputDecoration(
-        hintText: "値を入力してください",
-        labelText: "値",
-        errorText: filter.filterValueErrors.isNotEmpty
-            ? filter.filterValueErrors.toList()[0]
-            : null,
-      ),
-      onChanged: (value) {
-        print('入力中の値 $value');
-        context.read(filterControllerProvider).onChangeEqualsFilterValue(value);
-      },
-    );
+) {
+  final filterValue = filter.filterValue as EqualsFilterValue;
+  return TextFormField(
+    controller: textEditingController,
+    decoration: InputDecoration(
+      hintText: "値を入力してください",
+      labelText: "値",
+      errorText: filterValue.error,
+    ),
+    onChanged: (value) {
+      print('入力中の値 $value');
+      context.read(filterControllerProvider).onChangeEqualsFilterValue(value);
+    },
+  );
+}
 
 final createRangeValueFilterForm = (
   BuildContext context,

@@ -72,8 +72,9 @@ mixin FilterValue {
 @immutable
 class EqualsFilterValue extends Equatable with FilterValue {
   final String? value;
+  final String? error;
 
-  EqualsFilterValue(this.value);
+  EqualsFilterValue(this.value, this.error);
 
   @override
   Set<String> validate(Property prop) {
@@ -96,7 +97,59 @@ class EqualsFilterValue extends Equatable with FilterValue {
   }
 
   @override
-  List<Object?> get props => [this.value];
+  List<Object?> get props => [this.value, this.error];
+}
+
+String? validateBooleanValue(
+  String inputValue, {
+  String label: "入力値",
+}) {
+  final String lowerValue = inputValue.toLowerCase();
+  return lowerValue == 'true' || lowerValue == 'false'
+      ? null
+      : "$labelは'true'または'false'でないといけません";
+}
+
+String? validateStringValue(String inputValue, {String label: ''}) {
+  return inputValue.isNotEmpty ? null : "$label値を入力してください";
+}
+
+String? validateIntegerValue(
+  String inputValue, {
+  String label: '',
+}) {
+  return int.tryParse(inputValue) != null ? null : "$label整数値を入力してください";
+}
+
+String? validateDoubleValue(
+  String inputValue, {
+  String label: '',
+}) {
+  return double.tryParse(inputValue) != null ? null : "$label実数値を入力してください";
+}
+
+EqualsFilterValue createEqualsFilterValue(Property property, String? value) {
+  if (value == null) {
+    return EqualsFilterValue(value, "値を入力してください");
+  }
+  late final String? error;
+  switch (property.type) {
+    case bool:
+      error = validateBooleanValue(value);
+      break;
+    case String:
+      error = validateStringValue(value);
+      break;
+    case int:
+      error = validateIntegerValue(value);
+      break;
+    case double:
+      error = validateDoubleValue(value);
+      break;
+    default:
+      error = null;
+  }
+  return EqualsFilterValue(value, error);
 }
 
 @immutable
@@ -231,7 +284,7 @@ class Filter {
       case FilterType.UNSPECIFIED:
         return null;
       case FilterType.EQUALS:
-        return EqualsFilterValue(null);
+        return EqualsFilterValue(null, null);
       case FilterType.RANGE:
         return RangeFilterValue(null, null);
     }
