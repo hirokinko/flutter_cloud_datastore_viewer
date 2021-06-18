@@ -133,7 +133,7 @@ void main() {
         FilterType.RANGE,
         AVAILABLE_ALL_FILTERS,
         null,
-        RangeFilterValue(null, null),
+        RangeFilterValue(null, null, false, false, null, null, null),
         {},
       );
       container.read(filterControllerProvider).onChangeRangeFilterValues(
@@ -155,7 +155,7 @@ void main() {
       FilterType.RANGE,
       AVAILABLE_ALL_FILTERS,
       null,
-      RangeFilterValue('ん', 'あ'),
+      RangeFilterValue('ん', 'あ', false, false, null, null, null),
       {},
     );
     container.read(filterControllerProvider).onSubmitFilterClear();

@@ -88,8 +88,11 @@ class FilterController {
     final newFilterValue = RangeFilterValue(
       maxValue,
       minValue,
-      containsMaxValue: containsMaxValue,
-      containsMinValue: containsMinValue,
+      containsMaxValue,
+      containsMinValue,
+      null,
+      null,
+      null,
     );
     this.read(filterStateProvider).state = Filter(
       current.selectedProperty,

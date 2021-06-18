@@ -158,13 +158,19 @@ class RangeFilterValue extends Equatable with FilterValue {
   final String? minValue;
   final bool containsMaxValue;
   final bool containsMinValue;
+  final String? formError;
+  final String? maxValueError;
+  final String? minValueError;
 
   RangeFilterValue(
     this.maxValue,
-    this.minValue, {
-    this.containsMaxValue = false,
-    this.containsMinValue = false,
-  });
+    this.minValue,
+    this.containsMaxValue,
+    this.containsMinValue,
+    this.formError,
+    this.maxValueError,
+    this.minValueError,
+  );
 
   @override
   Set<String> validate(Property prop) {
@@ -194,6 +200,9 @@ class RangeFilterValue extends Equatable with FilterValue {
         this.minValue,
         this.containsMaxValue,
         this.containsMinValue,
+        this.formError,
+        this.maxValueError,
+        this.minValueError,
       ];
 
   Set<String> _validateIntegerValues() {
@@ -286,7 +295,7 @@ class Filter {
       case FilterType.EQUALS:
         return EqualsFilterValue(null, null);
       case FilterType.RANGE:
-        return RangeFilterValue(null, null);
+        return RangeFilterValue(null, null, false, false, null, null, null);
     }
   }
 
