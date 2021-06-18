@@ -128,6 +128,80 @@ String? validateDoubleValue(
   return double.tryParse(inputValue) != null ? null : "$label実数値を入力してください";
 }
 
+RangeFilterValue createIntegerRangeFilterValue(
+  String? maxValue,
+  String? minValue,
+  bool containsMaxValue,
+  bool containsMinValue,
+) {
+  late final String? formError;
+  late final String? maxValueError;
+  late final String? minValueError;
+
+  maxValueError = (maxValue != null && maxValue.isNotEmpty)
+      ? validateIntegerValue(maxValue, label: "最大値には")
+      : null;
+  minValueError = (minValue != null && minValue.isNotEmpty)
+      ? validateIntegerValue(minValue, label: "最小値には")
+      : null;
+
+  formError = (maxValue != null &&
+          maxValue.isNotEmpty &&
+          minValue != null &&
+          minValue.isNotEmpty &&
+          int.tryParse(maxValue) != null &&
+          int.tryParse(minValue) != null &&
+          int.parse(maxValue) < int.parse(minValue))
+      ? "最大値は最小値以上でないといけません"
+      : null;
+  return RangeFilterValue(
+    maxValue,
+    minValue,
+    containsMaxValue,
+    containsMinValue,
+    formError,
+    maxValueError,
+    minValueError,
+  );
+}
+
+RangeFilterValue createDoubleRangeFilterValue(
+  String? maxValue,
+  String? minValue,
+  bool containsMaxValue,
+  bool containsMinValue,
+) {
+  late final String? formError;
+  late final String? maxValueError;
+  late final String? minValueError;
+
+  maxValueError = (maxValue != null && maxValue.isNotEmpty)
+      ? validateDoubleValue(maxValue, label: "最大値には")
+      : null;
+  minValueError = (minValue != null && minValue.isNotEmpty)
+      ? validateDoubleValue(minValue, label: "最小値には")
+      : null;
+
+  formError = (maxValue != null &&
+          maxValue.isNotEmpty &&
+          minValue != null &&
+          minValue.isNotEmpty &&
+          double.tryParse(maxValue) != null &&
+          double.tryParse(minValue) != null &&
+          double.parse(maxValue) < double.parse(minValue))
+      ? "最大値は最小値以上でないといけません"
+      : null;
+  return RangeFilterValue(
+    maxValue,
+    minValue,
+    containsMaxValue,
+    containsMinValue,
+    formError,
+    maxValueError,
+    minValueError,
+  );
+}
+
 EqualsFilterValue createEqualsFilterValue(Property property, String? value) {
   if (value == null) {
     return EqualsFilterValue(value, "値を入力してください");
@@ -268,6 +342,24 @@ RangeFilterValue createRangeFilterValue(
   } else {
     formError = null;
   }
+
+  switch (property.type) {
+    case int:
+      return createIntegerRangeFilterValue(
+        maxValue,
+        minValue,
+        containsMaxValue,
+        containsMinValue,
+      );
+    case double:
+      return createDoubleRangeFilterValue(
+        maxValue,
+        minValue,
+        containsMaxValue,
+        containsMinValue,
+      );
+  }
+
   return RangeFilterValue(
     maxValue,
     minValue,
