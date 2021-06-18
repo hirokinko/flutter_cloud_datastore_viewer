@@ -28,7 +28,6 @@ void main() {
           FILTER_UNSELECTABLE,
           null,
           null,
-          {},
         );
 
         container
@@ -71,7 +70,6 @@ void main() {
           AVAILABLE_ALL_FILTERS,
           null,
           null,
-          {},
         );
         container
             .read(filterControllerProvider)
@@ -92,8 +90,7 @@ void main() {
     test(
       'ケース $index\n'
       '${fixture.property}に${fixture.givenValue}を与えたとき、\n'
-      '  - filterValueには${fixture.expectedFilterValue}がセットされる\n'
-      '  - filterValueErrorsには${fixture.expectedFilterValueErrors}がセットされる',
+      '  - filterValueには${fixture.expectedFilterValue}がセットされる',
       () {
         container.read(filterStateProvider).state = Filter(
           fixture.property,
@@ -103,7 +100,6 @@ void main() {
           AVAILABLE_ALL_FILTERS,
           null,
           EqualsFilterValue(null, null),
-          {},
         );
         container
             .read(filterControllerProvider)
@@ -111,10 +107,6 @@ void main() {
 
         final actualFilter = container.read(filterStateProvider).state;
         expect(actualFilter.filterValue, fixture.expectedFilterValue);
-        expect(
-          actualFilter.filterValueErrors,
-          fixture.expectedFilterValueErrors,
-        );
       },
     );
   });
@@ -123,9 +115,7 @@ void main() {
     test(
         'ケース $index\n'
         '${fixture.givenMinValue}から${fixture.givenMaxValue}までの${fixture.property}のクエリを作るとき、\n'
-        '  - filterValueには${fixture.expectedFilterValue}がセットされる'
-        '  - filterValueErrorsには${fixture.expectedFilterValueErrors}がセットされる',
-        () {
+        '  - filterValueには${fixture.expectedFilterValue}がセットされる', () {
       container.read(filterStateProvider).state = Filter(
         fixture.property,
         selectableProps,
@@ -134,7 +124,6 @@ void main() {
         AVAILABLE_ALL_FILTERS,
         null,
         RangeFilterValue(null, null, false, false, null, null, null),
-        {},
       );
       container.read(filterControllerProvider).onChangeRangeFilterValues(
             fixture.givenMaxValue,
@@ -143,7 +132,6 @@ void main() {
 
       final actualFilter = container.read(filterStateProvider).state;
       expect(actualFilter.filterValue, fixture.expectedFilterValue);
-      expect(actualFilter.filterValueErrors, fixture.expectedFilterValueErrors);
     });
   });
 
@@ -156,7 +144,6 @@ void main() {
       AVAILABLE_ALL_FILTERS,
       null,
       RangeFilterValue('ん', 'あ', false, false, null, null, null),
-      {},
     );
     container.read(filterControllerProvider).onSubmitFilterClear();
 
@@ -168,6 +155,5 @@ void main() {
     expect(actualFilter.selectableFilterTypes, FILTER_UNSELECTABLE);
     expect(actualFilter.selectedFilterTypeError, null);
     expect(actualFilter.filterValue, null);
-    expect(actualFilter.filterValueErrors, <String>{});
   });
 }

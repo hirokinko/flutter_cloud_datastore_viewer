@@ -20,7 +20,6 @@ final filterStateProvider = StateProvider.autoDispose((ref) {
     FILTER_UNSELECTABLE,
     null,
     null,
-    {},
   );
 });
 final filterControllerProvider =
@@ -42,7 +41,6 @@ class FilterController {
       current.getSelectableFilterTypes(prop),
       null,
       null,
-      {},
     );
     print(
       'プロパティ変更結果: ${this.read(filterStateProvider).state.selectedPropertyError}',
@@ -59,13 +57,11 @@ class FilterController {
       current.selectableFilterTypes,
       current.validateSelectedFilterType(filterType),
       current.generateDefaultFilterValue(filterType),
-      {},
     );
   }
 
   void onChangeEqualsFilterValue(String? value) {
     final current = this.read(filterStateProvider).state;
-    final newFilterValue = EqualsFilterValue(value, null);
     this.read(filterStateProvider).state = Filter(
       current.selectedProperty,
       current.selectableProperties,
@@ -74,7 +70,6 @@ class FilterController {
       current.selectableFilterTypes,
       current.selectedFilterTypeError,
       createEqualsFilterValue(current.selectedProperty!, value),
-      newFilterValue.validate(current.selectedProperty!),
     );
   }
 
@@ -85,13 +80,6 @@ class FilterController {
     bool containsMinValue: false,
   }) {
     final current = this.read(filterStateProvider).state;
-    final newFilterValue = createRangeFilterValue(
-      current.selectedProperty!,
-      maxValue,
-      minValue,
-      containsMaxValue,
-      containsMinValue,
-    );
     this.read(filterStateProvider).state = Filter(
       current.selectedProperty,
       current.selectableProperties,
@@ -99,8 +87,13 @@ class FilterController {
       current.filterType,
       current.selectableFilterTypes,
       current.selectedFilterTypeError,
-      newFilterValue,
-      newFilterValue.validate(current.selectedProperty!),
+      createRangeFilterValue(
+        current.selectedProperty!,
+        maxValue,
+        minValue,
+        containsMaxValue,
+        containsMinValue,
+      ),
     );
   }
 
@@ -114,7 +107,6 @@ class FilterController {
       FILTER_UNSELECTABLE,
       null,
       null,
-      {},
     );
   }
 }

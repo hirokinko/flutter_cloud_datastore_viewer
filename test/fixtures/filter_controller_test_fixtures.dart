@@ -40,13 +40,11 @@ class OnChangeEqualsFilterValueFixture {
   final Property property;
   final String? givenValue;
   final EqualsFilterValue expectedFilterValue;
-  final Set<String> expectedFilterValueErrors;
 
   OnChangeEqualsFilterValueFixture(
     this.property,
     this.givenValue,
     this.expectedFilterValue,
-    this.expectedFilterValueErrors,
   );
 }
 
@@ -58,14 +56,12 @@ class OnChangeRangeFilterValueFixture {
   final bool containsMaxValue;
   final bool containsMinValue;
   final RangeFilterValue expectedFilterValue;
-  final Set<String> expectedFilterValueErrors;
 
   OnChangeRangeFilterValueFixture(
     this.property,
     this.givenMaxValue,
     this.givenMinValue,
-    this.expectedFilterValue,
-    this.expectedFilterValueErrors, {
+    this.expectedFilterValue, {
     this.containsMaxValue: false,
     this.containsMinValue: false,
   });
@@ -129,115 +125,96 @@ final onChangeEqualsFilterValueFixtures = <OnChangeEqualsFilterValueFixture>[
     Property('stringProperty', String),
     null,
     EqualsFilterValue(null, "値を入力してください"),
-    {"値を入力してください"},
   ),
   OnChangeEqualsFilterValueFixture(
     Property('booleanProperty', bool),
     'true',
     EqualsFilterValue('true', null),
-    {},
   ),
   OnChangeEqualsFilterValueFixture(
     Property('booleanProperty', bool),
     'false',
     EqualsFilterValue('false', null),
-    {},
   ),
   OnChangeEqualsFilterValueFixture(
     Property('booleanProperty', bool),
     null,
     EqualsFilterValue(null, "値を入力してください"),
-    {"値を入力してください"},
   ),
   OnChangeEqualsFilterValueFixture(
     Property('booleanProperty', bool),
     'spam',
     EqualsFilterValue('spam', "入力値は'true'または'false'でないといけません"),
-    {"入力値は'true'または'false'でないといけません"},
   ),
   OnChangeEqualsFilterValueFixture(
     Property('stringProperty', String),
     '',
     EqualsFilterValue('', "値を入力してください"),
-    {"値を入力してください"},
   ),
   OnChangeEqualsFilterValueFixture(
     Property('integerProperty', int),
     '1',
     EqualsFilterValue('1', null),
-    {},
   ),
   OnChangeEqualsFilterValueFixture(
     Property('integerProperty', int),
     '-1',
     EqualsFilterValue('-1', null),
-    {},
   ),
   OnChangeEqualsFilterValueFixture(
     Property('integerProperty', int),
     '',
     EqualsFilterValue('', "整数値を入力してください"),
-    {"入力値は整数でないといけません"},
   ),
   OnChangeEqualsFilterValueFixture(
     Property('integerProperty', int),
     'spam',
     EqualsFilterValue('spam', "整数値を入力してください"),
-    {"入力値は整数でないといけません"},
   ),
   OnChangeEqualsFilterValueFixture(
     Property('integerProperty', int),
     '3.1415926535',
     EqualsFilterValue('3.1415926535', "整数値を入力してください"),
-    {"入力値は整数でないといけません"},
   ),
   OnChangeEqualsFilterValueFixture(
     Property('dobuleValue', double),
     '1.0',
     EqualsFilterValue('1.0', null),
-    {},
   ),
   OnChangeEqualsFilterValueFixture(
     Property('dobuleValue', double),
     '-1.0',
     EqualsFilterValue('-1.0', null),
-    {},
   ),
   OnChangeEqualsFilterValueFixture(
     Property('dobuleValue', double),
     '1',
     EqualsFilterValue('1', null),
-    {},
   ),
   OnChangeEqualsFilterValueFixture(
     Property('dobuleValue', double),
     '-1',
     EqualsFilterValue('-1', null),
-    {},
   ),
   OnChangeEqualsFilterValueFixture(
     Property('dobuleValue', double),
     '1E6',
     EqualsFilterValue('1E6', null),
-    {},
   ),
   OnChangeEqualsFilterValueFixture(
     Property('dobuleValue', double),
     '1E-6',
     EqualsFilterValue('1E-6', null),
-    {},
   ),
   OnChangeEqualsFilterValueFixture(
     Property('dobuleValue', double),
     '',
     EqualsFilterValue('', "実数値を入力してください"),
-    {"入力値は実数でないといけません"},
   ),
   OnChangeEqualsFilterValueFixture(
     Property('dobuleValue', double),
     'spam',
     EqualsFilterValue('spam', "実数値を入力してください"),
-    {"入力値は実数でないといけません"},
   ),
   // TODO: doubleについてはNaNやInfを与えたときの処理も必要？
 ];
@@ -256,7 +233,6 @@ final onChangeRangeFilterValueFixtures = [
       null,
       null,
     ),
-    {"最大値または最小値に値を入力してください"},
   ),
   OnChangeRangeFilterValueFixture(
     Property('stringProperty', String),
@@ -271,7 +247,6 @@ final onChangeRangeFilterValueFixtures = [
       null,
       null,
     ),
-    {"最大値または最小値に値を入力してください"},
   ),
   OnChangeRangeFilterValueFixture(
     Property('stringProperty', String),
@@ -286,7 +261,6 @@ final onChangeRangeFilterValueFixtures = [
       null,
       null,
     ),
-    {"最大値または最小値に値を入力してください"},
   ),
   OnChangeRangeFilterValueFixture(
     Property('stringProperty', String),
@@ -301,7 +275,6 @@ final onChangeRangeFilterValueFixtures = [
       null,
       null,
     ),
-    {"最大値または最小値に値を入力してください"},
   ),
   OnChangeRangeFilterValueFixture(
     Property('booleanProperty', bool),
@@ -316,7 +289,6 @@ final onChangeRangeFilterValueFixtures = [
       null,
       null,
     ),
-    {"真理値型のプロパティに範囲フィルターは使用できません"},
   ),
   OnChangeRangeFilterValueFixture(
     Property('integerProperty', int),
@@ -331,42 +303,36 @@ final onChangeRangeFilterValueFixtures = [
       "最大値には整数値を入力してください",
       "最小値には整数値を入力してください",
     ),
-    {"最大値は整数でないといけません", "最小値は整数でないといけません"},
   ),
   OnChangeRangeFilterValueFixture(
     Property('integerProperty', int),
     '0',
     null,
     RangeFilterValue('0', null, false, false, null, null, null),
-    {},
   ),
   OnChangeRangeFilterValueFixture(
     Property('integerProperty', int),
     '0',
     '',
     RangeFilterValue('0', '', false, false, null, null, null),
-    {},
   ),
   OnChangeRangeFilterValueFixture(
     Property('integerProperty', int),
     null,
     '0',
     RangeFilterValue(null, '0', false, false, null, null, null),
-    {},
   ),
   OnChangeRangeFilterValueFixture(
     Property('integerProperty', int),
     '',
     '0',
     RangeFilterValue('', '0', false, false, null, null, null),
-    {},
   ),
   OnChangeRangeFilterValueFixture(
     Property('integerProperty', int),
     '1',
     '2',
     RangeFilterValue('1', '2', false, false, "最大値は最小値以上でないといけません", null, null),
-    {"最大値は最小値以上でないといけません"},
   ),
   OnChangeRangeFilterValueFixture(
     Property('doubleProperty', double),
@@ -381,41 +347,35 @@ final onChangeRangeFilterValueFixtures = [
       "最大値には実数値を入力してください",
       "最小値には実数値を入力してください",
     ),
-    {"最大値は実数でないといけません", "最小値は実数でないといけません"},
   ),
   OnChangeRangeFilterValueFixture(
     Property('doubleProperty', double),
     '1.0',
     null,
     RangeFilterValue('1.0', null, false, false, null, null, null),
-    {},
   ),
   OnChangeRangeFilterValueFixture(
     Property('doubleProperty', double),
     '1.0',
     '',
     RangeFilterValue('1.0', '', false, false, null, null, null),
-    {},
   ),
   OnChangeRangeFilterValueFixture(
     Property('doubleProperty', double),
     null,
     '1.0',
     RangeFilterValue(null, '1.0', false, false, null, null, null),
-    {},
   ),
   OnChangeRangeFilterValueFixture(
     Property('doubleProperty', double),
     '',
     '1.0',
     RangeFilterValue('', '1.0', false, false, null, null, null),
-    {},
   ),
   OnChangeRangeFilterValueFixture(
     Property('doubleProperty', double),
     '1',
     '2',
     RangeFilterValue('1', '2', false, false, "最大値は最小値以上でないといけません", null, null),
-    {"最大値は最小値以上でないといけません"},
   ),
 ];

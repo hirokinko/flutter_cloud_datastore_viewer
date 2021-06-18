@@ -380,7 +380,6 @@ class Filter {
   final List<FilterType> selectableFilterTypes;
   final String? selectedFilterTypeError;
   final FilterValue? filterValue;
-  final Set<String> filterValueErrors;
 
   Filter(
     this.selectedProperty,
@@ -390,7 +389,6 @@ class Filter {
     this.selectableFilterTypes,
     this.selectedFilterTypeError,
     this.filterValue,
-    this.filterValueErrors,
   );
 
   String? validateSelectedProperty(Property? prop) {
