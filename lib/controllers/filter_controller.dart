@@ -85,14 +85,12 @@ class FilterController {
     bool containsMinValue: false,
   }) {
     final current = this.read(filterStateProvider).state;
-    final newFilterValue = RangeFilterValue(
+    final newFilterValue = createRangeFilterValue(
+      current.selectedProperty!,
       maxValue,
       minValue,
       containsMaxValue,
       containsMinValue,
-      null,
-      null,
-      null,
     );
     this.read(filterStateProvider).state = Filter(
       current.selectedProperty,

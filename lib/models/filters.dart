@@ -247,6 +247,38 @@ class RangeFilterValue extends Equatable with FilterValue {
   bool get minValueIsNotEmpty => this.minValue != null && this.minValue != '';
 }
 
+RangeFilterValue createRangeFilterValue(
+  Property property,
+  String? maxValue,
+  String? minValue,
+  bool containsMaxValue,
+  bool containsMinValue,
+) {
+  late final String? formError;
+  late final String? maxValueError;
+  late final String? minValueError;
+
+  maxValueError = null;
+  minValueError = null;
+  if (property.type == bool) {
+    formError = "真理値型のプロパティに範囲フィルターは使用できません";
+  } else if ((maxValue == null || maxValue.isEmpty) &&
+      (minValue == null || minValue.isEmpty)) {
+    formError = "最大値または最小値に値を入力してください";
+  } else {
+    formError = null;
+  }
+  return RangeFilterValue(
+    maxValue,
+    minValue,
+    containsMaxValue,
+    containsMinValue,
+    formError,
+    maxValueError,
+    minValueError,
+  );
+}
+
 @immutable
 class Filter {
   final Property? selectedProperty;
