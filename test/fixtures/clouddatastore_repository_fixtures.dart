@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+import 'package:flutter_cloud_datastore_viewer/patched_datastore/v1.dart';
 
 @immutable
 class ToValueTestFixture<T> {
@@ -406,3 +407,77 @@ final toRangeFilterFixtures = [
     },
   ),
 ];
+
+final namespacesRunQueryResponse = RunQueryResponse()
+  ..batch = (QueryResultBatch()
+    ..entityResults = [
+      EntityResult()
+        ..entity = (Entity()
+          ..key = (Key()
+            ..partitionId = (PartitionId()
+              ..projectId = 'test-project'
+              ..namespaceId = null)
+            ..path = [
+              PathElement()
+                ..kind = '__namespace__'
+                ..id = '1'
+                ..name = null,
+            ])),
+      EntityResult()
+        ..entity = (Entity()
+          ..key = (Key()
+            ..partitionId = (PartitionId()
+              ..projectId = 'test-project'
+              ..namespaceId = null)
+            ..path = [
+              PathElement()
+                ..kind = '__namespace__'
+                ..id = null
+                ..name = 'development',
+            ])),
+    ]);
+
+final expectedNamespacesRunQueryRequest = RunQueryRequest()
+  ..query = (Query()..kind = [KindExpression()..name = '__namespace__'])
+  ..partitionId = (PartitionId()..projectId = 'test-project');
+
+final kindRunQueryResponse = RunQueryResponse()
+  ..batch = (QueryResultBatch()
+    ..entityResults = [
+      EntityResult()
+        ..entity = (Entity()
+          ..key = (Key()
+            ..partitionId = (PartitionId()
+              ..projectId = 'test-project'
+              ..namespaceId = null)
+            ..path = [
+              PathElement()
+                ..kind = '__kind__'
+                ..name = 'Spam'
+                ..id = null,
+            ])),
+      EntityResult()
+        ..entity = (Entity()
+          ..key = (Key()
+            ..partitionId = (PartitionId()
+              ..projectId = 'test-project'
+              ..namespaceId = null)
+            ..path = [
+              PathElement()
+                ..kind = '__kind__'
+                ..name = 'Ham'
+                ..id = null,
+            ])),
+      EntityResult()
+        ..entity = (Entity()
+          ..key = (Key()
+            ..partitionId = (PartitionId()
+              ..projectId = 'test-project'
+              ..namespaceId = null)
+            ..path = [
+              PathElement()
+                ..kind = '__kind__'
+                ..name = 'Egg'
+                ..id = null,
+            ])),
+    ]);
