@@ -35,12 +35,32 @@ abstract class FilterValue extends Equatable {}
 class EqualsFilterValue extends FilterValue {
   final Type type;
   final String? value;
-  final String? error;
 
-  EqualsFilterValue(this.type, this.value, this.error);
+  EqualsFilterValue(this.type, this.value);
 
   @override
-  List<Object?> get props => [this.type, this.value, this.error];
+  List<Object?> get props => [this.type, this.value];
+
+  String? get error {
+    if (this.value == null || this.value!.isEmpty) {
+      return "値を入力してください";
+    }
+    switch (this.type) {
+      case String:
+        return null;
+      case bool:
+        return this.value!.toLowerCase() == 'true' ||
+                this.value!.toLowerCase() == 'false'
+            ? null
+            : "'true'または'false'を入力してください";
+      case int:
+        return int.tryParse(this.value!) != null ? null : "整数値を入力してください";
+      case double:
+        return double.tryParse(this.value!) != null ? null : "実数値を入力してください";
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 class _Validators {
@@ -154,7 +174,7 @@ RangeFilterValue createDoubleRangeFilterValue(
 
 EqualsFilterValue createEqualsFilterValue(Property property, String? value) {
   if (value == null) {
-    return EqualsFilterValue(property.type, value, "値を入力してください");
+    return EqualsFilterValue(property.type, value);
   }
   late final String? error;
   switch (property.type) {
@@ -173,7 +193,7 @@ EqualsFilterValue createEqualsFilterValue(Property property, String? value) {
     default:
       error = null;
   }
-  return EqualsFilterValue(property.type, value, error);
+  return EqualsFilterValue(property.type, value);
 }
 
 @immutable
@@ -298,7 +318,7 @@ class Filter {
       case FilterType.UNSPECIFIED:
         return null;
       case FilterType.EQUALS:
-        return EqualsFilterValue(Null, null, null);
+        return EqualsFilterValue(Null, null);
       case FilterType.RANGE:
         return RangeFilterValue(null, null, false, false, null, null, null);
     }

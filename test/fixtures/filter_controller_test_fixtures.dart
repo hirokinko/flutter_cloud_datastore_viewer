@@ -40,11 +40,13 @@ class OnChangeEqualsFilterValueFixture {
   final Property property;
   final String? givenValue;
   final EqualsFilterValue expectedFilterValue;
+  final String? expectedError;
 
   OnChangeEqualsFilterValueFixture(
     this.property,
     this.givenValue,
     this.expectedFilterValue,
+    this.expectedError,
   );
 }
 
@@ -110,7 +112,7 @@ final onChangeFilterTypeFixtures = <OnChangeFilterTypeFixture>[
     FilterType.EQUALS,
     FilterType.EQUALS,
     null,
-    EqualsFilterValue(Null, null, null),
+    EqualsFilterValue(Null, null),
   ),
   OnChangeFilterTypeFixture(
     FilterType.RANGE,
@@ -124,101 +126,115 @@ final onChangeEqualsFilterValueFixtures = <OnChangeEqualsFilterValueFixture>[
   OnChangeEqualsFilterValueFixture(
     Property('stringProperty', String),
     null,
-    EqualsFilterValue(String, null, "値を入力してください"),
+    EqualsFilterValue(String, null),
+    "値を入力してください",
   ),
   OnChangeEqualsFilterValueFixture(
     Property('booleanProperty', bool),
     'true',
-    EqualsFilterValue(bool, 'true', null),
+    EqualsFilterValue(bool, 'true'),
+    null,
   ),
   OnChangeEqualsFilterValueFixture(
     Property('booleanProperty', bool),
     'false',
-    EqualsFilterValue(bool, 'false', null),
-  ),
-  OnChangeEqualsFilterValueFixture(
-    Property('booleanProperty', bool),
+    EqualsFilterValue(bool, 'false'),
     null,
-    EqualsFilterValue(bool, null, "値を入力してください"),
   ),
+  OnChangeEqualsFilterValueFixture(Property('booleanProperty', bool), null,
+      EqualsFilterValue(bool, null), "値を入力してください"),
   OnChangeEqualsFilterValueFixture(
     Property('booleanProperty', bool),
     'spam',
     EqualsFilterValue(
       bool,
       'spam',
-      "入力値は'true'または'false'でないといけません",
     ),
+    "'true'または'false'を入力してください",
   ),
   OnChangeEqualsFilterValueFixture(
     Property('stringProperty', String),
     '',
-    EqualsFilterValue(int, '', "値を入力してください"),
+    EqualsFilterValue(String, ''),
+    "値を入力してください",
   ),
   OnChangeEqualsFilterValueFixture(
     Property('integerProperty', int),
     '1',
-    EqualsFilterValue(int, '1', null),
+    EqualsFilterValue(int, '1'),
+    null,
   ),
   OnChangeEqualsFilterValueFixture(
     Property('integerProperty', int),
     '-1',
-    EqualsFilterValue(int, '-1', null),
+    EqualsFilterValue(int, '-1'),
+    null,
   ),
   OnChangeEqualsFilterValueFixture(
     Property('integerProperty', int),
     '',
-    EqualsFilterValue(int, '', "整数値を入力してください"),
+    EqualsFilterValue(int, ''),
+    "値を入力してください",
   ),
   OnChangeEqualsFilterValueFixture(
     Property('integerProperty', int),
     'spam',
-    EqualsFilterValue(int, 'spam', "整数値を入力してください"),
+    EqualsFilterValue(int, 'spam'),
+    "整数値を入力してください",
   ),
   OnChangeEqualsFilterValueFixture(
     Property('integerProperty', int),
     '3.1415926535',
-    EqualsFilterValue(double, '3.1415926535', "整数値を入力してください"),
+    EqualsFilterValue(int, '3.1415926535'),
+    "整数値を入力してください",
   ),
   OnChangeEqualsFilterValueFixture(
     Property('dobuleValue', double),
     '1.0',
-    EqualsFilterValue(double, '1.0', null),
+    EqualsFilterValue(double, '1.0'),
+    null,
   ),
   OnChangeEqualsFilterValueFixture(
     Property('dobuleValue', double),
     '-1.0',
-    EqualsFilterValue(double, '-1.0', null),
+    EqualsFilterValue(double, '-1.0'),
+    null,
   ),
   OnChangeEqualsFilterValueFixture(
     Property('dobuleValue', double),
     '1',
-    EqualsFilterValue(double, '1', null),
+    EqualsFilterValue(double, '1'),
+    null,
   ),
   OnChangeEqualsFilterValueFixture(
     Property('dobuleValue', double),
     '-1',
-    EqualsFilterValue(double, '-1', null),
+    EqualsFilterValue(double, '-1'),
+    null,
   ),
   OnChangeEqualsFilterValueFixture(
     Property('dobuleValue', double),
     '1E6',
-    EqualsFilterValue(double, '1E6', null),
+    EqualsFilterValue(double, '1E6'),
+    null,
   ),
   OnChangeEqualsFilterValueFixture(
     Property('dobuleValue', double),
     '1E-6',
-    EqualsFilterValue(double, '1E-6', null),
+    EqualsFilterValue(double, '1E-6'),
+    null,
   ),
   OnChangeEqualsFilterValueFixture(
     Property('dobuleValue', double),
     '',
-    EqualsFilterValue(double, '', "実数値を入力してください"),
+    EqualsFilterValue(double, ''),
+    "値を入力してください",
   ),
   OnChangeEqualsFilterValueFixture(
     Property('dobuleValue', double),
     'spam',
-    EqualsFilterValue(double, 'spam', "実数値を入力してください"),
+    EqualsFilterValue(double, 'spam'),
+    "実数値を入力してください",
   ),
   // TODO: doubleについてはNaNやInfを与えたときの処理も必要？
 ];
@@ -336,7 +352,15 @@ final onChangeRangeFilterValueFixtures = [
     Property('integerProperty', int),
     '1',
     '2',
-    RangeFilterValue('1', '2', false, false, "最大値は最小値以上でないといけません", null, null),
+    RangeFilterValue(
+      '1',
+      '2',
+      false,
+      false,
+      "最大値には最小値より大きい整数値を入力してください",
+      null,
+      null,
+    ),
   ),
   OnChangeRangeFilterValueFixture(
     Property('doubleProperty', double),
@@ -380,6 +404,14 @@ final onChangeRangeFilterValueFixtures = [
     Property('doubleProperty', double),
     '1',
     '2',
-    RangeFilterValue('1', '2', false, false, "最大値は最小値以上でないといけません", null, null),
+    RangeFilterValue(
+      '1',
+      '2',
+      false,
+      false,
+      "最大値には最小値より大きい実数値を入力してください",
+      null,
+      null,
+    ),
   ),
 ];

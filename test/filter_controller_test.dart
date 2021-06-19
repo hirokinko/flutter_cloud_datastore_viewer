@@ -99,7 +99,7 @@ void main() {
           FilterType.EQUALS,
           AVAILABLE_ALL_FILTERS,
           null,
-          EqualsFilterValue(Null, null, null),
+          EqualsFilterValue(Null, null),
         );
         container
             .read(filterControllerProvider)
@@ -107,6 +107,10 @@ void main() {
 
         final actualFilter = container.read(filterStateProvider).state;
         expect(actualFilter.filterValue, fixture.expectedFilterValue);
+        expect(
+          (actualFilter.filterValue as EqualsFilterValue).error,
+          fixture.expectedError,
+        );
       },
     );
   });
