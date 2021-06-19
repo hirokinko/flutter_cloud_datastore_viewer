@@ -158,4 +158,19 @@ void main() {
     expect(actualFilter.selectedFilterTypeError, null);
     expect(actualFilter.filterValue, null);
   });
+
+  group('getSuggestedProperties', () {
+    for (final fixture in getSuggestedPropertiesFixtures) {
+      test('${fixture.input}を入力した時、${fixture.expected}が返る', () {
+        final filter = Filter(
+          null,
+          selectableProps,
+          FilterType.UNSPECIFIED,
+          FILTER_UNSELECTABLE,
+          null,
+        );
+        expect(filter.getSuggestedProperties(fixture.input), fixture.expected);
+      });
+    }
+  });
 }

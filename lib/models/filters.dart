@@ -193,6 +193,12 @@ class Filter {
     }
   }
 
+  List<Property> getSuggestedProperties(String propertyName) {
+    return this.selectableProperties.where((Property property) {
+      return property.name.toLowerCase().contains(propertyName.toLowerCase());
+    }).toList(growable: false);
+  }
+
   String? get selectedPropertyError =>
       this.selectedProperty == null ? "プロパティを選択してください" : null;
 

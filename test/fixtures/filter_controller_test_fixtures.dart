@@ -75,6 +75,14 @@ class OnChangeRangeFilterValueFixture {
   });
 }
 
+@immutable
+class GetSuggestedPropertiesFixture {
+  final String input;
+  final List<Property> expected;
+
+  GetSuggestedPropertiesFixture(this.input, this.expected);
+}
+
 final selectableProps = <Property>[
   Property('stringProperty', String),
   Property('boolProperty', bool),
@@ -452,5 +460,32 @@ final onChangeRangeFilterValueFixtures = [
     null,
     null,
     "最大値には最小値より大きい実数値を入力してください",
+  ),
+];
+
+final getSuggestedPropertiesFixtures = [
+  GetSuggestedPropertiesFixture(
+    'P',
+    <Property>[
+      Property('stringProperty', String),
+      Property('boolProperty', bool),
+    ],
+  ),
+  GetSuggestedPropertiesFixture(
+    'B',
+    <Property>[
+      Property('boolProperty', bool),
+    ],
+  ),
+  GetSuggestedPropertiesFixture(
+    'Hoge',
+    <Property>[],
+  ),
+  GetSuggestedPropertiesFixture(
+    '',
+    <Property>[
+      Property('stringProperty', String),
+      Property('boolProperty', bool),
+    ],
   ),
 ];
