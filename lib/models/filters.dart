@@ -33,41 +33,67 @@ abstract class FilterValue extends Equatable {}
 
 @immutable
 class EqualsFilterValue extends FilterValue {
+  final Type type;
   final String? value;
   final String? error;
 
-  EqualsFilterValue(this.value, this.error);
+  EqualsFilterValue(this.type, this.value, this.error);
 
   @override
-  List<Object?> get props => [this.value, this.error];
+  List<Object?> get props => [this.type, this.value, this.error];
 }
 
-String? validateBooleanValue(
-  String inputValue, {
-  String label: "入力値",
-}) {
-  final String lowerValue = inputValue.toLowerCase();
-  return lowerValue == 'true' || lowerValue == 'false'
-      ? null
-      : "$labelは'true'または'false'でないといけません";
-}
+class _Validators {
+  static String? validateBooleanValue(
+    String inputValue, {
+    String label: "入力値",
+  }) {
+    final String lowerValue = inputValue.toLowerCase();
+    return lowerValue == 'true' || lowerValue == 'false'
+        ? null
+        : "$labelは'true'または'false'でないといけません";
+  }
 
-String? validateStringValue(String inputValue, {String label: ''}) {
-  return inputValue.isNotEmpty ? null : "$label値を入力してください";
-}
+  static String? validateStringValue(String inputValue, {String label: ''}) {
+    return inputValue.isNotEmpty ? null : "$label値を入力してください";
+  }
 
-String? validateIntegerValue(
-  String inputValue, {
-  String label: '',
-}) {
-  return int.tryParse(inputValue) != null ? null : "$label整数値を入力してください";
-}
+  static String? validateIntegerValue(
+    String inputValue, {
+    String label: '',
+  }) {
+    return int.tryParse(inputValue) != null ? null : "$label整数値を入力してください";
+  }
 
-String? validateDoubleValue(
-  String inputValue, {
-  String label: '',
-}) {
-  return double.tryParse(inputValue) != null ? null : "$label実数値を入力してください";
+  static String? validateDoubleValue(
+    String inputValue, {
+    String label: '',
+  }) {
+    return double.tryParse(inputValue) != null ? null : "$label実数値を入力してください";
+  }
+
+  static String? validateIntegerRangeValues(
+    String? maxValue,
+    String? minValue,
+  ) {
+    return maxValue != null &&
+            minValue != null &&
+            int.tryParse(maxValue) != null &&
+            int.tryParse(minValue) != null &&
+            int.parse(maxValue) < int.parse(minValue)
+        ? "最大値には最小値より大きい整数値を入力してください"
+        : null;
+  }
+
+  static String? validateDoubleRangeValues(String? maxValue, String? minValue) {
+    return maxValue != null &&
+            minValue != null &&
+            double.tryParse(maxValue) != null &&
+            double.tryParse(minValue) != null &&
+            double.parse(maxValue) < double.parse(minValue)
+        ? "最大値には最小値より大きい実数値を入力してください"
+        : null;
+  }
 }
 
 RangeFilterValue createIntegerRangeFilterValue(
@@ -81,21 +107,12 @@ RangeFilterValue createIntegerRangeFilterValue(
   late final String? minValueError;
 
   maxValueError = (maxValue != null && maxValue.isNotEmpty)
-      ? validateIntegerValue(maxValue, label: "最大値には")
+      ? _Validators.validateIntegerValue(maxValue, label: "最大値には")
       : null;
   minValueError = (minValue != null && minValue.isNotEmpty)
-      ? validateIntegerValue(minValue, label: "最小値には")
+      ? _Validators.validateIntegerValue(minValue, label: "最小値には")
       : null;
-
-  formError = (maxValue != null &&
-          maxValue.isNotEmpty &&
-          minValue != null &&
-          minValue.isNotEmpty &&
-          int.tryParse(maxValue) != null &&
-          int.tryParse(minValue) != null &&
-          int.parse(maxValue) < int.parse(minValue))
-      ? "最大値は最小値以上でないといけません"
-      : null;
+  formError = _Validators.validateIntegerRangeValues(maxValue, minValue);
   return RangeFilterValue(
     maxValue,
     minValue,
@@ -118,21 +135,12 @@ RangeFilterValue createDoubleRangeFilterValue(
   late final String? minValueError;
 
   maxValueError = (maxValue != null && maxValue.isNotEmpty)
-      ? validateDoubleValue(maxValue, label: "最大値には")
+      ? _Validators.validateDoubleValue(maxValue, label: "最大値には")
       : null;
   minValueError = (minValue != null && minValue.isNotEmpty)
-      ? validateDoubleValue(minValue, label: "最小値には")
+      ? _Validators.validateDoubleValue(minValue, label: "最小値には")
       : null;
-
-  formError = (maxValue != null &&
-          maxValue.isNotEmpty &&
-          minValue != null &&
-          minValue.isNotEmpty &&
-          double.tryParse(maxValue) != null &&
-          double.tryParse(minValue) != null &&
-          double.parse(maxValue) < double.parse(minValue))
-      ? "最大値は最小値以上でないといけません"
-      : null;
+  formError = _Validators.validateDoubleRangeValues(maxValue, minValue);
   return RangeFilterValue(
     maxValue,
     minValue,
@@ -146,26 +154,26 @@ RangeFilterValue createDoubleRangeFilterValue(
 
 EqualsFilterValue createEqualsFilterValue(Property property, String? value) {
   if (value == null) {
-    return EqualsFilterValue(value, "値を入力してください");
+    return EqualsFilterValue(property.type, value, "値を入力してください");
   }
   late final String? error;
   switch (property.type) {
     case bool:
-      error = validateBooleanValue(value);
+      error = _Validators.validateBooleanValue(value);
       break;
     case String:
-      error = validateStringValue(value);
+      error = _Validators.validateStringValue(value);
       break;
     case int:
-      error = validateIntegerValue(value);
+      error = _Validators.validateIntegerValue(value);
       break;
     case double:
-      error = validateDoubleValue(value);
+      error = _Validators.validateDoubleValue(value);
       break;
     default:
       error = null;
   }
-  return EqualsFilterValue(value, error);
+  return EqualsFilterValue(property.type, value, error);
 }
 
 @immutable
@@ -290,7 +298,7 @@ class Filter {
       case FilterType.UNSPECIFIED:
         return null;
       case FilterType.EQUALS:
-        return EqualsFilterValue(null, null);
+        return EqualsFilterValue(Null, null, null);
       case FilterType.RANGE:
         return RangeFilterValue(null, null, false, false, null, null, null);
     }

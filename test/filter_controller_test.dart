@@ -99,7 +99,7 @@ void main() {
           FilterType.EQUALS,
           AVAILABLE_ALL_FILTERS,
           null,
-          EqualsFilterValue(null, null),
+          EqualsFilterValue(Null, null, null),
         );
         container
             .read(filterControllerProvider)
