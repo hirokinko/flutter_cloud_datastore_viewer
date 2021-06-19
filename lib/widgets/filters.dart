@@ -3,17 +3,14 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../controllers/filter_controller.dart';
 import '../models/filters.dart';
+import './commons.dart';
 
 class FilterFormWidget extends HookWidget {
   // FilterFormWidget({required Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    print('run build');
     final currentState = useProvider(filterStateProvider).state;
-    print(currentState.selectedProperty);
-    print(currentState.filterType);
-    print(currentState.filterValue);
     final equalsFilterValueTextEditingController =
         useTextEditingController(text: ''); // TODO: initial value
     final rangeFilterMaxValueTextEditingController =
@@ -47,12 +44,12 @@ class FilterFormWidget extends HookWidget {
 
 final createPropertyAutoCompleteField = (
   BuildContext context,
-  Filter state,
+  Filter filter,
 ) =>
     Autocomplete<Property>(
       displayStringForOption: (Property option) => option.toString(),
       optionsBuilder: (TextEditingValue textEditingValue) {
-        return state.getSuggestedProperties(textEditingValue.text);
+        return filter.getSuggestedProperties(textEditingValue.text);
       },
       onSelected: (Property? property) {
         context.read(filterControllerProvider).onChangeProperty(property);
@@ -69,10 +66,10 @@ final createPropertyAutoCompleteField = (
           decoration: InputDecoration(
             hintText: "絞り込むプロパティを選択してください",
             labelText: "プロパティ*",
-            errorText: state.selectedPropertyError,
+            errorText: filter.selectedPropertyError,
           ),
           onFieldSubmitted: (String value) {
-            final properties = state.getSuggestedProperties(value);
+            final properties = filter.getSuggestedProperties(value);
             final selected = (properties.length == 1) ? properties[0] : null;
             context.read(filterControllerProvider).onChangeProperty(selected);
             if (selected != null) {
@@ -153,7 +150,6 @@ final createBooleanValueDropdownButton = (
         labelText: "値",
       ),
       onChanged: (value) {
-        print('選択した値 $value');
         context.read(filterControllerProvider).onChangeEqualsFilterValue(value);
       },
     );
@@ -186,7 +182,6 @@ Widget createEqualsFilterValueTextEditField(
       errorText: filterValue.error,
     ),
     onChanged: (value) {
-      print('入力中の値 $value');
       context.read(filterControllerProvider).onChangeEqualsFilterValue(value);
     },
   );
@@ -208,24 +203,28 @@ final createRangeValueFilterForm = (
           labelText: "最大値",
         ),
         onChanged: (value) {
-          print('入力中の最大値 $value');
           context.read(filterControllerProvider).onChangeRangeFilterValues(
               value, filterValue.minValue,
               containsMaxValue: filterValue.containsMaxValue,
               containsMinValue: filterValue.containsMinValue);
         },
       ),
-      Checkbox(
+      LabeledCheckbox(
+        label: "最大値を含む",
         value: filterValue.containsMaxValue,
-        onChanged: (bool? value) {
-          print('最大値を含むか? $value');
-          context.read(filterControllerProvider).onChangeRangeFilterValues(
-                filterValue.maxValue,
-                filterValue.minValue,
-                containsMaxValue: value ?? false,
-                containsMinValue: filterValue.containsMinValue,
-              );
-        },
+        onChanged: filterValue.maxValue == null || filterValue.maxValue!.isEmpty
+            ? null
+            : (bool? value) {
+                context
+                    .read(filterControllerProvider)
+                    .onChangeRangeFilterValues(
+                      filterValue.maxValue,
+                      filterValue.minValue,
+                      containsMaxValue: value ?? false,
+                      containsMinValue: filterValue.containsMinValue,
+                    );
+              },
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
       ),
       TextFormField(
         controller: minValueTextEditingController,
@@ -234,24 +233,28 @@ final createRangeValueFilterForm = (
           labelText: "最小値",
         ),
         onChanged: (value) {
-          print('入力中の最小値 $value');
           context.read(filterControllerProvider).onChangeRangeFilterValues(
               filterValue.maxValue, value,
               containsMaxValue: filterValue.containsMaxValue,
               containsMinValue: filterValue.containsMinValue);
         },
       ),
-      Checkbox(
+      LabeledCheckbox(
+        label: "最小値を含む",
         value: filterValue.containsMinValue,
-        onChanged: (bool? value) {
-          print('最小値を含むか? $value');
-          context.read(filterControllerProvider).onChangeRangeFilterValues(
-                filterValue.maxValue,
-                filterValue.minValue,
-                containsMaxValue: filterValue.containsMaxValue,
-                containsMinValue: value ?? false,
-              );
-        },
+        onChanged: filterValue.minValue == null || filterValue.minValue!.isEmpty
+            ? null
+            : (bool? value) {
+                context
+                    .read(filterControllerProvider)
+                    .onChangeRangeFilterValues(
+                      filterValue.maxValue,
+                      filterValue.minValue,
+                      containsMaxValue: filterValue.containsMaxValue,
+                      containsMinValue: value ?? false,
+                    );
+              },
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
       ),
     ],
   );
