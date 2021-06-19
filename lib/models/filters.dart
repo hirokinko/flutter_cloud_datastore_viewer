@@ -171,26 +171,17 @@ class RangeFilterValue extends FilterValue {
 class Filter {
   final Property? selectedProperty;
   final List<Property> selectableProperties;
-  final String? selectedPropertyError;
   final FilterType filterType;
   final List<FilterType> selectableFilterTypes;
-  final String? selectedFilterTypeError;
   final FilterValue? filterValue;
 
   Filter(
     this.selectedProperty,
     this.selectableProperties,
-    this.selectedPropertyError,
     this.filterType,
     this.selectableFilterTypes,
-    this.selectedFilterTypeError,
     this.filterValue,
   );
-
-  String? validateSelectedProperty(Property? prop) {
-    print(prop);
-    return prop == null ? "プロパティを選択してください" : null;
-  }
 
   List<FilterType> getSelectableFilterTypes(Property? prop) {
     if (prop == null) {
@@ -211,4 +202,12 @@ class Filter {
       return property.name.toLowerCase().contains(propertyName.toLowerCase());
     }).toList(growable: false);
   }
+
+  String? get selectedPropertyError =>
+      this.selectedProperty == null ? "プロパティを選択してください" : null;
+
+  String? get selectedFilterTypeError =>
+      this.selectedProperty != null && this.filterType == FilterType.UNSPECIFIED
+          ? "フィルタータイプを選択してください"
+          : null;
 }

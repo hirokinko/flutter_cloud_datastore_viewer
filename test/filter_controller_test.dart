@@ -23,10 +23,8 @@ void main() {
         container.read(filterStateProvider).state = Filter(
           null,
           fixture.selectableProperties,
-          null,
           FilterType.UNSPECIFIED,
           FILTER_UNSELECTABLE,
-          null,
           null,
         );
 
@@ -65,10 +63,8 @@ void main() {
         container.read(filterStateProvider).state = Filter(
           Property('stringProperty', String),
           selectableProps,
-          null,
           FilterType.UNSPECIFIED,
           AVAILABLE_ALL_FILTERS,
-          null,
           null,
         );
         container
@@ -95,10 +91,8 @@ void main() {
         container.read(filterStateProvider).state = Filter(
           fixture.property,
           selectableProps,
-          null,
           FilterType.EQUALS,
           AVAILABLE_ALL_FILTERS,
-          null,
           defaultEqualsFilterValue,
         );
         container
@@ -126,10 +120,8 @@ void main() {
       container.read(filterStateProvider).state = Filter(
         fixture.property,
         selectableProps,
-        null,
         FilterType.RANGE,
         AVAILABLE_ALL_FILTERS,
-        null,
         defaultRangeFilterValue,
       );
       container.read(filterControllerProvider).onChangeRangeFilterValues(
@@ -151,10 +143,8 @@ void main() {
     container.read(filterStateProvider).state = Filter(
       Property('stringProperty', String),
       selectableProps,
-      null,
       FilterType.RANGE,
       AVAILABLE_ALL_FILTERS,
-      null,
       RangeFilterValue(String, 'ん', 'あ', false, false),
     );
     container.read(filterControllerProvider).onSubmitFilterClear();
@@ -162,7 +152,7 @@ void main() {
     final actualFilter = container.read(filterStateProvider).state;
     expect(actualFilter.selectedProperty, null);
     expect(actualFilter.selectableProperties, selectableProps);
-    expect(actualFilter.selectedPropertyError, null);
+    expect(actualFilter.selectedPropertyError, "プロパティを選択してください");
     expect(actualFilter.filterType, FilterType.UNSPECIFIED);
     expect(actualFilter.selectableFilterTypes, FILTER_UNSELECTABLE);
     expect(actualFilter.selectedFilterTypeError, null);

@@ -15,10 +15,8 @@ final filterStateProvider = StateProvider.autoDispose((ref) {
   return Filter(
     null,
     selectableProperties,
-    null,
     FilterType.UNSPECIFIED,
     FILTER_UNSELECTABLE,
-    null,
     null,
   );
 });
@@ -36,10 +34,8 @@ class FilterController {
     this.read(filterStateProvider).state = Filter(
       prop,
       current.selectableProperties,
-      current.validateSelectedProperty(prop),
       FilterType.UNSPECIFIED,
       current.getSelectableFilterTypes(prop),
-      null,
       null,
     );
     print(
@@ -64,10 +60,8 @@ class FilterController {
     this.read(filterStateProvider).state = Filter(
       current.selectedProperty,
       current.selectableProperties,
-      null,
       filterType,
       current.selectableFilterTypes,
-      current.validateSelectedFilterType(filterType),
       filterValue,
     );
   }
@@ -77,10 +71,8 @@ class FilterController {
     this.read(filterStateProvider).state = Filter(
       current.selectedProperty,
       current.selectableProperties,
-      current.selectedPropertyError,
       current.filterType,
       current.selectableFilterTypes,
-      current.selectedFilterTypeError,
       EqualsFilterValue(current.selectedProperty!.type, value),
     );
   }
@@ -95,10 +87,8 @@ class FilterController {
     this.read(filterStateProvider).state = Filter(
       current.selectedProperty,
       current.selectableProperties,
-      current.selectedPropertyError,
       current.filterType,
       current.selectableFilterTypes,
-      current.selectedFilterTypeError,
       RangeFilterValue(
         current.selectedProperty!.type,
         maxValue,
@@ -114,10 +104,8 @@ class FilterController {
     this.read(filterStateProvider).state = Filter(
       null,
       current.selectableProperties,
-      null,
       FilterType.UNSPECIFIED,
       FILTER_UNSELECTABLE,
-      null,
       null,
     );
   }
