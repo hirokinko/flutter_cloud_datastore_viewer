@@ -99,7 +99,7 @@ void main() {
           FilterType.EQUALS,
           AVAILABLE_ALL_FILTERS,
           null,
-          EqualsFilterValue(Null, null),
+          defaultEqualsFilterValue,
         );
         container
             .read(filterControllerProvider)
@@ -130,7 +130,7 @@ void main() {
         FilterType.RANGE,
         AVAILABLE_ALL_FILTERS,
         null,
-        RangeFilterValue(Null, null, null, false, false),
+        defaultRangeFilterValue,
       );
       container.read(filterControllerProvider).onChangeRangeFilterValues(
             fixture.givenMaxValue,

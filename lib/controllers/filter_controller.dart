@@ -48,6 +48,18 @@ class FilterController {
   }
 
   void onChangeFilterType(FilterType filterType) {
+    late final FilterValue? filterValue;
+    switch (filterType) {
+      case FilterType.EQUALS:
+        filterValue = defaultEqualsFilterValue;
+        break;
+      case FilterType.RANGE:
+        filterValue = defaultRangeFilterValue;
+        break;
+      default:
+        filterValue = null;
+    }
+
     final current = this.read(filterStateProvider).state;
     this.read(filterStateProvider).state = Filter(
       current.selectedProperty,
@@ -56,7 +68,7 @@ class FilterController {
       filterType,
       current.selectableFilterTypes,
       current.validateSelectedFilterType(filterType),
-      current.generateDefaultFilterValue(filterType),
+      filterValue,
     );
   }
 
@@ -69,7 +81,7 @@ class FilterController {
       current.filterType,
       current.selectableFilterTypes,
       current.selectedFilterTypeError,
-      createEqualsFilterValue(current.selectedProperty!, value),
+      EqualsFilterValue(current.selectedProperty!.type, value),
     );
   }
 
@@ -87,8 +99,8 @@ class FilterController {
       current.filterType,
       current.selectableFilterTypes,
       current.selectedFilterTypeError,
-      createRangeFilterValue(
-        current.selectedProperty!,
+      RangeFilterValue(
+        current.selectedProperty!.type,
         maxValue,
         minValue,
         containsMaxValue,
