@@ -119,7 +119,10 @@ void main() {
     test(
         'ケース $index\n'
         '${fixture.givenMinValue}から${fixture.givenMaxValue}までの${fixture.property}のクエリを作るとき、\n'
-        '  - filterValueには${fixture.expectedFilterValue}がセットされる', () {
+        '  - filterValueには${fixture.expectedFilterValue}がセットされる\n'
+        '  - filterValue.maxValueError は ${fixture.expectedMaxValueError} を返す\n'
+        '  - filterValue.minValueError は ${fixture.expectedMinValueError} を返す\n'
+        '  - filterValue.formError は ${fixture.expectedFormError} を返す', () {
       container.read(filterStateProvider).state = Filter(
         fixture.property,
         selectableProps,
@@ -127,7 +130,7 @@ void main() {
         FilterType.RANGE,
         AVAILABLE_ALL_FILTERS,
         null,
-        RangeFilterValue(null, null, false, false, null, null, null),
+        RangeFilterValue(Null, null, null, false, false),
       );
       container.read(filterControllerProvider).onChangeRangeFilterValues(
             fixture.givenMaxValue,
@@ -136,6 +139,11 @@ void main() {
 
       final actualFilter = container.read(filterStateProvider).state;
       expect(actualFilter.filterValue, fixture.expectedFilterValue);
+      RangeFilterValue actualFilterValue =
+          actualFilter.filterValue as RangeFilterValue;
+      expect(actualFilterValue.maxValueError, fixture.expectedMaxValueError);
+      expect(actualFilterValue.minValueError, fixture.expectedMinValueError);
+      expect(actualFilterValue.formError, fixture.expectedFormError);
     });
   });
 
@@ -147,7 +155,7 @@ void main() {
       FilterType.RANGE,
       AVAILABLE_ALL_FILTERS,
       null,
-      RangeFilterValue('ん', 'あ', false, false, null, null, null),
+      RangeFilterValue(String, 'ん', 'あ', false, false),
     );
     container.read(filterControllerProvider).onSubmitFilterClear();
 
