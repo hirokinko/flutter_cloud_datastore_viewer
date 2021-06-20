@@ -1,4 +1,5 @@
 import '../patched_datastore/v1.dart' as datastore_api;
+import '../models/entities.dart' as models;
 
 class CloudDatastoreUtils {
   static datastore_api.Value toValue(Type type, String? value) {
@@ -87,33 +88,18 @@ class CloudDatastoreRepostiry {
         [];
   }
 
-  Future<void> find(String kindName, String? namespace) async {
+  Future<Iterable<models.Entity?>> find(
+    String kindName,
+    String? namespace,
+  ) async {
     // TODO filter
     // TODO ordering
     final response = await this._runQuery(kindName, namespace);
-    response.batch?.entityResults
-        ?.forEach((datastore_api.EntityResult entityResult) {
-      final entity = entityResult.entity;
-      final key = entity?.key;
-      final keyPartitionId = key?.partitionId;
-      final keyPath = key?.path;
-      print(
-        'namespace: ${keyPartitionId?.namespaceId}, projectId: ${keyPartitionId?.projectId}',
-      );
-      keyPath?.forEach((datastore_api.PathElement pathElement) {
-        print(
-          'kind: ${pathElement.kind}, id: ${pathElement.id}, name: ${pathElement.name}',
-        );
-      });
-      entity?.properties?.forEach((
-        String propertyKey,
-        datastore_api.Value propertyValue,
-      ) {
-        print(
-          'property key: $propertyKey, value: ${propertyValue.toJson().toString()}',
-        );
-      });
-    });
+    return response.batch?.entityResults?.map(
+          (datastore_api.EntityResult entityResult) =>
+              this._toModelEntity(entityResult.entity),
+        ) ??
+        <models.Entity>[];
   }
 
   Future<datastore_api.RunQueryResponse> _runQuery(
@@ -129,5 +115,98 @@ class CloudDatastoreRepostiry {
       ..partitionId = partitionId
       ..query = query;
     return await client.projects.runQuery(request, this.projectId);
+  }
+
+  models.Key? _toModelKey(datastore_api.Key? datastoreKey) {
+    final partitionId = datastoreKey?.partitionId;
+    final path = datastoreKey?.path;
+
+    if ((partitionId == null || partitionId.projectId == null) &&
+        (path == null || path.isEmpty)) {
+      return null;
+    }
+
+    final modelKeys = path!
+        .map(
+          (datastore_api.PathElement e) => models.Key(
+            partitionId!.projectId!,
+            partitionId.namespaceId,
+            e.kind ?? '',
+            int.tryParse(e.id ?? ''),
+            e.name,
+            [],
+          ),
+        )
+        .toList(growable: false);
+
+    return models.Key(
+      modelKeys[0].projectId,
+      modelKeys[0].namespaceId,
+      modelKeys[0].kind,
+      modelKeys[0].id,
+      modelKeys[0].name,
+      modelKeys.length > 1 ? modelKeys.sublist(1) : [],
+    );
+  }
+
+  Object? _toValue(datastore_api.Value datastoreValue) {
+    if (datastoreValue.booleanValue != null) {
+      return datastoreValue.booleanValue;
+    }
+    if (datastoreValue.integerValue != null) {
+      return int.tryParse(datastoreValue.integerValue!);
+    }
+    if (datastoreValue.doubleValue != null) {
+      return datastoreValue.doubleValue;
+    }
+    // TODO timestampValue
+    if (datastoreValue.keyValue != null) {
+      return this._toModelKey(datastoreValue.keyValue);
+    }
+    if (datastoreValue.stringValue != null) {
+      return datastoreValue.stringValue;
+    }
+    // TODO blobValue
+    // TODO geoPointValue
+    if (datastoreValue.entityValue != null) {
+      return this._toModelEntity(datastoreValue.entityValue);
+    }
+    if (datastoreValue.arrayValue != null &&
+        datastoreValue.arrayValue!.values != null) {
+      // FIXME it returns SingleProperty...
+      final values =
+          datastoreValue.arrayValue!.values!.map((v) => this._toValue(v));
+      return values;
+    }
+    return null;
+  }
+
+  models.Entity? _toModelEntity(datastore_api.Entity? datastoreEntity) {
+    final modelKey = this._toModelKey(datastoreEntity?.key);
+    final properties = datastoreEntity?.properties?.entries
+            .map<models.Property>(
+          (
+            MapEntry<String, datastore_api.Value> entry,
+          ) {
+            final indexed = !(entry.value.excludeFromIndexes ?? false);
+            final value = this._toValue(entry.value);
+            if (value == null) {
+              return models.SingleProperty(entry.key, String, indexed, null);
+            }
+            if (value.runtimeType == List && (value as List).isNotEmpty) {
+              final type = value[0].runtimeType;
+              return models.ListProperty(entry.key, type, indexed, value);
+            }
+            return models.SingleProperty(
+              entry.key,
+              value.runtimeType,
+              indexed,
+              value,
+            );
+          },
+        ).toList(growable: false) ??
+        [];
+
+    return properties.isNotEmpty ? models.Entity(modelKey, properties) : null;
   }
 }

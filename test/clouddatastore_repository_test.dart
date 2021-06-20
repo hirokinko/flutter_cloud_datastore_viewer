@@ -88,4 +88,27 @@ void main() {
     );
     expect(await repository.kinds(null), ['Spam', 'Ham', 'Egg']);
   });
+
+  test('CloudDatastoreRepository.find', () async {
+    final datastoreApi = MockDatastoreApi();
+    final mockedProjectResource = MockProjectsResource();
+    final projectId = 'test-project';
+    final repository = CloudDatastoreRepostiry(datastoreApi, projectId);
+
+    when(datastoreApi.projects).thenReturn(mockedProjectResource);
+    when(
+      mockedProjectResource.runQuery(any, any),
+    ).thenAnswer(
+      (_) async => findRunQueryResponse,
+    );
+
+    final result = await repository.find('Profile', 'development');
+    result.forEach((entity) {
+      print(entity?.key);
+      entity?.properties.forEach((property) {
+        print(property);
+      });
+    });
+    // TODO assertion
+  });
 }

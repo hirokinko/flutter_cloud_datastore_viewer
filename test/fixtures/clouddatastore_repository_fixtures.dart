@@ -481,3 +481,64 @@ final kindRunQueryResponse = RunQueryResponse()
                 ..id = null,
             ])),
     ]);
+
+final findRunQueryResponse = RunQueryResponse()
+  ..batch = (QueryResultBatch()
+    ..entityResults = [
+      EntityResult()
+        ..entity = (Entity()
+          ..key = (Key()
+            ..partitionId = (PartitionId()
+              ..projectId = 'test-project'
+              ..namespaceId = null)
+            ..path = [
+              PathElement()
+                ..kind = 'MontyPython'
+                ..name = 'Spam'
+                ..id = null,
+              PathElement()
+                ..kind = 'MontyPython'
+                ..name = 'Ham'
+                ..id = null,
+              PathElement()
+                ..kind = 'MontyPython'
+                ..name = 'Egg'
+                ..id = null,
+            ])
+          ..properties = {
+            'booleanProperty': Value()..booleanValue = true,
+            'integerProperty': Value()..integerValue = '1',
+            'doubleProperty': Value()..doubleValue = 3.141592,
+            'keyProperty': Value()
+              ..keyValue = (Key()
+                ..partitionId = (PartitionId()
+                  ..projectId = 'test-project'
+                  ..namespaceId = null)
+                ..path = [
+                  PathElement()
+                    ..kind = 'FlyingCircus'
+                    ..name = null
+                    ..id = '1',
+                  PathElement()
+                    ..kind = 'FlyingCircus'
+                    ..name = null
+                    ..id = '2'
+                ]),
+            'stringProperty': Value()
+              ..stringValue = "NOBODY expects the Spanish Inquisition!!!!!",
+            'childEntityProperty': Value()
+              ..entityValue = (Entity()
+                ..key = null
+                ..properties = {
+                  'inner1': Value()..integerValue = "1",
+                  'inner2': Value()..doubleValue = 42,
+                }),
+            'arrayProperty': Value()
+              ..arrayValue = (ArrayValue()
+                ..values = [
+                  Value()..integerValue = '1',
+                  Value()..integerValue = '2',
+                  Value()..integerValue = '3'
+                ]),
+          }),
+    ]);
