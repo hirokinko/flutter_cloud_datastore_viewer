@@ -94,6 +94,8 @@ class CloudDatastoreRepostiry {
   ) async {
     // TODO filter
     // TODO ordering
+    // TODO limit
+    // TODO cursor
     final response = await this._runQuery(kindName, namespace);
     return response.batch?.entityResults?.map(
           (datastore_api.EntityResult entityResult) =>
@@ -149,6 +151,7 @@ class CloudDatastoreRepostiry {
     );
   }
 
+  // FIXME それぞれの型で返したい
   Object? _toValue(datastore_api.Value datastoreValue) {
     if (datastoreValue.booleanValue != null) {
       return datastoreValue.booleanValue;
@@ -173,14 +176,15 @@ class CloudDatastoreRepostiry {
     }
     if (datastoreValue.arrayValue != null &&
         datastoreValue.arrayValue!.values != null) {
-      // FIXME it returns SingleProperty...
-      final values =
-          datastoreValue.arrayValue!.values!.map((v) => this._toValue(v));
+      final values = datastoreValue.arrayValue!.values!
+          .map((v) => this._toValue(v))
+          .toList(growable: false);
       return values;
     }
     return null;
   }
 
+  // FIXME それぞれのプロパティのGenericsがdynamicになるのをなんとかしたい
   models.Entity? _toModelEntity(datastore_api.Entity? datastoreEntity) {
     final modelKey = this._toModelKey(datastoreEntity?.key);
     final properties = datastoreEntity?.properties?.entries
@@ -193,7 +197,9 @@ class CloudDatastoreRepostiry {
             if (value == null) {
               return models.SingleProperty(entry.key, String, indexed, null);
             }
-            if (value.runtimeType == List && (value as List).isNotEmpty) {
+            // FIXME もっとスマートにListと認識する方法を知りたい
+            if (value.runtimeType.toString() == 'List<Object?>' &&
+                (value as List).isNotEmpty) {
               final type = value[0].runtimeType;
               return models.ListProperty(entry.key, type, indexed, value);
             }
