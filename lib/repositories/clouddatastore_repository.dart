@@ -69,7 +69,12 @@ class CloudDatastoreRepostiry {
   CloudDatastoreRepostiry(this.client, this.projectId);
 
   Future<List<String?>> namespaces() async {
-    final response = await this._runQuery('__namespace__', null);
+    final response = await this._runQuery(
+      '__namespace__',
+      null,
+      null,
+      limit: 0,
+    );
     return response.batch?.entityResults?.map((
           datastore_api.EntityResult entityResult,
         ) {
@@ -79,7 +84,12 @@ class CloudDatastoreRepostiry {
   }
 
   Future<List<String>> kinds(String? namespace) async {
-    final response = await this._runQuery('__kind__', namespace);
+    final response = await this._runQuery(
+      '__kind__',
+      namespace,
+      null,
+      limit: 0,
+    );
     return response.batch?.entityResults?.map((
           datastore_api.EntityResult entityResult,
         ) {
@@ -88,31 +98,56 @@ class CloudDatastoreRepostiry {
         [];
   }
 
-  Future<Iterable<models.Entity?>> find(
+  Future<models.EntityList> find(
     String kindName,
     String? namespace,
-  ) async {
+    String? startCursor,
+    String? previousPageStartCursor, {
+    int limit = 50,
+  }) async {
     // TODO filter
     // TODO ordering
-    // TODO limit
-    // TODO cursor
-    final response = await this._runQuery(kindName, namespace);
-    return response.batch?.entityResults?.map(
-          (datastore_api.EntityResult entityResult) =>
-              this._toModelEntity(entityResult.entity),
-        ) ??
-        <models.Entity>[];
+    final response = await this._runQuery(
+      kindName,
+      namespace,
+      startCursor,
+      limit: limit,
+    );
+
+    final entities = response.batch?.entityResults
+            ?.map((datastore_api.EntityResult entityResult) =>
+                this._toModelEntity(entityResult.entity))
+            .toList(growable: false) ??
+        [];
+
+    final endCursor = this._getEndCursor(response.batch);
+
+    return models.EntityList(
+      entities,
+      limit,
+      startCursor,
+      endCursor,
+      previousPageStartCursor,
+    );
   }
 
   Future<datastore_api.RunQueryResponse> _runQuery(
     String kindName,
     String? namespace,
-  ) async {
+    String? startCursor, {
+    int limit = 50,
+  }) async {
     final partitionId = datastore_api.PartitionId()
       ..projectId = this.projectId
       ..namespaceId = namespace;
     final kind = datastore_api.KindExpression()..name = kindName;
     final query = datastore_api.Query()..kind = [kind];
+    if (limit > 0) {
+      query..limit = limit;
+    }
+    if (startCursor != null) {
+      query..startCursor = startCursor;
+    }
     final request = datastore_api.RunQueryRequest()
       ..partitionId = partitionId
       ..query = query;
@@ -214,5 +249,13 @@ class CloudDatastoreRepostiry {
         [];
 
     return properties.isNotEmpty ? models.Entity(modelKey, properties) : null;
+  }
+
+  String? _getEndCursor(datastore_api.QueryResultBatch? batch) {
+    return ((batch?.moreResults == 'MORE_RESULTS_AFTER_LIMIT' ||
+                batch?.moreResults == 'MORE_RESULTS_AFTER_CURSOR') &&
+            batch?.endCursor != null)
+        ? batch?.endCursor
+        : null;
   }
 }

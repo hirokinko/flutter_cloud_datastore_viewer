@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
+const DUMMY_EMPTY_KEY = const Key('', null, '', null, null, []);
+
 @immutable
 abstract class Property<T> extends Equatable {
   final String name;
@@ -34,14 +36,7 @@ class SingleProperty<T> extends Property<T> {
             ? <MapEntry<String, Type>>[]
             : (this.value as Entity).getIndexedInnerPropertyEntries(this.name);
       case Key:
-        return Key(
-          '',
-          null,
-          '',
-          null,
-          null,
-          [],
-        ).getIndexedInnerPropertyEntries(this.name);
+        return DUMMY_EMPTY_KEY.getIndexedInnerPropertyEntries(this.name);
       default:
         return [MapEntry<String, Type>(this.name, this.type)];
     }
@@ -72,14 +67,7 @@ class ListProperty<T> extends Property<T> {
             : (nonNullValues.first as Entity)
                 .getIndexedInnerPropertyEntries(this.name);
       case Key:
-        return Key(
-          '',
-          null,
-          '',
-          null,
-          null,
-          [],
-        ).getIndexedInnerPropertyEntries(this.name);
+        return DUMMY_EMPTY_KEY.getIndexedInnerPropertyEntries(this.name);
       default:
         return [MapEntry<String, Type>(this.name, this.type)];
     }
@@ -95,7 +83,7 @@ class Key extends Equatable {
   final String? name;
   final List<Key> ancestors;
 
-  Key(
+  const Key(
     this.projectId,
     this.namespaceId,
     this.kind,
@@ -167,4 +155,32 @@ class Entity extends Equatable {
     allPropertyEntries.addAll(folded);
     return allPropertyEntries;
   }
+}
+
+@immutable
+class EntityList extends Equatable {
+  final List<Entity?> entities;
+  final int limit;
+  final String? startCursor;
+  final String? endCursor;
+  final String? previousPageStartCursor;
+
+  const EntityList(
+    this.entities,
+    this.limit,
+    this.startCursor,
+    this.endCursor,
+    this.previousPageStartCursor,
+  );
+
+  @override
+  List<Object?> get props => [
+        this.entities,
+        this.limit,
+        this.startCursor,
+        this.endCursor,
+        this.previousPageStartCursor,
+      ];
+
+  String? get isInvalidLimit => this.limit < 0 ? "件数は正の整数を入力してください" : null;
 }
