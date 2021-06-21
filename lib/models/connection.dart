@@ -3,11 +3,13 @@ import 'package:flutter_cloud_datastore_viewer/patched_datastore/v1.dart'
     as v1Api;
 import 'package:ordered_set/ordered_set.dart';
 
+@deprecated
 enum SortDirection {
   ASCENDING,
   DESCENDING,
 }
 
+@deprecated
 class ColumnModel implements Comparable {
   late String name;
   late bool sortable;
@@ -17,6 +19,7 @@ class ColumnModel implements Comparable {
   int compareTo(other) => this.name.compareTo(other.name);
 }
 
+@deprecated
 class EntitiesDatatableModel {
   late OrderedSet<ColumnModel> columns;
   late List<v1Api.Entity?> entities;
@@ -24,6 +27,7 @@ class EntitiesDatatableModel {
   bool containsKey(String key) => this.columns.any((c) => c.name == key);
 }
 
+@deprecated
 class ConnectionModel {
   String? keyFilePath = '';
   String? rootUrl = 'http://0.0.0.0:8081/';

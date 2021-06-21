@@ -8,14 +8,17 @@ import 'package:ordered_set/ordered_set.dart';
 import 'package:styled_text/styled_text.dart';
 import 'dart:core' as core;
 
+@core.deprecated
 final connectionProvider = Provider((ref) => ConnectionModel());
 
+@core.deprecated
 final entitiesProvider = FutureProvider((ref) async {
   final connection = ref.read(connectionProvider);
 
   return connection.runQuery();
 });
 
+@core.deprecated
 class EntityListScreen extends StatelessWidget {
   @core.override
   Widget build(BuildContext context) {
@@ -45,6 +48,7 @@ class EntityListScreen extends StatelessWidget {
   }
 }
 
+@core.deprecated
 class EntityDatatable extends StatelessWidget {
   final EntitiesDatatableModel _model;
   final ConnectionModel _connection;
@@ -122,6 +126,7 @@ class EntityDatatable extends StatelessWidget {
   }
 }
 
+@core.deprecated
 enum FilterOperator {
   UNSPECIFIED,
   LT,
@@ -131,6 +136,7 @@ enum FilterOperator {
   EQ,
 }
 
+@core.deprecated
 extension FilterOperatorExtension on FilterOperator {
   core.String get displayValue {
     switch (this) {
@@ -167,6 +173,7 @@ extension FilterOperatorExtension on FilterOperator {
   }
 }
 
+@core.deprecated
 class FilterForm extends StatefulWidget {
   final OrderedSet<ColumnModel> _columns;
   final ConnectionModel _connection;
@@ -179,6 +186,7 @@ class FilterForm extends StatefulWidget {
   State<StatefulWidget> createState() => FilterFormState(_columns, _connection);
 }
 
+@core.deprecated
 class FilterFormState extends State<FilterForm> {
   final _formKey = GlobalKey<FormState>();
   final OrderedSet<ColumnModel> _columns;
