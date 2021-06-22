@@ -1,4 +1,5 @@
 import '../patched_datastore/v1.dart' as datastore_api;
+import '../models/connection.dart' as connections;
 import '../models/entities.dart' as models;
 
 class CloudDatastoreUtils {
@@ -96,6 +97,14 @@ class CloudDatastoreRepostiry {
           return entityResult.entity?.key?.path?[0].name ?? '';
         }).toList(growable: false) ??
         [];
+  }
+
+  Future<connections.CloudDatastoreMetadata> getMetadata(
+    String? namespace,
+  ) async {
+    List<String?> namespaces = await this.namespaces();
+    List<String> kinds = await this.kinds(namespace);
+    return connections.CloudDatastoreMetadata(namespaces, kinds);
   }
 
   Future<models.EntityList> find(
