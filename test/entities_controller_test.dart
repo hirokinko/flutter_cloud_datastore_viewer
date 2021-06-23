@@ -18,10 +18,14 @@ main() {
         container = ProviderContainer(
           overrides: [
             repositoryProvider.overrideWithProvider(
-              AutoDisposeProvider((ref) => mockedRepositry),
+              Provider((ref) => mockedRepositry),
             ),
           ],
         )
+      });
+
+  tearDown(() => {
+        reset(mockedRepositry),
       });
 
   group('onChangeCurrentShowingNamespace', () {
@@ -36,8 +40,6 @@ main() {
               ['Spam', 'Ham', 'Egg'],
             ),
           );
-          container.read(metadataStateProvider).state =
-              CloudDatastoreMetadata([null, 'development'], []);
           await container
               .read(entitiesControllerProvider)
               .onChangeCurrentShowingNamespace(namespace);
@@ -50,12 +52,13 @@ main() {
               ['Spam', 'Ham', 'Egg'],
             ),
           );
+          verify(mockedRepositry.getMetadata(namespace)).called(1);
         },
       );
     });
 
     test(
-      'If `spam` not in namespaces and gives it to EntitiesController.onChangeCurrentShowingNamespace, state returns current',
+      'If "spam" not in namespaces and gives it to EntitiesController.onChangeCurrentShowingNamespace, state returns current',
       () async {
         when(mockedRepositry.getMetadata('spam')).thenAnswer(
             (_) async => CloudDatastoreMetadata([null, 'development'], []));
@@ -69,6 +72,7 @@ main() {
         expect(actual, CurrentShowing(null, null));
         expect(container.read(metadataStateProvider).state,
             CloudDatastoreMetadata([null, 'development'], []));
+        verify(mockedRepositry.getMetadata('spam')).called(1);
       },
     );
   });
@@ -86,15 +90,13 @@ main() {
             ['Spam', 'Ham', 'Egg'],
           );
           container.read(currentShowingStateProvider).state = CurrentShowing(
-            null,
+            'development',
             null,
           );
-          final expected = CurrentShowing(null, entry.value);
-
-          container
+          final expected = CurrentShowing('development', entry.value);
+          await container
               .read(entitiesControllerProvider)
               .onChangeCurrentShowingKind(entry.key);
-
           final actual = container.read(currentShowingStateProvider).state;
           expect(actual, expected);
         },

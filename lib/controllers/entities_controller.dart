@@ -10,7 +10,7 @@ import '../repositories/clouddatastore_repository.dart';
 const DEFAULT_LIMIT = 50;
 const DEFAULT_ENTITY_LIST = EntityList([], DEFAULT_LIMIT, null, null, null);
 
-final currentConnectionStateProvider = StateProvider.autoDispose(
+final currentConnectionStateProvider = StateProvider(
   (ref) => CloudDatastoreConnection(
     '',
     'test-project',
@@ -18,12 +18,13 @@ final currentConnectionStateProvider = StateProvider.autoDispose(
   ),
 );
 final currentShowingStateProvider =
-    StateProvider.autoDispose((ref) => CurrentShowing(null, null));
+    StateProvider((ref) => CurrentShowing(null, null));
 final entityListStateProvider =
     StateProvider.autoDispose((ref) => DEFAULT_ENTITY_LIST);
+// TODO 初期状態とConnectionを変えた時の対応
 final metadataStateProvider =
-    StateProvider.autoDispose((ref) => CloudDatastoreMetadata([], []));
-final repositoryProvider = Provider.autoDispose((ref) {
+    StateProvider((ref) => CloudDatastoreMetadata([null, 'development'], []));
+final repositoryProvider = Provider((ref) {
   final currentConnection = ref.watch(currentConnectionStateProvider).state;
   final client = auth.clientViaApiKey(currentConnection.keyFilePath);
   final datastoreApi = DatastoreApi(client, rootUrl: currentConnection.rootUrl);
@@ -49,7 +50,7 @@ class EntitiesController {
     // TODO notify to entityList(reload)
   }
 
-  void onChangeCurrentShowingKind(String kind) {
+  Future<void> onChangeCurrentShowingKind(String kind) async {
     final metadata = this.read(metadataStateProvider).state;
     if (!(metadata.kinds.contains(kind))) return;
 
@@ -57,6 +58,7 @@ class EntitiesController {
     this.read(currentShowingStateProvider).state =
         CurrentShowing(previousShowing.namespace, kind);
     // TODO notify to entityList(reload)
+    // await this.read(entitiesControllerProvider).onLoadEntityList(null, null);
   }
 
   Future<void> onLoadEntityList(
