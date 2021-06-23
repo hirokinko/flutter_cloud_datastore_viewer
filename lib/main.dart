@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_cloud_datastore_viewer/widgets/header.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import './widgets/filters.dart';
 
@@ -13,9 +14,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        home: Scaffold(
-      appBar: AppBar(title: const Text('test')),
-      body: FilterFormWidget(),
-    ));
+      home: Scaffold(
+        appBar: Header(),
+        body: FilterFormWidget(),
+      ),
+    );
   }
 }
