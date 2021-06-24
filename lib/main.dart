@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cloud_datastore_viewer/widgets/header.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import './widgets/filters.dart';
+
+// import './widgets/filters.dart';
+import './widgets/entity_list.dart';
 
 void main() {
   runApp(ProviderScope(child: MyApp()));
@@ -16,7 +18,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: Header(),
-        body: FilterFormWidget(),
+        body: EntityListWidget(),
       ),
     );
   }

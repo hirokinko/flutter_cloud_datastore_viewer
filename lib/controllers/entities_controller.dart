@@ -18,7 +18,7 @@ final currentConnectionStateProvider = StateProvider(
   ),
 );
 final currentShowingStateProvider =
-    StateProvider((ref) => CurrentShowing(null, null));
+    StateProvider((ref) => CurrentShowing('development', 'User'));
 final entityListStateProvider =
     StateProvider.autoDispose((ref) => DEFAULT_ENTITY_LIST);
 // TODO 初期状態とConnectionを変えた時の対応
