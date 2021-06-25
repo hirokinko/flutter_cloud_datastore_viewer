@@ -14,7 +14,7 @@ final currentConnectionStateProvider = StateProvider(
   (ref) => CloudDatastoreConnection(
     '',
     'test-project',
-    rootUrl: 'http://0.0.0.0:8081/',
+    rootUrl: 'http://localhost:8081/',
   ),
 );
 final currentShowingStateProvider =
