@@ -58,7 +58,7 @@ class EntitiesController {
     this.read(currentShowingStateProvider).state =
         CurrentShowing(previousShowing.namespace, kind);
     // TODO notify to entityList(reload)
-    // await this.read(entitiesControllerProvider).onLoadEntityList(null, null);
+    await this.read(entitiesControllerProvider).onLoadEntityList(null, null);
   }
 
   Future<void> onLoadEntityList(

@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 const DUMMY_EMPTY_KEY = const Key('', null, '', null, null, []);
 
 @immutable
-abstract class Property<T> extends Equatable {
+abstract class Property<T> extends Equatable with Comparable<dynamic> {
   final String name;
   final Type type;
   final bool indexed;
@@ -12,6 +12,11 @@ abstract class Property<T> extends Equatable {
   Property(this.name, this.type, this.indexed);
 
   List<MapEntry<String, Type>> get propertyEntries;
+
+  @override
+  int compareTo(other) {
+    return this.name.compareTo(name);
+  }
 }
 
 @immutable
@@ -34,7 +39,7 @@ class SingleProperty<T> extends Property<T> {
       case Entity:
         return this.value == null
             ? <MapEntry<String, Type>>[]
-            : (this.value as Entity).getIndexedInnerPropertyEntries(this.name);
+            : (this.value as Entity).getInnerPropertyEntries(this.name, false);
       case Key:
         return DUMMY_EMPTY_KEY.getIndexedInnerPropertyEntries(this.name);
       default:
@@ -65,7 +70,7 @@ class ListProperty<T> extends Property<T> {
         return nonNullValues.isEmpty
             ? <MapEntry<String, Type>>[]
             : (nonNullValues.first as Entity)
-                .getIndexedInnerPropertyEntries(this.name);
+                .getInnerPropertyEntries(this.name, false);
       case Key:
         return DUMMY_EMPTY_KEY.getIndexedInnerPropertyEntries(this.name);
       default:
@@ -125,8 +130,9 @@ class Entity extends Equatable {
   @override
   List<Object?> get props => [this.key, this.properties];
 
-  List<MapEntry<String, Type>> getIndexedInnerPropertyEntries(
+  List<MapEntry<String, Type>> getInnerPropertyEntries(
     String? parentName,
+    bool indexedOnly,
   ) {
     final allPropertyEntries =
         this.key?.getIndexedInnerPropertyEntries('__key__') ??
@@ -134,7 +140,10 @@ class Entity extends Equatable {
     final parentTag =
         parentName != null && parentName.isNotEmpty ? '$parentName.' : '';
 
-    final folded = this.properties.where((p) => p.indexed).fold(
+    final folded = this
+        .properties
+        .where((p) => !indexedOnly || (indexedOnly && p.indexed))
+        .fold(
       <MapEntry<String, Type>>[],
       (
         List<MapEntry<String, Type>> acc,

@@ -10,13 +10,20 @@ class EntityListWidget extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final entityList = useProvider(entityListStateProvider).state;
-    return Column(
-      children: [
-        // Expanded(
-        //   child: createEntityDataTable(context, entityList),
-        // ),
-      ],
-    );
+    // TODO 後で見た目を整える
+    if (entityList.entities.isEmpty) {
+      return Column(
+        children: [],
+      );
+    } else {
+      return Column(
+        children: [
+          Expanded(
+            child: createEntityDataTable(context, entityList),
+          ),
+        ],
+      );
+    }
   }
 }
 
@@ -29,21 +36,21 @@ DataTable createEntityDataTable(
       entities.Entity? cur,
     ) {
       acc.addAll(cur
-              ?.getIndexedInnerPropertyEntries(null)
+              ?.getInnerPropertyEntries(null, false)
+              .where((p) => !p.key.startsWith('__key__.kind'))
               .map((e) => filters.Property(e.key, e.value)) ??
           <filters.Property>[]);
       return acc;
     },
   ).toList(growable: false);
-  indexedProperties.sort();
+  final rows = entityList.entities
+      .where((e) => e != null)
+      .map((e) => createDataRow(indexedProperties.map((p) => p.name), e!))
+      .toList(growable: false);
 
   return DataTable(
     columns: createDataColumns(indexedProperties),
-    rows: [
-      DataRow(cells: [
-        DataCell.empty,
-      ]),
-    ],
+    rows: rows,
   );
 }
 
@@ -53,13 +60,20 @@ List<DataColumn> createDataColumns(Iterable<filters.Property> properties) {
       .toList(growable: false);
 }
 
-// List<DataRow> createDataRow(
-//     Iterable<String> propertyNames, entities.Entity entity) {
-//   propertyNames.map(
-//     (String propertyName) => DataCell(
-//       Text(
-//         entity.properties.firstWhere((entities.Property p) => p.name == propertyName)?.
-//       ),
-//     ),
-//   );
-// }
+DataRow createDataRow(Iterable<String> propertyNames, entities.Entity entity) {
+  final cells = <DataCell>[
+    DataCell(
+      Text(entity.key?.name ?? '<NULL>'),
+    ),
+    DataCell(
+      Text(entity.key?.id?.toString() ?? '<NULL>'),
+    ),
+  ];
+
+  cells.addAll(propertyNames.where((p) => !p.startsWith('__key__')).map(
+        (String propertyName) => DataCell(
+          Text(propertyName),
+        ),
+      ));
+  return DataRow(cells: cells);
+}

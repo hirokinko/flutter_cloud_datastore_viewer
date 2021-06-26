@@ -177,7 +177,7 @@ void main() {
         SingleProperty("unindexedBoolValue", bool, false, true),
         ListProperty("stringListValue", String, true, ["spam", "ham", "egg"]),
       ]);
-      final result = entity.getIndexedInnerPropertyEntries(null);
+      final result = entity.getInnerPropertyEntries(null, true);
       expect(result.length, 2);
       expect(result[0].key, 'intValue');
       expect(result[0].value, int);
@@ -204,7 +204,7 @@ void main() {
           ),
         ],
       );
-      final result = parent.getIndexedInnerPropertyEntries(null);
+      final result = parent.getInnerPropertyEntries(null, true);
       expect(result.length, 3);
       expect(result[0].key, 'intValue');
       expect(result[0].value, int);
@@ -246,7 +246,7 @@ void main() {
           ),
         ],
       );
-      final result = parent.getIndexedInnerPropertyEntries(null);
+      final result = parent.getInnerPropertyEntries(null, true);
       expect(result.length, 1);
       expect(result[0].key, 'child.grandchild.intValue');
       expect(result[0].value, int);
@@ -272,7 +272,7 @@ void main() {
         ),
       ],
     );
-    final result = parent.getIndexedInnerPropertyEntries(null);
+    final result = parent.getInnerPropertyEntries(null, true);
     expect(result.length, 6);
     expect(result[0].key, '__key__.kind');
     expect(result[0].value, String);
