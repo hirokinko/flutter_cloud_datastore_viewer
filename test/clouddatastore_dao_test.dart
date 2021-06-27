@@ -1,11 +1,11 @@
 import 'package:flutter_cloud_datastore_viewer/patched_datastore/v1.dart'
     as datastore_api;
-import 'package:flutter_cloud_datastore_viewer/repositories/clouddatastore_repository.dart';
+import 'package:flutter_cloud_datastore_viewer/data_access_objects/clouddatastore_dao.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'clouddatastore_repository_test.mocks.dart';
-import 'fixtures/clouddatastore_repository_fixtures.dart';
+import 'clouddatastore_dao_test.mocks.dart';
+import 'fixtures/clouddatastore_dao_fixtures.dart';
 
 @GenerateMocks([datastore_api.DatastoreApi, datastore_api.ProjectsResource])
 void main() {
@@ -55,11 +55,11 @@ void main() {
     );
   });
 
-  test('CloudDatastoreRepository.namespaces', () async {
+  test('CloudDatastoreDao.namespaces', () async {
     final datastoreApi = MockDatastoreApi();
     final mockedProjectResouce = MockProjectsResource();
     final projectId = 'test-project';
-    final repository = CloudDatastoreRepostiry(datastoreApi, projectId);
+    final dao = CloudDatastoreDao(datastoreApi, projectId);
 
     when(datastoreApi.projects).thenReturn(mockedProjectResouce);
     when(
@@ -70,15 +70,15 @@ void main() {
     ).thenAnswer(
       (_) async => namespacesRunQueryResponse,
     );
-    expect(await repository.namespaces(), [null, 'development']);
+    expect(await dao.namespaces(), [null, 'development']);
     verify(mockedProjectResouce.runQuery(any, any)).called(1);
   });
 
-  test('CloudDatastoreRepository.kinds', () async {
+  test('CloudDatastoreDao.kinds', () async {
     final datastoreApi = MockDatastoreApi();
     final mockedProjectResouce = MockProjectsResource();
     final projectId = 'test-project';
-    final repository = CloudDatastoreRepostiry(datastoreApi, projectId);
+    final dao = CloudDatastoreDao(datastoreApi, projectId);
 
     when(datastoreApi.projects).thenReturn(mockedProjectResouce);
     when(
@@ -86,14 +86,14 @@ void main() {
     ).thenAnswer(
       (_) async => kindRunQueryResponse,
     );
-    expect(await repository.kinds(null), ['Spam', 'Ham', 'Egg']);
+    expect(await dao.kinds(null), ['Spam', 'Ham', 'Egg']);
   });
 
-  test('CloudDatastoreRepository.find', () async {
+  test('CloudDatastoreDao.find', () async {
     final datastoreApi = MockDatastoreApi();
     final mockedProjectResource = MockProjectsResource();
     final projectId = 'test-project';
-    final repository = CloudDatastoreRepostiry(datastoreApi, projectId);
+    final dao = CloudDatastoreDao(datastoreApi, projectId);
 
     when(datastoreApi.projects).thenReturn(mockedProjectResource);
     when(
@@ -102,7 +102,7 @@ void main() {
       (_) async => findRunQueryResponse,
     );
 
-    final result = await repository.find('Profile', 'development', null, null);
+    final result = await dao.find('Profile', 'development', null, null);
     result.entities.forEach((entity) {
       print(entity?.key);
       entity?.properties.forEach((property) {

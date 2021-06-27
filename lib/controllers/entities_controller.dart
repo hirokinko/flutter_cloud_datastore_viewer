@@ -5,7 +5,7 @@ import 'package:meta/meta.dart';
 import '../models/connection.dart';
 import '../models/entities.dart';
 import '../patched_datastore/v1.dart';
-import '../repositories/clouddatastore_repository.dart';
+import '../data_access_objects/clouddatastore_dao.dart';
 
 const DEFAULT_LIMIT = 50;
 const DEFAULT_ENTITY_LIST = EntityList([], DEFAULT_LIMIT, null, null, null);
@@ -24,11 +24,11 @@ final entityListStateProvider =
 // TODO 初期状態とConnectionを変えた時の対応
 final metadataStateProvider =
     StateProvider((ref) => CloudDatastoreMetadata([null, 'development'], []));
-final repositoryProvider = Provider((ref) {
+final datastoreDaoProvider = Provider((ref) {
   final currentConnection = ref.watch(currentConnectionStateProvider).state;
   final client = auth.clientViaApiKey(currentConnection.keyFilePath);
   final datastoreApi = DatastoreApi(client, rootUrl: currentConnection.rootUrl);
-  return CloudDatastoreRepostiry(datastoreApi, currentConnection.projectId);
+  return CloudDatastoreDao(datastoreApi, currentConnection.projectId);
 });
 final entitiesControllerProvider =
     Provider.autoDispose((ref) => EntitiesController(ref.read));
@@ -41,7 +41,7 @@ class EntitiesController {
 
   Future<void> onChangeCurrentShowingNamespace(String? namespace) async {
     final newMetadata =
-        await this.read(repositoryProvider).getMetadata(namespace);
+        await this.read(datastoreDaoProvider).getMetadata(namespace);
     this.read(metadataStateProvider).state = newMetadata;
     if (!newMetadata.namespaces.contains(namespace)) return;
 
@@ -74,7 +74,7 @@ class EntitiesController {
       return;
     }
 
-    final newEntityList = await this.read(repositoryProvider).find(
+    final newEntityList = await this.read(datastoreDaoProvider).find(
           currentShowing.kind!,
           currentShowing.namespace,
           startCursor,

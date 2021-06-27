@@ -63,11 +63,11 @@ class CloudDatastoreUtils {
   }
 }
 
-class CloudDatastoreRepostiry {
+class CloudDatastoreDao {
   datastore_api.DatastoreApi client;
   String projectId;
 
-  CloudDatastoreRepostiry(this.client, this.projectId);
+  CloudDatastoreDao(this.client, this.projectId);
 
   Future<List<String?>> namespaces() async {
     final response = await this._runQuery(

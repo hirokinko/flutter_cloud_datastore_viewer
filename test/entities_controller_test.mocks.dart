@@ -8,7 +8,7 @@ import 'package:flutter_cloud_datastore_viewer/models/connection.dart' as _i3;
 import 'package:flutter_cloud_datastore_viewer/models/entities.dart' as _i4;
 import 'package:flutter_cloud_datastore_viewer/patched_datastore/v1.dart'
     as _i2;
-import 'package:flutter_cloud_datastore_viewer/repositories/clouddatastore_repository.dart'
+import 'package:flutter_cloud_datastore_viewer/data_access_objects/clouddatastore_dao.dart'
     as _i5;
 import 'package:mockito/mockito.dart' as _i1;
 
@@ -28,9 +28,8 @@ class _FakeEntityList extends _i1.Fake implements _i4.EntityList {}
 /// A class which mocks [CloudDatastoreRepostiry].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockCloudDatastoreRepostiry extends _i1.Mock
-    implements _i5.CloudDatastoreRepostiry {
-  MockCloudDatastoreRepostiry() {
+class MockCloudDatastoreDao extends _i1.Mock implements _i5.CloudDatastoreDao {
+  MockCloudDatastoreDao() {
     _i1.throwOnMissingStub(this);
   }
 

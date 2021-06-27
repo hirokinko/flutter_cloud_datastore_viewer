@@ -1,7 +1,7 @@
 import 'package:flutter_cloud_datastore_viewer/controllers/entities_controller.dart';
 import 'package:flutter_cloud_datastore_viewer/models/connection.dart';
 import 'package:flutter_cloud_datastore_viewer/models/entities.dart';
-import 'package:flutter_cloud_datastore_viewer/repositories/clouddatastore_repository.dart';
+import 'package:flutter_cloud_datastore_viewer/data_access_objects/clouddatastore_dao.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mockito/annotations.dart';
@@ -9,23 +9,23 @@ import 'package:mockito/mockito.dart';
 
 import 'entities_controller_test.mocks.dart';
 
-@GenerateMocks([CloudDatastoreRepostiry])
+@GenerateMocks([CloudDatastoreDao])
 main() {
   late ProviderContainer container;
-  final mockedRepositry = MockCloudDatastoreRepostiry();
+  final mockedDao = MockCloudDatastoreDao();
 
   setUp(() => {
         container = ProviderContainer(
           overrides: [
-            repositoryProvider.overrideWithProvider(
-              Provider((ref) => mockedRepositry),
+            datastoreDaoProvider.overrideWithProvider(
+              Provider((ref) => mockedDao),
             ),
           ],
         )
       });
 
   tearDown(() => {
-        reset(mockedRepositry),
+        reset(mockedDao),
       });
 
   group('onChangeCurrentShowingNamespace', () {
@@ -34,7 +34,7 @@ main() {
       test(
         'gives $namespace to EntitiesController.onChangeCurrentShowingNamespace, state returns $expected',
         () async {
-          when(mockedRepositry.getMetadata(namespace)).thenAnswer(
+          when(mockedDao.getMetadata(namespace)).thenAnswer(
             (_) async => CloudDatastoreMetadata(
               [null, 'development'],
               ['Spam', 'Ham', 'Egg'],
@@ -52,7 +52,7 @@ main() {
               ['Spam', 'Ham', 'Egg'],
             ),
           );
-          verify(mockedRepositry.getMetadata(namespace)).called(1);
+          verify(mockedDao.getMetadata(namespace)).called(1);
         },
       );
     });
@@ -60,7 +60,7 @@ main() {
     test(
       'If "spam" not in namespaces and gives it to EntitiesController.onChangeCurrentShowingNamespace, state returns current',
       () async {
-        when(mockedRepositry.getMetadata('spam')).thenAnswer(
+        when(mockedDao.getMetadata('spam')).thenAnswer(
             (_) async => CloudDatastoreMetadata([null, 'development'], []));
         container.read(metadataStateProvider).state =
             CloudDatastoreMetadata([null, 'development'], []);
@@ -72,7 +72,7 @@ main() {
         expect(actual, CurrentShowing(null, null));
         expect(container.read(metadataStateProvider).state,
             CloudDatastoreMetadata([null, 'development'], []));
-        verify(mockedRepositry.getMetadata('spam')).called(1);
+        verify(mockedDao.getMetadata('spam')).called(1);
       },
     );
   });
@@ -106,7 +106,7 @@ main() {
 
   group('onLoadEntityList', () {
     test('Query to no exists namespace', () async {
-      when(mockedRepositry.find('Spam', 'spam', 'Eric', 'Terry', limit: 50))
+      when(mockedDao.find('Spam', 'spam', 'Eric', 'Terry', limit: 50))
           .thenAnswer((_) async => DEFAULT_ENTITY_LIST);
 
       container.read(metadataStateProvider).state = CloudDatastoreMetadata(
@@ -125,7 +125,7 @@ main() {
         DEFAULT_ENTITY_LIST,
       );
 
-      verifyNever(mockedRepositry.find(
+      verifyNever(mockedDao.find(
         'Spam',
         'spam',
         'Eric',
@@ -135,8 +135,7 @@ main() {
     });
 
     test('Query to no exists kind', () async {
-      when(mockedRepositry.find(
-              'SpanishInquisition', 'development', 'Eric', 'Terry',
+      when(mockedDao.find('SpanishInquisition', 'development', 'Eric', 'Terry',
               limit: 50))
           .thenAnswer((_) async => DEFAULT_ENTITY_LIST);
 
@@ -156,7 +155,7 @@ main() {
         DEFAULT_ENTITY_LIST,
       );
 
-      verifyNever(mockedRepositry.find(
+      verifyNever(mockedDao.find(
         'SpanishInquisition',
         'development',
         'Eric',
@@ -166,7 +165,7 @@ main() {
     });
 
     test('Query to null kind', () async {
-      when(mockedRepositry.find(
+      when(mockedDao.find(
         null,
         null,
         'Eric',
@@ -190,7 +189,7 @@ main() {
         DEFAULT_ENTITY_LIST,
       );
 
-      verifyNever(mockedRepositry.find(
+      verifyNever(mockedDao.find(
         null,
         null,
         'Eric',
@@ -200,7 +199,7 @@ main() {
     });
 
     test('Got entities', () async {
-      when(mockedRepositry.find(
+      when(mockedDao.find(
         'Spam',
         null,
         'Eric',
@@ -224,7 +223,7 @@ main() {
         EntityList([], 50, 'Eric', 'Graham', 'Terry'),
       );
 
-      verify(mockedRepositry.find(
+      verify(mockedDao.find(
         'Spam',
         null,
         'Eric',
