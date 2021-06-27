@@ -1,8 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:googleapis_auth/auth_io.dart' as auth;
-import 'package:flutter_cloud_datastore_viewer/patched_datastore/v1.dart'
-    as v1Api;
-import 'package:ordered_set/ordered_set.dart';
 import 'package:meta/meta.dart';
 
 mixin Connection {}
