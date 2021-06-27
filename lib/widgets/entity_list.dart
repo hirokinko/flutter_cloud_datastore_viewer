@@ -6,6 +6,9 @@ import '../controllers/entities_controller.dart';
 import '../models/entities.dart' as entities;
 import '../models/filters.dart' as filters;
 
+// TODO text decoration
+const NULL_TEXT = const Text('<NULL>');
+
 class EntityListWidget extends HookWidget {
   @override
   Widget build(BuildContext context) {
@@ -16,41 +19,75 @@ class EntityListWidget extends HookWidget {
         children: [],
       );
     } else {
-      return Column(
+      return ListView(
+        padding: const EdgeInsets.all(4),
         children: [
-          Expanded(
-            child: createEntityDataTable(context, entityList),
-          ),
+          createEntityDataTable(context, entityList),
         ],
       );
     }
   }
 }
 
-DataTable createEntityDataTable(
+class TempTable {
+  final Set<String> columnNames;
+  final List<Map<String, DataCell>> tempRowMapList;
+
+  TempTable(this.columnNames, this.tempRowMapList);
+}
+
+class _DataSource extends DataTableSource {
+  final BuildContext context;
+  final List<DataRow> rows;
+
+  _DataSource(this.context, this.rows);
+
+  @override
+  DataRow? getRow(int index) {
+    return this.rows[index];
+  }
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get rowCount => this.rows.length;
+
+  @override
+  int get selectedRowCount => 0;
+}
+
+PaginatedDataTable createEntityDataTable(
     BuildContext context, entities.EntityList entityList) {
-  final indexedProperties = entityList.entities.fold(
-    <filters.Property>{},
-    (
-      Set<filters.Property> acc,
-      entities.Entity? cur,
-    ) {
-      acc.addAll(cur
-              ?.getInnerPropertyEntries(null, false)
-              .where((p) => !p.key.startsWith('__key__.kind'))
-              .map((e) => filters.Property(e.key, e.value)) ??
-          <filters.Property>[]);
+  final tempTable = entityList.entities.fold(
+    TempTable({}, []),
+    (TempTable acc, entities.Entity? e) {
+      if (e != null) {
+        final tempRowMap = createTempRowMap(e);
+        acc.columnNames.addAll(tempRowMap.keys);
+        acc.tempRowMapList.add(tempRowMap);
+      }
       return acc;
     },
-  ).toList(growable: false);
-  final rows = entityList.entities
-      .where((e) => e != null)
-      .map((e) => createDataRow(indexedProperties.map((p) => p.name), e!))
-      .toList(growable: false);
+  );
 
-  return DataTable(
-    columns: createDataColumns(indexedProperties),
-    rows: rows,
+  final columnNames = tempTable.columnNames.toList(growable: false);
+  columnNames.sort();
+
+  final rows = tempTable.tempRowMapList.map((Map<String, DataCell> tempRowMap) {
+    return DataRow(
+      cells: columnNames
+          .map((String name) => tempRowMap[name] ?? DataCell(NULL_TEXT))
+          .toList(growable: false),
+    );
+  }).toList(growable: false);
+
+  return PaginatedDataTable(
+    rowsPerPage: entityList.entities.length,
+    columns: columnNames
+        .map((String c) => DataColumn(label: Text(c)))
+        .toList(growable: false),
+    source: _DataSource(context, rows),
   );
 }
 
@@ -60,20 +97,53 @@ List<DataColumn> createDataColumns(Iterable<filters.Property> properties) {
       .toList(growable: false);
 }
 
-DataRow createDataRow(Iterable<String> propertyNames, entities.Entity entity) {
-  final cells = <DataCell>[
-    DataCell(
-      Text(entity.key?.name ?? '<NULL>'),
-    ),
-    DataCell(
-      Text(entity.key?.id?.toString() ?? '<NULL>'),
-    ),
-  ];
+Map<String, DataCell> createTempRowMap(entities.Entity entity) {
+  return entity.properties.fold(
+    {'__key__': createKeyDataCell(entity.key)},
+    (Map<String, DataCell> acc, entities.Property cur) {
+      acc[cur.name] = createDataCell(cur);
+      return acc;
+    },
+  );
+}
 
-  cells.addAll(propertyNames.where((p) => !p.startsWith('__key__')).map(
-        (String propertyName) => DataCell(
-          Text(propertyName),
-        ),
-      ));
-  return DataRow(cells: cells);
+DataCell createDataCell(entities.Property property) {
+  print(property);
+  if (property is entities.SingleProperty && property.value != null) {
+    switch (property.type) {
+      case int:
+      case double:
+        return createNumberSinglePropertyDataCell(property);
+      case String:
+        return createStringSinglePropertyDataCell(property);
+      case entities.Key:
+        return createKeyDataCell(property.value);
+      default:
+        return DataCell(Text(property.name));
+    }
+  } else {
+    return DataCell(Text(property.name));
+  }
+}
+
+DataCell createKeyDataCell(entities.Key? key) {
+  if (key?.kind != null && key?.id != null) {
+    return DataCell(Text('${key?.kind}(id=${key?.id})'));
+  } else if (key?.kind != null && key?.name != null) {
+    return DataCell(Text('${key?.kind}(name=${key?.name})'));
+  } else if (key?.kind != null && key?.id == null && key?.name == null) {
+    return DataCell(Text('${key?.kind}(<NULL>)'));
+  } else {
+    return DataCell(NULL_TEXT);
+  }
+}
+
+DataCell createNumberSinglePropertyDataCell(entities.SingleProperty property) {
+  return DataCell(Text(property.value.toString()));
+}
+
+DataCell createStringSinglePropertyDataCell(
+  entities.SingleProperty property,
+) {
+  return DataCell(Text(property.value));
 }
