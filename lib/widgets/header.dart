@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../controllers/entities_controller.dart';
+import '../models/connection.dart';
 
 class Header extends HookWidget with PreferredSizeWidget {
   @override

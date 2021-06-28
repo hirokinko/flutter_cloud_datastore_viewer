@@ -1,6 +1,6 @@
-import 'package:flutter_cloud_datastore_viewer/controllers/entities_controller.dart';
 import 'package:riverpod/riverpod.dart';
 
+import '../data_access_objects/clouddatastore_dao.dart';
 import '../data_access_objects/connections_dao.dart';
 import '../models/connection.dart';
 
@@ -13,9 +13,14 @@ class ConnectionController {
   ConnectionController(this.read);
 
   // TODO onLoadConnectionList
-  void onSelectConnection(CloudDatastoreConnection connection) {
+  Future<void> onSelectConnection(CloudDatastoreConnection connection) async {
     this.read(currentConnectionStateProvider).state = connection;
     this.read(currentShowingStateProvider).state = CurrentShowing(null, null);
+
+    final dao = await this.read(datastoreDaoProvider);
+    if (dao == null) return;
+    final metadata = await dao.getMetadata(null);
+    this.read(metadataStateProvider).state = metadata;
   }
   // TODO onCreateConnection
   // TODO onDeleteConnection

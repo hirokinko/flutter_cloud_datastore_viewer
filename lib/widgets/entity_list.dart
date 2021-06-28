@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../controllers/entities_controller.dart';
 import '../models/entities.dart' as entities;
 import '../models/filters.dart' as filters;
 
@@ -12,7 +11,7 @@ const NULL_TEXT = const Text('<NULL>');
 class EntityListWidget extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    final entityList = useProvider(entityListStateProvider).state;
+    final entityList = useProvider(entities.entityListStateProvider).state;
     // TODO 後で見た目を整える
     if (entityList.entities.isEmpty) {
       return Column(

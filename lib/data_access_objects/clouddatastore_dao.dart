@@ -1,6 +1,34 @@
+import 'dart:io';
+
+import 'package:googleapis_auth/auth_io.dart' as auth;
+import 'package:http/http.dart';
+import 'package:riverpod/riverpod.dart';
+
 import '../patched_datastore/v1.dart' as datastore_api;
 import '../models/connection.dart' as connections;
 import '../models/entities.dart' as models;
+
+final datastoreDaoProvider = Provider<Future<CloudDatastoreDao?>>((ref) async {
+  late Client client;
+  final currentConnection =
+      ref.watch(connections.currentConnectionStateProvider).state;
+  if (currentConnection == null) {
+    return null;
+  }
+
+  if (currentConnection.keyFilePath != null) {
+    final key = new File(currentConnection.keyFilePath!).readAsStringSync();
+    client = await auth.clientViaServiceAccount(
+      auth.ServiceAccountCredentials.fromJson(key),
+      ['https://www.googleapis.com/auth/datastore'],
+    );
+  } else {
+    client = auth.clientViaApiKey('');
+  }
+  final datastoreApi =
+      datastore_api.DatastoreApi(client, rootUrl: currentConnection.rootUrl);
+  return CloudDatastoreDao(datastoreApi, currentConnection.projectId);
+});
 
 class CloudDatastoreUtils {
   static datastore_api.Value toValue(Type type, String? value) {

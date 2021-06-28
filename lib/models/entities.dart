@@ -1,7 +1,13 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
+import 'package:riverpod/riverpod.dart';
 
+const DEFAULT_LIMIT = 50;
 const DUMMY_EMPTY_KEY = const Key('', null, '', null, null, []);
+const DEFAULT_ENTITY_LIST = EntityList([], DEFAULT_LIMIT, null, null, null);
+
+final entityListStateProvider =
+    StateProvider.autoDispose((ref) => DEFAULT_ENTITY_LIST);
 
 @immutable
 abstract class Property<T> extends Equatable with Comparable<dynamic> {

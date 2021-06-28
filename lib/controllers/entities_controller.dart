@@ -1,47 +1,10 @@
-import 'dart:io';
-
-import 'package:googleapis_auth/auth_io.dart' as auth;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
 import '../models/connection.dart';
 import '../models/entities.dart';
-import '../patched_datastore/v1.dart';
 import '../data_access_objects/clouddatastore_dao.dart';
 
-const DEFAULT_LIMIT = 50;
-const DEFAULT_ENTITY_LIST = EntityList([], DEFAULT_LIMIT, null, null, null);
-
-final currentConnectionStateProvider = StateProvider(
-  (ref) => CloudDatastoreConnection(
-    '',
-    'test-project',
-    rootUrl: 'http://localhost:8081/',
-  ),
-);
-final currentShowingStateProvider =
-    StateProvider((ref) => CurrentShowing(null, null));
-final entityListStateProvider =
-    StateProvider.autoDispose((ref) => DEFAULT_ENTITY_LIST);
-final metadataStateProvider =
-    StateProvider((ref) => CloudDatastoreMetadata([], []));
-final datastoreDaoProvider = Provider((ref) async {
-  late Client client;
-  final currentConnection = ref.watch(currentConnectionStateProvider).state;
-
-  if (currentConnection.keyFilePath != null) {
-    final key = new File(currentConnection.keyFilePath!).readAsStringSync();
-    client = await auth.clientViaServiceAccount(
-      auth.ServiceAccountCredentials.fromJson(key),
-      ['https://www.googleapis.com/auth/datastore'],
-    );
-  } else {
-    client = auth.clientViaApiKey('');
-  }
-  final datastoreApi = DatastoreApi(client, rootUrl: currentConnection.rootUrl);
-  return CloudDatastoreDao(datastoreApi, currentConnection.projectId);
-});
 final entitiesControllerProvider =
     Provider.autoDispose((ref) => EntitiesController(ref.read));
 
@@ -52,8 +15,12 @@ class EntitiesController {
   EntitiesController(this.read);
 
   Future<void> onChangeCurrentShowingNamespace(String? namespace) async {
-    final newMetadata =
-        await (await this.read(datastoreDaoProvider)).getMetadata(namespace);
+    final dao = await this.read(datastoreDaoProvider);
+    if (dao == null) {
+      return;
+    }
+
+    final newMetadata = await dao.getMetadata(namespace);
     this.read(metadataStateProvider).state = newMetadata;
     if (!newMetadata.namespaces.contains(namespace)) return;
 
@@ -78,6 +45,9 @@ class EntitiesController {
     String? previousPageStartCursor, {
     int limit = DEFAULT_LIMIT,
   }) async {
+    final dao = await this.read(datastoreDaoProvider);
+    if (dao == null) return;
+
     final metadata = this.read(metadataStateProvider).state;
     final currentShowing = this.read(currentShowingStateProvider).state;
     if (!(metadata.namespaces.contains(currentShowing.namespace) &&
@@ -86,7 +56,7 @@ class EntitiesController {
       return;
     }
 
-    final newEntityList = await (await this.read(datastoreDaoProvider)).find(
+    final newEntityList = await dao.find(
       currentShowing.kind!,
       currentShowing.namespace,
       startCursor,

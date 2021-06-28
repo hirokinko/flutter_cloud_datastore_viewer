@@ -37,8 +37,8 @@ class ConnectionListDrawer extends HookWidget {
           (c) => ListTile(
             leading: Icon(Icons.storage_outlined), // TODO CloudDatastore icon
             title: Text('${c.projectId}(${c.rootUrl})'),
-            onTap: () {
-              context.read(connectionController).onSelectConnection(c);
+            onTap: () async {
+              await context.read(connectionController).onSelectConnection(c);
               Navigator.pop(context);
             },
             onLongPress: () {

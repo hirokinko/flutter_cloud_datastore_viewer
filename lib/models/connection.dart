@@ -2,8 +2,17 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
+import 'package:riverpod/riverpod.dart';
 
 const DEFAULT_ROOT_URL = 'https://datastore.googleapis.com/';
+
+final currentConnectionStateProvider = StateProvider<CloudDatastoreConnection?>(
+  (ref) => null,
+);
+final currentShowingStateProvider =
+    StateProvider((ref) => CurrentShowing(null, null));
+final metadataStateProvider =
+    StateProvider((ref) => CloudDatastoreMetadata([], []));
 
 mixin Connection {}
 
