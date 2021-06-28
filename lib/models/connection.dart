@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
@@ -6,6 +7,8 @@ import 'package:riverpod/riverpod.dart';
 
 const DEFAULT_ROOT_URL = 'https://datastore.googleapis.com/';
 
+final connectionListStateProvider =
+    StateProvider<List<CloudDatastoreConnection>>((ref) => []);
 final currentConnectionStateProvider = StateProvider<CloudDatastoreConnection?>(
   (ref) => null,
 );
@@ -31,7 +34,7 @@ class CloudDatastoreConnection extends Equatable with Connection {
   @override
   List<Object?> get props => [this.keyFilePath, this.rootUrl, this.projectId];
 
-  static CloudDatastoreConnection fromJson(Map<String, String> json) {
+  static CloudDatastoreConnection fromJson(Map<String, dynamic> json) {
     return CloudDatastoreConnection(
       json['keyFilePath'],
       json['projectId']!,
@@ -46,6 +49,19 @@ class CloudDatastoreConnection extends Equatable with Connection {
       'rootUrl': this.rootUrl,
     });
   }
+
+  bool get isValid {
+    return this.projectId.isNotEmpty &&
+        (isValidKeyFilePath || isLocalEmulatorConnection);
+  }
+
+  bool get isValidKeyFilePath =>
+      this.rootUrl == DEFAULT_ROOT_URL &&
+      this.keyFilePath != null &&
+      new File(this.keyFilePath!).existsSync();
+
+  // TODO ping to emulator host
+  bool get isLocalEmulatorConnection => this.rootUrl != DEFAULT_ROOT_URL;
 }
 
 @immutable

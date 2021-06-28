@@ -4,12 +4,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../controllers/connections_controller.dart';
 import '../models/connection.dart';
-
-final _connections = <CloudDatastoreConnection>[];
+import '../widgets/connection_edit_dialog.dart';
 
 class ConnectionListDrawer extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    final connections = useProvider(connectionListStateProvider).state;
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -17,22 +17,38 @@ class ConnectionListDrawer extends HookWidget {
               DrawerHeader(
                 decoration: BoxDecoration(color: Colors.blue),
                 child: Text(
-                  '接続一覧',
+                  'コネクション一覧',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 24,
                   ),
                 ),
+              ),
+              ListTile(
+                leading: Icon(Icons.add_circle),
+                title: Text('コネクションの追加'),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      // context.read(editingConnectionStateProvider).state = null;
+                      return ConnectionEditFormDialog();
+                    },
+                  ).then((value) {
+                    Navigator.pop(context);
+                  });
+                },
               )
             ] +
-            this._createConnectionList(context),
+            this._createConnectionList(context, connections),
       ),
     );
   }
 
-  List<Widget> _createConnectionList(BuildContext context) {
+  List<Widget> _createConnectionList(
+      BuildContext context, List<CloudDatastoreConnection> connections) {
     // TODO replace to state
-    return _connections
+    return connections
         .map(
           (c) => ListTile(
             leading: Icon(Icons.storage_outlined), // TODO CloudDatastore icon

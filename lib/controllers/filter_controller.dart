@@ -38,9 +38,6 @@ class FilterController {
       current.getSelectableFilterTypes(prop),
       null,
     );
-    print(
-      'プロパティ変更結果: ${this.read(filterStateProvider).state.selectedPropertyError}',
-    );
   }
 
   void onChangeFilterType(FilterType filterType) {

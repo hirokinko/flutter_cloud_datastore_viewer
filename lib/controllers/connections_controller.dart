@@ -12,7 +12,12 @@ class ConnectionController {
 
   ConnectionController(this.read);
 
-  // TODO onLoadConnectionList
+  Future<void> onLoadConnectionList() async {
+    final connections =
+        await this.read(connectionDaoProvider).getCloudDatastoreConnections();
+    this.read(connectionListStateProvider).state = connections;
+  }
+
   Future<void> onSelectConnection(CloudDatastoreConnection connection) async {
     this.read(currentConnectionStateProvider).state = connection;
     this.read(currentShowingStateProvider).state = CurrentShowing(null, null);
@@ -22,7 +27,24 @@ class ConnectionController {
     final metadata = await dao.getMetadata(null);
     this.read(metadataStateProvider).state = metadata;
   }
-  // TODO onCreateConnection
+
+  Future<void> onCreateConnection(
+      CloudDatastoreConnection newConnection) async {
+    // TODO OrderedSetにするか？
+    final connectionSet =
+        (await this.read(connectionDaoProvider).getCloudDatastoreConnections())
+            .toSet();
+    connectionSet.add(newConnection);
+    final connectionList = connectionSet.toList(growable: false);
+    connectionList.sort(
+      (CloudDatastoreConnection a, CloudDatastoreConnection b) =>
+          a.projectId.compareTo(b.projectId),
+    );
+    await this
+        .read(connectionDaoProvider)
+        .putCloudDatastoreConnectionsToPref(connectionList);
+  }
+
   // TODO onDeleteConnection
   // TODO onUpdateConnection
 }

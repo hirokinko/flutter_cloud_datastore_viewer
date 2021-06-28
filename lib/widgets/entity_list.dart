@@ -107,7 +107,6 @@ Map<String, DataCell> createTempRowMap(entities.Entity entity) {
 }
 
 DataCell createDataCell(entities.Property property) {
-  print(property);
   if (property is entities.SingleProperty && property.value != null) {
     switch (property.type) {
       case int:

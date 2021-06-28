@@ -104,7 +104,6 @@ void main() {
 
     final result = await dao.find('Profile', 'development', null, null);
     result.entities.forEach((entity) {
-      print(entity?.key);
       entity?.properties.forEach((property) {
         print(property);
       });
