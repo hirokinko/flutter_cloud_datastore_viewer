@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:googleapis_auth/auth_io.dart' as auth;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
 import '../models/connection.dart';
@@ -18,15 +21,24 @@ final currentConnectionStateProvider = StateProvider(
   ),
 );
 final currentShowingStateProvider =
-    StateProvider((ref) => CurrentShowing('development', 'User'));
+    StateProvider((ref) => CurrentShowing(null, null));
 final entityListStateProvider =
     StateProvider.autoDispose((ref) => DEFAULT_ENTITY_LIST);
-// TODO 初期状態とConnectionを変えた時の対応
 final metadataStateProvider =
-    StateProvider((ref) => CloudDatastoreMetadata([null, 'development'], []));
-final datastoreDaoProvider = Provider((ref) {
+    StateProvider((ref) => CloudDatastoreMetadata([], []));
+final datastoreDaoProvider = Provider((ref) async {
+  late Client client;
   final currentConnection = ref.watch(currentConnectionStateProvider).state;
-  final client = auth.clientViaApiKey(currentConnection.keyFilePath);
+
+  if (currentConnection.keyFilePath != null) {
+    final key = new File(currentConnection.keyFilePath!).readAsStringSync();
+    client = await auth.clientViaServiceAccount(
+      auth.ServiceAccountCredentials.fromJson(key),
+      ['https://www.googleapis.com/auth/datastore'],
+    );
+  } else {
+    client = auth.clientViaApiKey('');
+  }
   final datastoreApi = DatastoreApi(client, rootUrl: currentConnection.rootUrl);
   return CloudDatastoreDao(datastoreApi, currentConnection.projectId);
 });
@@ -41,7 +53,7 @@ class EntitiesController {
 
   Future<void> onChangeCurrentShowingNamespace(String? namespace) async {
     final newMetadata =
-        await this.read(datastoreDaoProvider).getMetadata(namespace);
+        await (await this.read(datastoreDaoProvider)).getMetadata(namespace);
     this.read(metadataStateProvider).state = newMetadata;
     if (!newMetadata.namespaces.contains(namespace)) return;
 
@@ -74,12 +86,12 @@ class EntitiesController {
       return;
     }
 
-    final newEntityList = await this.read(datastoreDaoProvider).find(
-          currentShowing.kind!,
-          currentShowing.namespace,
-          startCursor,
-          previousPageStartCursor,
-        );
+    final newEntityList = await (await this.read(datastoreDaoProvider)).find(
+      currentShowing.kind!,
+      currentShowing.namespace,
+      startCursor,
+      previousPageStartCursor,
+    );
     this.read(entityListStateProvider).state = newEntityList;
   }
 }

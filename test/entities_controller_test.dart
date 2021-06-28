@@ -17,8 +17,8 @@ main() {
   setUp(() => {
         container = ProviderContainer(
           overrides: [
-            datastoreDaoProvider.overrideWithProvider(
-              Provider((ref) => mockedDao),
+            (datastoreDaoProvider).overrideWithProvider(
+              Provider((ref) => Future.value(mockedDao)),
             ),
           ],
         )
@@ -85,6 +85,9 @@ main() {
       test(
         'When gives ${entry.key} to onChangeCurrentShowingKind, then returns ${entry.value}',
         () async {
+          when(mockedDao.find('Ham', 'development', null, null, limit: 50))
+              .thenAnswer((_) async => EntityList([], 50, null, null, null));
+
           container.read(metadataStateProvider).state = CloudDatastoreMetadata(
             [null, 'development'],
             ['Spam', 'Ham', 'Egg'],

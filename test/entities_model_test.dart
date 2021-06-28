@@ -30,11 +30,13 @@ void main() {
       );
       final property = SingleProperty('entityValue', Entity, true, innerEntity);
       final result = property.propertyEntries;
-      expect(result.length, 2);
+      expect(result.length, 3);
       expect(result[0].key, 'entityValue.innerIntValue');
       expect(result[0].value, int);
       expect(result[1].key, 'entityValue.innerDoubleValue');
       expect(result[1].value, double);
+      expect(result[2].key, 'entityValue.innerBoolValue');
+      expect(result[2].value, bool);
     });
 
     test('null Entity Value SingleProperty', () {
