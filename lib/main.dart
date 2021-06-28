@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_cloud_datastore_viewer/widgets/connection_list.dart';
 import 'package:flutter_cloud_datastore_viewer/widgets/header.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
       home: Scaffold(
         appBar: Header(),
         body: EntityListWidget(),
+        drawer: ConnectionListDrawer(),
       ),
     );
   }

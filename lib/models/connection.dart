@@ -3,18 +3,20 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
+const DEFAULT_ROOT_URL = 'https://datastore.googleapis.com/';
+
 mixin Connection {}
 
 @immutable
 class CloudDatastoreConnection extends Equatable with Connection {
-  final String keyFilePath;
+  final String? keyFilePath;
   final String rootUrl;
   final String projectId;
 
   const CloudDatastoreConnection(
     this.keyFilePath,
     this.projectId, {
-    this.rootUrl: 'https://datastore.googleapis.com/',
+    this.rootUrl: DEFAULT_ROOT_URL,
   });
 
   @override
@@ -22,9 +24,9 @@ class CloudDatastoreConnection extends Equatable with Connection {
 
   static CloudDatastoreConnection fromJson(Map<String, String> json) {
     return CloudDatastoreConnection(
-      json['keyFilePath']!,
+      json['keyFilePath'],
       json['projectId']!,
-      rootUrl: json['rootUrl'] ?? 'https://datastore.googleapis.com/',
+      rootUrl: json['rootUrl'] ?? DEFAULT_ROOT_URL,
     );
   }
 
