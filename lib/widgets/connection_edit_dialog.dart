@@ -39,7 +39,9 @@ class ConnectionEditFormDialog extends HookWidget {
             controller: keyFilePathEditingController,
             decoration: InputDecoration(
               labelText: 'キーファイルのパス',
-              errorText: connection != null && !connection.isValidKeyFilePath
+              errorText: connection != null &&
+                      !connection.isLocalEmulatorConnection &&
+                      !connection.isValidKeyFilePath
                   ? 'キーファイルがありません'
                   : null,
             ),
@@ -58,7 +60,7 @@ class ConnectionEditFormDialog extends HookWidget {
             title: Column(
           children: [
             ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   final newConnection = CloudDatastoreConnection(
                     keyFilePathEditingController.text.isNotEmpty
                         ? keyFilePathEditingController.text
@@ -73,13 +75,28 @@ class ConnectionEditFormDialog extends HookWidget {
                   context
                       .read(connectionController)
                       .onCreateConnection(newConnection);
-                  // TODO 「コネクションを追加しました」というアラートダイアログを出す
+                  await showDidAddNewConnectionDialog(context);
                   Navigator.pop(context);
                 },
                 child: Text('追加')),
           ],
         ))
       ],
+    );
+  }
+
+  Future<void> showDidAddNewConnectionDialog(BuildContext context) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        content: const Text('コネクションを追加しました'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
     );
   }
 }

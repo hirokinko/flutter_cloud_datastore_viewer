@@ -45,6 +45,18 @@ class ConnectionController {
         .putCloudDatastoreConnectionsToPref(connectionList);
   }
 
-  // TODO onDeleteConnection
+  Future<void> onDeleteConnection(CloudDatastoreConnection connection) async {
+    final dao = this.read(connectionDaoProvider);
+    final connections = await dao.getCloudDatastoreConnections();
+    await dao.putCloudDatastoreConnectionsToPref(
+      connections.where((c) => c != connection).toList(growable: false),
+    );
+    if (this.read(currentConnectionStateProvider).state == connection) {
+      this.read(currentConnectionStateProvider).state = null;
+    }
+    this.read(connectionListStateProvider).state =
+        await dao.getCloudDatastoreConnections();
+  }
+
   // TODO onUpdateConnection
 }

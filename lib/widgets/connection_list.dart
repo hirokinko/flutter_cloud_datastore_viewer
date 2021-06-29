@@ -46,8 +46,9 @@ class ConnectionListDrawer extends HookWidget {
   }
 
   List<Widget> _createConnectionList(
-      BuildContext context, List<CloudDatastoreConnection> connections) {
-    // TODO replace to state
+    BuildContext context,
+    List<CloudDatastoreConnection> connections,
+  ) {
     return connections
         .map(
           (c) => ListTile(
@@ -59,9 +60,55 @@ class ConnectionListDrawer extends HookWidget {
             },
             onLongPress: () {
               // TODO show menu for connection
+              showMenuForConnection(context, c);
             },
           ),
         )
         .toList(growable: false);
+  }
+
+  void showMenuForConnection(
+    BuildContext context,
+    CloudDatastoreConnection connection,
+  ) async {
+    final selected = await showMenu<String?>(
+      context: context,
+      position: RelativeRect.fill,
+      items: [
+        PopupMenuItem(
+          value: 'EDIT',
+          child: Text('編集'),
+        ),
+        PopupMenuItem(
+          value: 'DELETE',
+          child: Text('削除'),
+        ),
+      ],
+    );
+    if (selected == null || selected.isEmpty) return;
+    switch (selected) {
+      case 'DELETE':
+        await context.read(connectionController).onDeleteConnection(connection);
+        final newConnectionList =
+            context.read(connectionListStateProvider).state;
+        if (newConnectionList.where((c) => c == connection).isEmpty) {
+          showDidDeleteConnectionDialog(context);
+        }
+    }
+  }
+
+  void showDidDeleteConnectionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        content: const Text('コネクションを削除しました'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 }
