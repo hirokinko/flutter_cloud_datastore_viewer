@@ -3,7 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import './controllers/connections_controller.dart';
-import './widgets/connection_list.dart';
+import 'widgets/list_connection_drawer.dart';
 import './widgets/header.dart';
 
 import './widgets/entity_list.dart';

@@ -4,7 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../controllers/connections_controller.dart';
 import '../models/connection.dart';
-import '../widgets/connection_edit_dialog.dart';
+import 'edit_connection_dialog.dart';
 
 class ConnectionListDrawer extends HookWidget {
   @override
