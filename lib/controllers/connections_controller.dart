@@ -58,5 +58,24 @@ class ConnectionController {
         await dao.getCloudDatastoreConnections();
   }
 
-  // TODO onUpdateConnection
+  Future<void> onUpdateConnection(
+    CloudDatastoreConnection currentConnection,
+    CloudDatastoreConnection newConnection,
+  ) async {
+    final dao = this.read(connectionDaoProvider);
+    final connections = await dao.getCloudDatastoreConnections();
+    final replacedConnection = connections.fold(
+      <CloudDatastoreConnection>[],
+      (List<CloudDatastoreConnection> acc, CloudDatastoreConnection c) {
+        if (c == currentConnection) {
+          acc.add(newConnection);
+        } else {
+          acc.add(c);
+        }
+        return acc;
+      },
+    );
+    await dao.putCloudDatastoreConnectionsToPref(replacedConnection);
+    this.read(connectionListStateProvider).state = replacedConnection;
+  }
 }

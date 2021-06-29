@@ -7,20 +7,28 @@ import 'package:riverpod/riverpod.dart';
 import '../models/connection.dart';
 
 final editingConnectionStateProvider =
-    StateProvider.autoDispose<CloudDatastoreConnection?>((ref) => null);
+    StateProvider<CloudDatastoreConnection?>((ref) => null);
 
 class ConnectionEditFormDialog extends HookWidget {
+  final CloudDatastoreConnection? _editingConnection;
+
+  ConnectionEditFormDialog(this._editingConnection);
+
   @override
   Widget build(BuildContext context) {
-    final projectIdEditingController = useTextEditingController(text: '');
-    final keyFilePathEditingController = useTextEditingController(text: '');
-    final rootUrlEditingController =
-        useTextEditingController(text: DEFAULT_ROOT_URL);
-
     final connection = useProvider(editingConnectionStateProvider).state;
+    final projectIdEditingController = useTextEditingController(
+      text: connection?.projectId ?? '',
+    );
+    final keyFilePathEditingController = useTextEditingController(
+      text: connection?.keyFilePath ?? '',
+    );
+    final rootUrlEditingController = useTextEditingController(
+      text: connection?.rootUrl ?? DEFAULT_ROOT_URL,
+    );
 
     return SimpleDialog(
-      title: Text('コネクションの追加'),
+      title: Text('コネクションの${this._actionLabel}'),
       children: <Widget>[
         ListTile(
           title: TextFormField(
@@ -62,7 +70,7 @@ class ConnectionEditFormDialog extends HookWidget {
                   rootUrlEditingController.text,
                 );
               },
-              child: Text('追加'),
+              child: Text(this._actionLabel),
             ),
           ],
         ))
@@ -70,11 +78,11 @@ class ConnectionEditFormDialog extends HookWidget {
     );
   }
 
-  Future<void> showDidAddNewConnectionDialog(BuildContext context) async {
+  Future<void> showDidAddOrUpdateConnectionDialog(BuildContext context) async {
     await showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        content: const Text('コネクションを追加しました'),
+        content: Text('コネクションを${this._actionLabel}しました'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -113,8 +121,17 @@ class ConnectionEditFormDialog extends HookWidget {
     context.read(editingConnectionStateProvider).state = newConnection;
 
     if (!newConnection.isValid) return;
-    context.read(connectionController).onCreateConnection(newConnection);
-    await showDidAddNewConnectionDialog(context);
+    if (this._editingConnection == null) {
+      context.read(connectionController).onCreateConnection(newConnection);
+    } else {
+      context.read(connectionController).onUpdateConnection(
+            this._editingConnection!,
+            newConnection,
+          );
+    }
+    await showDidAddOrUpdateConnectionDialog(context);
     Navigator.pop(context);
   }
+
+  String get _actionLabel => this._editingConnection == null ? '追加' : '更新';
 }

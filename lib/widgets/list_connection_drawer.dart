@@ -27,18 +27,17 @@ class ConnectionListDrawer extends HookWidget {
               ListTile(
                 leading: Icon(Icons.add_circle),
                 title: Text('コネクションの追加'),
-                onTap: () {
-                  showDialog(
+                onTap: () async {
+                  context.read(editingConnectionStateProvider).state = null;
+                  await showDialog(
                     context: context,
                     builder: (BuildContext context) {
-                      // context.read(editingConnectionStateProvider).state = null;
-                      return ConnectionEditFormDialog();
+                      return ConnectionEditFormDialog(null);
                     },
-                  ).then((value) {
-                    Navigator.pop(context);
-                  });
+                  );
+                  Navigator.pop(context);
                 },
-              )
+              ),
             ] +
             this._createConnectionList(context, connections),
       ),
@@ -59,7 +58,6 @@ class ConnectionListDrawer extends HookWidget {
               Navigator.pop(context);
             },
             onLongPress: () {
-              // TODO show menu for connection
               showMenuForConnection(context, c);
             },
           ),
@@ -94,6 +92,15 @@ class ConnectionListDrawer extends HookWidget {
         if (newConnectionList.where((c) => c == connection).isEmpty) {
           showDidDeleteConnectionDialog(context);
         }
+        break;
+      case 'EDIT':
+        context.read(editingConnectionStateProvider).state = connection;
+        await showDialog(
+          context: context,
+          builder: (BuildContext context) =>
+              ConnectionEditFormDialog(connection),
+        );
+        break;
     }
   }
 
