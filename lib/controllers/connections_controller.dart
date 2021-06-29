@@ -21,11 +21,7 @@ class ConnectionController {
   Future<void> onSelectConnection(CloudDatastoreConnection connection) async {
     this.read(currentConnectionStateProvider).state = connection;
     this.read(currentShowingStateProvider).state = CurrentShowing(null, null);
-
-    final dao = await this.read(datastoreDaoProvider);
-    if (dao == null) return;
-    final metadata = await dao.getMetadata(null);
-    this.read(metadataStateProvider).state = metadata;
+    await this._updateDatastoreMetadataState();
   }
 
   Future<void> onCreateConnection(
@@ -43,6 +39,7 @@ class ConnectionController {
     await this
         .read(connectionDaoProvider)
         .putCloudDatastoreConnectionsToPref(connectionList);
+    await this._updateDatastoreMetadataState();
   }
 
   Future<void> onDeleteConnection(CloudDatastoreConnection connection) async {
@@ -56,6 +53,8 @@ class ConnectionController {
     }
     this.read(connectionListStateProvider).state =
         await dao.getCloudDatastoreConnections();
+    this.read(currentConnectionStateProvider).state = connection;
+    await this._updateDatastoreMetadataState();
   }
 
   Future<void> onUpdateConnection(
@@ -64,7 +63,7 @@ class ConnectionController {
   ) async {
     final dao = this.read(connectionDaoProvider);
     final connections = await dao.getCloudDatastoreConnections();
-    final replacedConnection = connections.fold(
+    final replacedConnections = connections.fold(
       <CloudDatastoreConnection>[],
       (List<CloudDatastoreConnection> acc, CloudDatastoreConnection c) {
         if (c == currentConnection) {
@@ -75,7 +74,16 @@ class ConnectionController {
         return acc;
       },
     );
-    await dao.putCloudDatastoreConnectionsToPref(replacedConnection);
-    this.read(connectionListStateProvider).state = replacedConnection;
+    await dao.putCloudDatastoreConnectionsToPref(replacedConnections);
+    this.read(connectionListStateProvider).state = replacedConnections;
+    this.read(currentConnectionStateProvider).state = newConnection;
+    await this._updateDatastoreMetadataState();
+  }
+
+  Future<void> _updateDatastoreMetadataState() async {
+    final dao = await this.read(datastoreDaoProvider);
+    if (dao == null) return;
+    final metadata = await dao.getMetadata(null);
+    this.read(metadataStateProvider).state = metadata;
   }
 }
