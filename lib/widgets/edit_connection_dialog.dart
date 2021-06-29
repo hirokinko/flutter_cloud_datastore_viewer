@@ -27,9 +27,7 @@ class ConnectionEditFormDialog extends HookWidget {
             controller: projectIdEditingController,
             decoration: InputDecoration(
               labelText: 'プロジェクトID',
-              errorText: connection != null && connection.projectId.isEmpty
-                  ? 'プロジェクトIDを入力してください'
-                  : null,
+              errorText: this._onProjectIdIsEmpty(connection),
             ),
           ),
         ),
@@ -39,11 +37,7 @@ class ConnectionEditFormDialog extends HookWidget {
             controller: keyFilePathEditingController,
             decoration: InputDecoration(
               labelText: 'キーファイルのパス',
-              errorText: connection != null &&
-                      !connection.isLocalEmulatorConnection &&
-                      !connection.isValidKeyFilePath
-                  ? 'キーファイルがありません'
-                  : null,
+              errorText: this._onKeyFileNotFound(connection),
             ),
           ),
         ),
@@ -60,25 +54,16 @@ class ConnectionEditFormDialog extends HookWidget {
             title: Column(
           children: [
             ElevatedButton(
-                onPressed: () async {
-                  final newConnection = CloudDatastoreConnection(
-                    keyFilePathEditingController.text.isNotEmpty
-                        ? keyFilePathEditingController.text
-                        : null,
-                    projectIdEditingController.text,
-                    rootUrl: rootUrlEditingController.text,
-                  );
-                  context.read(editingConnectionStateProvider).state =
-                      newConnection;
-
-                  if (!newConnection.isValid) return;
-                  context
-                      .read(connectionController)
-                      .onCreateConnection(newConnection);
-                  await showDidAddNewConnectionDialog(context);
-                  Navigator.pop(context);
-                },
-                child: Text('追加')),
+              onPressed: () async {
+                await this._onPressedAddButton(
+                  context,
+                  keyFilePathEditingController.text,
+                  projectIdEditingController.text,
+                  rootUrlEditingController.text,
+                );
+              },
+              child: Text('追加'),
+            ),
           ],
         ))
       ],
@@ -98,5 +83,38 @@ class ConnectionEditFormDialog extends HookWidget {
         ],
       ),
     );
+  }
+
+  String? _onProjectIdIsEmpty(CloudDatastoreConnection? connection) {
+    return connection != null && connection.projectId.isEmpty
+        ? 'プロジェクトIDを入力してください'
+        : null;
+  }
+
+  String? _onKeyFileNotFound(CloudDatastoreConnection? connection) {
+    return connection != null &&
+            !connection.isLocalEmulatorConnection &&
+            !connection.isValidKeyFilePath
+        ? 'キーファイルがありません'
+        : null;
+  }
+
+  Future<void> _onPressedAddButton(
+    BuildContext context,
+    String keyFilePath,
+    String projectId,
+    String rootUrl,
+  ) async {
+    final newConnection = CloudDatastoreConnection(
+      keyFilePath.isNotEmpty ? keyFilePath : null,
+      projectId,
+      rootUrl: rootUrl,
+    );
+    context.read(editingConnectionStateProvider).state = newConnection;
+
+    if (!newConnection.isValid) return;
+    context.read(connectionController).onCreateConnection(newConnection);
+    await showDidAddNewConnectionDialog(context);
+    Navigator.pop(context);
   }
 }
