@@ -55,6 +55,7 @@ class ConnectionEditFormDialog extends HookWidget {
             decoration: InputDecoration(
               labelText: 'DatastoreのルートURL',
               hintText: 'エミュレーターに接続するときはエミュレーターのホストとポートを指定してください',
+              errorText: this._onRootUrlRegExpPatternNotMatched(connection),
             ),
           ),
         ),
@@ -104,6 +105,13 @@ class ConnectionEditFormDialog extends HookWidget {
             !connection.isLocalEmulatorConnection &&
             !connection.isValidKeyFilePath
         ? 'キーファイルがありません'
+        : null;
+  }
+
+  String? _onRootUrlRegExpPatternNotMatched(
+      CloudDatastoreConnection? connection) {
+    return connection != null && !connection.isRootUrlPatternMatched
+        ? 'ルートURLは `http[s]://<ドメイン>[:ポート番号]/` で入力してください'
         : null;
   }
 

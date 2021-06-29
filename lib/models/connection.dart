@@ -16,6 +16,8 @@ final currentShowingStateProvider =
     StateProvider((ref) => CurrentShowing(null, null));
 final metadataStateProvider =
     StateProvider((ref) => CloudDatastoreMetadata([], []));
+final rootUrlPattern =
+    RegExp('^https?:\/\/[a-zA-Z][a-zA-Z0-9\.]*[a-zA-Z](\:[0-9]+)?\/\$');
 
 mixin Connection {}
 
@@ -52,7 +54,8 @@ class CloudDatastoreConnection extends Equatable with Connection {
 
   bool get isValid {
     return this.projectId.isNotEmpty &&
-        (isValidKeyFilePath || isLocalEmulatorConnection);
+        (isValidKeyFilePath || isLocalEmulatorConnection) &&
+        isRootUrlPatternMatched;
   }
 
   bool get isValidKeyFilePath =>
@@ -62,6 +65,8 @@ class CloudDatastoreConnection extends Equatable with Connection {
 
   // TODO ping to emulator host
   bool get isLocalEmulatorConnection => this.rootUrl != DEFAULT_ROOT_URL;
+
+  bool get isRootUrlPatternMatched => rootUrlPattern.hasMatch(this.rootUrl);
 }
 
 @immutable
