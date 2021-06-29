@@ -56,7 +56,7 @@ class _DataSource extends DataTableSource {
   int get selectedRowCount => 0;
 }
 
-PaginatedDataTable createEntityDataTable(
+Widget createEntityDataTable(
     BuildContext context, entities.EntityList entityList) {
   final tempTable = entityList.entities.fold(
     TempTable({}, []),
@@ -108,12 +108,15 @@ Map<String, DataCell> createTempRowMap(entities.Entity entity) {
 
 DataCell createDataCell(entities.Property property) {
   if (property is entities.SingleProperty && property.value != null) {
+    // TODO Entity型
     switch (property.type) {
       case int:
       case double:
         return createNumberSinglePropertyDataCell(property);
       case String:
         return createStringSinglePropertyDataCell(property);
+      case DateTime:
+        return createDateTimeSinglePropertyDataCell(property);
       case entities.Key:
         return createKeyDataCell(property.value);
       default:
@@ -144,4 +147,10 @@ DataCell createStringSinglePropertyDataCell(
   entities.SingleProperty property,
 ) {
   return DataCell(Text(property.value));
+}
+
+DataCell createDateTimeSinglePropertyDataCell(
+  entities.SingleProperty property,
+) {
+  return DataCell(Text((property.value as DateTime).toIso8601String()));
 }

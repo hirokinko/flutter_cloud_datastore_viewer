@@ -45,6 +45,8 @@ class CloudDatastoreUtils {
         return datastore_api.Value()..doubleValue = double.parse(value);
       case String:
         return datastore_api.Value()..stringValue = value;
+      case DateTime:
+        return datastore_api.Value()..timestampValue = value;
       default:
         throw UnimplementedError();
     }
@@ -234,7 +236,9 @@ class CloudDatastoreDao {
     if (datastoreValue.doubleValue != null) {
       return datastoreValue.doubleValue;
     }
-    // TODO timestampValue
+    if (datastoreValue.timestampValue != null) {
+      return DateTime.tryParse(datastoreValue.timestampValue!);
+    }
     if (datastoreValue.keyValue != null) {
       return this._toModelKey(datastoreValue.keyValue);
     }

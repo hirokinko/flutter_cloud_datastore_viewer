@@ -217,6 +217,21 @@ final toPropertyFilterFixtures = [
       },
     },
   ),
+  ToPropertyFilterFixture(
+    "timestampProperty",
+    "EQUAL",
+    DateTime,
+    "2014-10-02T15:01:23.045123456Z",
+    {
+      "property": {
+        "name": "timestampProperty",
+      },
+      "op": "EQUAL",
+      "value": {
+        "timestampValue": "2014-10-02T15:01:23.045123456Z",
+      }
+    },
+  ),
 ];
 
 final toRangeFilterFixtures = [
@@ -540,5 +555,7 @@ final findRunQueryResponse = RunQueryResponse()
                   Value()..integerValue = '2',
                   Value()..integerValue = '3'
                 ]),
+            'timestampProperty': Value()
+              ..timestampValue = "2014-10-02T15:01:23.045123456Z",
           }),
     ]);
