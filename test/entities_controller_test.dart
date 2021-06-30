@@ -1,6 +1,8 @@
 import 'package:flutter_cloud_datastore_viewer/controllers/entities_controller.dart';
+import 'package:flutter_cloud_datastore_viewer/controllers/filter_controller.dart';
 import 'package:flutter_cloud_datastore_viewer/models/connection.dart';
 import 'package:flutter_cloud_datastore_viewer/models/entities.dart';
+import 'package:flutter_cloud_datastore_viewer/models/filters.dart' as filters;
 import 'package:flutter_cloud_datastore_viewer/data_access_objects/clouddatastore_dao.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -85,8 +87,25 @@ main() {
       test(
         'When gives ${entry.key} to onChangeCurrentShowingKind, then returns ${entry.value}',
         () async {
-          when(mockedDao.find('Ham', 'development', null, null, limit: 50))
-              .thenAnswer((_) async => EntityList([], 50, null, null, null));
+          when(mockedDao.find(
+            entry.key,
+            'development',
+            null,
+            null,
+            filters.Filter(
+              null,
+              [
+                filters.Property('booleanProperty', bool),
+                filters.Property('stringProperty', String),
+                filters.Property('integerProperty', int),
+                filters.Property('doubleProperty', double),
+              ],
+              filters.FilterType.UNSPECIFIED,
+              [filters.FilterType.UNSPECIFIED],
+              null,
+            ),
+            limit: 50,
+          )).thenAnswer((_) async => EntityList([], 50, null, null, null));
 
           container.read(metadataStateProvider).state = CloudDatastoreMetadata(
             [null, 'development'],
@@ -96,6 +115,20 @@ main() {
             'development',
             null,
           );
+
+          container.read(filterStateProvider).state = filters.Filter(
+            null,
+            [
+              filters.Property('booleanProperty', bool),
+              filters.Property('stringProperty', String),
+              filters.Property('integerProperty', int),
+              filters.Property('doubleProperty', double),
+            ],
+            filters.FilterType.UNSPECIFIED,
+            [filters.FilterType.UNSPECIFIED],
+            null,
+          );
+
           final expected = CurrentShowing('development', entry.value);
           await container
               .read(entitiesControllerProvider)
@@ -109,7 +142,7 @@ main() {
 
   group('onLoadEntityList', () {
     test('Query to no exists namespace', () async {
-      when(mockedDao.find('Spam', 'spam', 'Eric', 'Terry', limit: 50))
+      when(mockedDao.find('Spam', 'spam', 'Eric', 'Terry', null, limit: 50))
           .thenAnswer((_) async => DEFAULT_ENTITY_LIST);
 
       container.read(metadataStateProvider).state = CloudDatastoreMetadata(
@@ -133,14 +166,42 @@ main() {
         'spam',
         'Eric',
         'Terry',
+        filters.Filter(
+          null,
+          [
+            filters.Property('booleanProperty', bool),
+            filters.Property('stringProperty', String),
+            filters.Property('integerProperty', int),
+            filters.Property('doubleProperty', double),
+          ],
+          filters.FilterType.UNSPECIFIED,
+          [filters.FilterType.UNSPECIFIED],
+          null,
+        ),
         limit: 50,
       ));
     });
 
     test('Query to no exists kind', () async {
-      when(mockedDao.find('SpanishInquisition', 'development', 'Eric', 'Terry',
-              limit: 50))
-          .thenAnswer((_) async => DEFAULT_ENTITY_LIST);
+      when(mockedDao.find(
+        'SpanishInquisition',
+        'development',
+        'Eric',
+        'Terry',
+        filters.Filter(
+          null,
+          [
+            filters.Property('booleanProperty', bool),
+            filters.Property('stringProperty', String),
+            filters.Property('integerProperty', int),
+            filters.Property('doubleProperty', double),
+          ],
+          filters.FilterType.UNSPECIFIED,
+          [filters.FilterType.UNSPECIFIED],
+          null,
+        ),
+        limit: 50,
+      )).thenAnswer((_) async => DEFAULT_ENTITY_LIST);
 
       container.read(metadataStateProvider).state = CloudDatastoreMetadata(
         [null, 'development'],
@@ -163,6 +224,18 @@ main() {
         'development',
         'Eric',
         'Terry',
+        filters.Filter(
+          null,
+          [
+            filters.Property('booleanProperty', bool),
+            filters.Property('stringProperty', String),
+            filters.Property('integerProperty', int),
+            filters.Property('doubleProperty', double),
+          ],
+          filters.FilterType.UNSPECIFIED,
+          [filters.FilterType.UNSPECIFIED],
+          null,
+        ),
         limit: 50,
       ));
     });
@@ -173,6 +246,7 @@ main() {
         null,
         'Eric',
         'Terry',
+        any,
         limit: 50,
       )).thenAnswer((_) async => DEFAULT_ENTITY_LIST);
 
@@ -197,6 +271,7 @@ main() {
         null,
         'Eric',
         'Terry',
+        any,
         limit: 50,
       ));
     });
@@ -207,6 +282,18 @@ main() {
         null,
         'Eric',
         'Terry',
+        filters.Filter(
+          null,
+          [
+            filters.Property('booleanProperty', bool),
+            filters.Property('stringProperty', String),
+            filters.Property('integerProperty', int),
+            filters.Property('doubleProperty', double),
+          ],
+          filters.FilterType.UNSPECIFIED,
+          [filters.FilterType.UNSPECIFIED],
+          null,
+        ),
         limit: 50,
       )).thenAnswer((_) async => EntityList([], 50, 'Eric', 'Graham', 'Terry'));
 
@@ -231,6 +318,18 @@ main() {
         null,
         'Eric',
         'Terry',
+        filters.Filter(
+          null,
+          [
+            filters.Property('booleanProperty', bool),
+            filters.Property('stringProperty', String),
+            filters.Property('integerProperty', int),
+            filters.Property('doubleProperty', double),
+          ],
+          filters.FilterType.UNSPECIFIED,
+          [filters.FilterType.UNSPECIFIED],
+          null,
+        ),
         limit: 50,
       )).called(1);
     });

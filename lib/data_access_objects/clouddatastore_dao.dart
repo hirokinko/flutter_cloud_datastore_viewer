@@ -7,6 +7,7 @@ import 'package:riverpod/riverpod.dart';
 import '../patched_datastore/v1.dart' as datastore_api;
 import '../models/connection.dart' as connections;
 import '../models/entities.dart' as models;
+import '../models/filters.dart' as filters;
 
 final datastoreDaoProvider = Provider<Future<CloudDatastoreDao?>>((ref) async {
   late Client client;
@@ -141,7 +142,8 @@ class CloudDatastoreDao {
     String kindName,
     String? namespace,
     String? startCursor,
-    String? previousPageStartCursor, {
+    String? previousPageStartCursor,
+    filters.Filter? filter, {
     int limit = 50,
   }) async {
     // TODO filter
@@ -151,6 +153,7 @@ class CloudDatastoreDao {
       namespace,
       startCursor,
       limit: limit,
+      filter: filter,
     );
 
     final entities = response.batch?.entityResults
@@ -174,6 +177,7 @@ class CloudDatastoreDao {
     String kindName,
     String? namespace,
     String? startCursor, {
+    filters.Filter? filter,
     int limit = 50,
   }) async {
     final partitionId = datastore_api.PartitionId()
@@ -183,6 +187,16 @@ class CloudDatastoreDao {
     final query = datastore_api.Query()..kind = [kind];
     if (limit > 0) {
       query..limit = limit;
+    }
+    if (filter != null &&
+        filter.selectedProperty != null &&
+        filter.filterValue != null) {
+      query
+        ..filter = this._toFilter(
+          filter.selectedProperty!,
+          filter.filterType,
+          filter.filterValue!,
+        );
     }
     if (startCursor != null) {
       query..startCursor = startCursor;
@@ -298,5 +312,60 @@ class CloudDatastoreDao {
             batch?.endCursor != null)
         ? batch?.endCursor
         : null;
+  }
+
+  datastore_api.Filter _toFilter(
+    filters.Property property,
+    filters.FilterType filterType,
+    filters.FilterValue value,
+  ) {
+    switch (filterType) {
+      case filters.FilterType.EQUALS:
+        return this._toPropertyFilter(
+          property.name,
+          property.type,
+          value as filters.EqualsFilterValue,
+        );
+      case filters.FilterType.RANGE:
+        return this._toCompositeFilter(
+          property.name,
+          property.type,
+          value as filters.RangeFilterValue,
+        );
+      default:
+        throw UnsupportedError("Unsupported filter type");
+    }
+  }
+
+  datastore_api.Filter _toPropertyFilter(
+    String name,
+    Type type,
+    filters.EqualsFilterValue value,
+  ) {
+    datastore_api.PropertyFilter propertyFilter =
+        CloudDatastoreUtils.toPropertyFilter(
+      name,
+      "EQUAL",
+      type,
+      value.value,
+    );
+    return datastore_api.Filter()..propertyFilter = propertyFilter;
+  }
+
+  datastore_api.Filter _toCompositeFilter(
+    String name,
+    Type type,
+    filters.RangeFilterValue value,
+  ) {
+    datastore_api.CompositeFilter compositeFilter =
+        CloudDatastoreUtils.toRangeFilter(
+      name,
+      type,
+      value.maxValue!,
+      value.minValue!,
+      containsMaxValue: value.containsMaxValue,
+      containsMinValue: value.containsMinValue,
+    );
+    return datastore_api.Filter()..compositeFilter = compositeFilter;
   }
 }

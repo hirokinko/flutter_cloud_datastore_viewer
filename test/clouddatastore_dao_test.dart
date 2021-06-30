@@ -102,7 +102,7 @@ void main() {
       (_) async => findRunQueryResponse,
     );
 
-    final result = await dao.find('Profile', 'development', null, null);
+    final result = await dao.find('Profile', 'development', null, null, null);
     result.entities.forEach((entity) {
       entity?.properties.forEach((property) {
         print(property);

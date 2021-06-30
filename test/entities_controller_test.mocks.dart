@@ -4,12 +4,13 @@
 
 import 'dart:async' as _i6;
 
-import 'package:flutter_cloud_datastore_viewer/models/connection.dart' as _i3;
-import 'package:flutter_cloud_datastore_viewer/models/entities.dart' as _i4;
-import 'package:flutter_cloud_datastore_viewer/patched_datastore/v1.dart'
-    as _i2;
 import 'package:flutter_cloud_datastore_viewer/data_access_objects/clouddatastore_dao.dart'
     as _i5;
+import 'package:flutter_cloud_datastore_viewer/models/connection.dart' as _i3;
+import 'package:flutter_cloud_datastore_viewer/models/entities.dart' as _i4;
+import 'package:flutter_cloud_datastore_viewer/models/filters.dart' as _i7;
+import 'package:flutter_cloud_datastore_viewer/patched_datastore/v1.dart'
+    as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: avoid_redundant_argument_values
@@ -25,7 +26,7 @@ class _FakeCloudDatastoreMetadata extends _i1.Fake
 
 class _FakeEntityList extends _i1.Fake implements _i4.EntityList {}
 
-/// A class which mocks [CloudDatastoreRepostiry].
+/// A class which mocks [CloudDatastoreDao].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockCloudDatastoreDao extends _i1.Mock implements _i5.CloudDatastoreDao {
@@ -65,14 +66,23 @@ class MockCloudDatastoreDao extends _i1.Mock implements _i5.CloudDatastoreDao {
                   _FakeCloudDatastoreMetadata()))
           as _i6.Future<_i3.CloudDatastoreMetadata>);
   @override
-  _i6.Future<_i4.EntityList> find(String? kindName, String? namespace,
-          String? startCursor, String? previousPageStartCursor,
+  _i6.Future<_i4.EntityList> find(
+          String? kindName,
+          String? namespace,
+          String? startCursor,
+          String? previousPageStartCursor,
+          _i7.Filter? filter,
           {int? limit = 50}) =>
       (super.noSuchMethod(
-              Invocation.method(
-                  #find,
-                  [kindName, namespace, startCursor, previousPageStartCursor],
-                  {#limit: limit}),
+              Invocation.method(#find, [
+                kindName,
+                namespace,
+                startCursor,
+                previousPageStartCursor,
+                filter
+              ], {
+                #limit: limit
+              }),
               returnValue: Future<_i4.EntityList>.value(_FakeEntityList()))
           as _i6.Future<_i4.EntityList>);
 }

@@ -1,3 +1,4 @@
+import 'package:flutter_cloud_datastore_viewer/controllers/filter_controller.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:meta/meta.dart';
 
@@ -55,12 +56,14 @@ class EntitiesController {
       this.read(entityListStateProvider).state = DEFAULT_ENTITY_LIST;
       return;
     }
+    final filter = this.read(filterStateProvider).state;
 
     final newEntityList = await dao.find(
       currentShowing.kind!,
       currentShowing.namespace,
       startCursor,
       previousPageStartCursor,
+      filter,
     );
     this.read(entityListStateProvider).state = newEntityList;
   }

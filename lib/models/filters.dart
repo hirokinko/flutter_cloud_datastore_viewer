@@ -168,7 +168,7 @@ class RangeFilterValue extends FilterValue {
 }
 
 @immutable
-class Filter {
+class Filter extends Equatable {
   final Property? selectedProperty;
   final List<Property> selectableProperties;
   final FilterType filterType;
@@ -206,4 +206,13 @@ class Filter {
       this.selectedProperty != null && this.filterType == FilterType.UNSPECIFIED
           ? "フィルタータイプを選択してください"
           : null;
+
+  @override
+  List<Object?> get props => [
+        this.selectedProperty,
+        this.selectableProperties,
+        this.filterType,
+        this.selectableFilterTypes,
+        this.filterValue,
+      ];
 }
