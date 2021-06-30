@@ -53,7 +53,6 @@ class ConnectionController {
     }
     this.read(connectionListStateProvider).state =
         await dao.getCloudDatastoreConnections();
-    this.read(currentConnectionStateProvider).state = connection;
     await this._updateDatastoreMetadataState();
   }
 

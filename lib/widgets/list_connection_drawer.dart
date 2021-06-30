@@ -57,39 +57,39 @@ class ConnectionListDrawer extends HookWidget {
               await context.read(connectionController).onSelectConnection(c);
               Navigator.pop(context);
             },
-            onLongPress: () {
-              showMenuForConnection(context, c);
-            },
+            trailing: PopupMenuButton<String>(
+              itemBuilder: (BuildContext context) => [
+                const PopupMenuItem<String>(
+                  value: 'EDIT',
+                  child: Text('編集'),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'DELETE',
+                  child: Text('削除'),
+                ),
+              ],
+              onSelected: (String selected) async {
+                this._onSelectedConnectionMenu(context, c, selected);
+              },
+            ),
           ),
         )
         .toList(growable: false);
   }
 
-  void showMenuForConnection(
+  Future<void> _onSelectedConnectionMenu(
     BuildContext context,
     CloudDatastoreConnection connection,
+    String selected,
   ) async {
-    final selected = await showMenu<String?>(
-      context: context,
-      position: RelativeRect.fill,
-      items: [
-        PopupMenuItem(
-          value: 'EDIT',
-          child: Text('編集'),
-        ),
-        PopupMenuItem(
-          value: 'DELETE',
-          child: Text('削除'),
-        ),
-      ],
-    );
-    if (selected == null || selected.isEmpty) return;
     switch (selected) {
       case 'DELETE':
         await context.read(connectionController).onDeleteConnection(connection);
         final newConnectionList =
             context.read(connectionListStateProvider).state;
-        if (newConnectionList.where((c) => c == connection).isEmpty) {
+        if (newConnectionList
+            .where((CloudDatastoreConnection c) => c == connection)
+            .isEmpty) {
           showDidDeleteConnectionDialog(context);
         }
         break;
@@ -97,8 +97,9 @@ class ConnectionListDrawer extends HookWidget {
         context.read(editingConnectionStateProvider).state = connection;
         await showDialog(
           context: context,
-          builder: (BuildContext context) =>
-              ConnectionEditFormDialog(connection),
+          builder: (BuildContext context) => ConnectionEditFormDialog(
+            connection,
+          ),
         );
         break;
     }
