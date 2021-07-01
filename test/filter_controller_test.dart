@@ -22,6 +22,7 @@ void main() {
       () {
         container.read(filterStateProvider).state = Filter(
           null,
+          null,
           fixture.selectableProperties,
           FilterType.UNSPECIFIED,
           FILTER_UNSELECTABLE,
@@ -61,6 +62,7 @@ void main() {
       '  - filterValueには${fixture.expectedFilterValue}がセットされる',
       () {
         container.read(filterStateProvider).state = Filter(
+          null,
           Property('stringProperty', String),
           selectableProps,
           FilterType.UNSPECIFIED,
@@ -89,6 +91,7 @@ void main() {
       '  - filterValueには${fixture.expectedFilterValue}がセットされる',
       () {
         container.read(filterStateProvider).state = Filter(
+          null,
           fixture.property,
           selectableProps,
           FilterType.EQUALS,
@@ -118,6 +121,7 @@ void main() {
         '  - filterValue.minValueError は ${fixture.expectedMinValueError} を返す\n'
         '  - filterValue.formError は ${fixture.expectedFormError} を返す', () {
       container.read(filterStateProvider).state = Filter(
+        null,
         fixture.property,
         selectableProps,
         FilterType.RANGE,
@@ -141,6 +145,7 @@ void main() {
 
   test('clearボタンをsubmitしたとき、プロパティ、フィルタータイプ、値の入力をクリアする', () {
     container.read(filterStateProvider).state = Filter(
+      null,
       Property('stringProperty', String),
       selectableProps,
       FilterType.RANGE,
@@ -163,6 +168,7 @@ void main() {
     for (final fixture in getSuggestedPropertiesFixtures) {
       test('${fixture.input}を入力した時、${fixture.expected}が返る', () {
         final filter = Filter(
+          null,
           null,
           selectableProps,
           FilterType.UNSPECIFIED,

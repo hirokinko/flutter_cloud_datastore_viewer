@@ -66,9 +66,15 @@ class EntitiesController {
       filter,
     );
     this.read(entityListStateProvider).state = newEntityList;
+    final newSelectableProperties =
+        (currentShowing.kind == filter.kind && newEntityList.entities.isEmpty)
+            ? filter.selectableProperties
+            : this._createNewSelectableProperties(newEntityList.entities);
+
     this.read(filters.filterStateProvider).state = filters.Filter(
+      currentShowing.kind,
       null,
-      this._createNewSelectableProperties(newEntityList.entities),
+      newSelectableProperties,
       filters.FilterType.UNSPECIFIED,
       [filters.FilterType.UNSPECIFIED],
       null,

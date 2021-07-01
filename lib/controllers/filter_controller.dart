@@ -15,6 +15,7 @@ class FilterController {
   void onChangeProperty(Property? prop) {
     final current = this.read(filterStateProvider).state;
     this.read(filterStateProvider).state = Filter(
+      current.kind,
       prop,
       current.selectableProperties,
       FilterType.UNSPECIFIED,
@@ -38,6 +39,7 @@ class FilterController {
 
     final current = this.read(filterStateProvider).state;
     this.read(filterStateProvider).state = Filter(
+      current.kind,
       current.selectedProperty,
       current.selectableProperties,
       filterType,
@@ -49,6 +51,7 @@ class FilterController {
   void onChangeEqualsFilterValue(String? value) {
     final current = this.read(filterStateProvider).state;
     this.read(filterStateProvider).state = Filter(
+      current.kind,
       current.selectedProperty,
       current.selectableProperties,
       current.filterType,
@@ -65,6 +68,7 @@ class FilterController {
   }) {
     final current = this.read(filterStateProvider).state;
     this.read(filterStateProvider).state = Filter(
+      current.kind,
       current.selectedProperty,
       current.selectableProperties,
       current.filterType,
@@ -82,6 +86,7 @@ class FilterController {
   void onSubmitFilterClear() {
     final current = this.read(filterStateProvider).state;
     this.read(filterStateProvider).state = Filter(
+      current.kind,
       null,
       current.selectableProperties,
       FilterType.UNSPECIFIED,

@@ -93,6 +93,7 @@ main() {
             null,
             filters.Filter(
               null,
+              null,
               [
                 filters.Property('booleanProperty', bool),
                 filters.Property('stringProperty', String),
@@ -116,6 +117,7 @@ main() {
           );
 
           container.read(filters.filterStateProvider).state = filters.Filter(
+            null,
             null,
             [
               filters.Property('booleanProperty', bool),
@@ -147,6 +149,7 @@ main() {
         'Eric',
         'Terry',
         filters.Filter(
+          'Spam',
           null,
           [],
           filters.FilterType.UNSPECIFIED,
@@ -178,6 +181,7 @@ main() {
         'Eric',
         'Terry',
         filters.Filter(
+          'Spam',
           null,
           [],
           filters.FilterType.UNSPECIFIED,
@@ -195,6 +199,7 @@ main() {
         'Eric',
         'Terry',
         filters.Filter(
+          'SpanishInquisition',
           null,
           [
             filters.Property('booleanProperty', bool),
@@ -231,6 +236,7 @@ main() {
         'Eric',
         'Terry',
         filters.Filter(
+          'SpanishInquisition',
           null,
           [
             filters.Property('booleanProperty', bool),
@@ -289,6 +295,7 @@ main() {
         'Eric',
         'Terry',
         filters.Filter(
+          'Spam',
           null,
           [],
           filters.FilterType.UNSPECIFIED,
@@ -320,6 +327,7 @@ main() {
         'Eric',
         'Terry',
         filters.Filter(
+          'Spam',
           null,
           [],
           filters.FilterType.UNSPECIFIED,

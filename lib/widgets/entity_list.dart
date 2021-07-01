@@ -15,35 +15,32 @@ class EntityListWidget extends HookWidget {
     final entityList = useProvider(entities.entityListStateProvider).state;
     final filterState = useProvider(filters.filterStateProvider).state;
     // TODO 後で見た目を整える
-    if (entityList.entities.isEmpty) {
-      return Column(
-        children: [],
-      );
-    } else {
-      return ListView(
-        padding: const EdgeInsets.all(4),
-        children: [
-          ExpansionTile(
-            title: Text('フィルター'),
-            children: [],
-            trailing: IconButton(
-              icon: const Icon(Icons.add_outlined),
-              onPressed: (filterState.filterValue == null)
-                  ? () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return filterWidget.FilterFormWidget();
-                        },
-                      );
-                    }
-                  : null,
-            ),
+
+    return ListView(
+      padding: const EdgeInsets.all(4),
+      children: [
+        ExpansionTile(
+          title: Text('フィルター'),
+          children: [],
+          trailing: IconButton(
+            icon: const Icon(Icons.add_outlined),
+            onPressed: (filterState.filterValue == null)
+                ? () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return filterWidget.FilterFormWidget();
+                      },
+                    );
+                  }
+                : null,
           ),
-          createEntityDataTable(context, entityList),
-        ],
-      );
-    }
+        ),
+        entityList.entities.isNotEmpty
+            ? createEntityDataTable(context, entityList)
+            : SizedBox.shrink(),
+      ],
+    );
   }
 }
 

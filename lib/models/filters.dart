@@ -28,6 +28,7 @@ final defaultRangeFilterValue = RangeFilterValue(
 final filterStateProvider = StateProvider((ref) {
   return Filter(
     null,
+    null,
     <Property>[],
     FilterType.UNSPECIFIED,
     FILTER_UNSELECTABLE,
@@ -191,6 +192,7 @@ class RangeFilterValue extends FilterValue {
 
 @immutable
 class Filter extends Equatable {
+  final String? kind;
   final Property? selectedProperty;
   final List<Property> selectableProperties;
   final FilterType filterType;
@@ -198,6 +200,7 @@ class Filter extends Equatable {
   final FilterValue? filterValue;
 
   Filter(
+    this.kind,
     this.selectedProperty,
     this.selectableProperties,
     this.filterType,
