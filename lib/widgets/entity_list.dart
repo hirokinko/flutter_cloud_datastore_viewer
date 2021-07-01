@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_cloud_datastore_viewer/controllers/filter_controller.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../models/entities.dart' as entities;
 import '../models/filters.dart' as filters;
+import 'filters.dart' as filterWidget;
 
 // TODO text decoration
 const NULL_TEXT = const Text('<NULL>');
@@ -12,6 +14,7 @@ class EntityListWidget extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final entityList = useProvider(entities.entityListStateProvider).state;
+    final filterState = useProvider(filterStateProvider).state;
     // TODO 後で見た目を整える
     if (entityList.entities.isEmpty) {
       return Column(
@@ -21,6 +24,23 @@ class EntityListWidget extends HookWidget {
       return ListView(
         padding: const EdgeInsets.all(4),
         children: [
+          ExpansionTile(
+            title: Text('フィルター'),
+            children: [],
+            trailing: IconButton(
+              icon: const Icon(Icons.add_outlined),
+              onPressed: (filterState.filterValue == null)
+                  ? () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return filterWidget.FilterFormWidget();
+                        },
+                      );
+                    }
+                  : null,
+            ),
+          ),
           createEntityDataTable(context, entityList),
         ],
       );

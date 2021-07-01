@@ -38,7 +38,9 @@ class Property extends Equatable {
   }
 }
 
-abstract class FilterValue extends Equatable {}
+abstract class FilterValue extends Equatable {
+  bool get isValid;
+}
 
 @immutable
 class EqualsFilterValue extends FilterValue {
@@ -70,6 +72,9 @@ class EqualsFilterValue extends FilterValue {
         throw UnimplementedError();
     }
   }
+
+  @override
+  bool get isValid => this.error == null;
 }
 
 @immutable
@@ -165,6 +170,12 @@ class RangeFilterValue extends FilterValue {
       double.tryParse(this.maxValue!) != null &&
       double.tryParse(this.minValue!) != null &&
       double.parse(this.maxValue!) < double.parse(this.minValue!);
+
+  @override
+  bool get isValid =>
+      this.maxValueError == null &&
+      this.minValueError == null &&
+      this.formError == null;
 }
 
 @immutable
@@ -215,4 +226,9 @@ class Filter extends Equatable {
         this.selectableFilterTypes,
         this.filterValue,
       ];
+
+  bool get isValid =>
+      this.selectedPropertyError == null &&
+      this.selectedFilterTypeError == null &&
+      (this.filterValue?.isValid ?? true);
 }

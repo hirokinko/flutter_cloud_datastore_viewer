@@ -1,9 +1,10 @@
-import 'package:flutter_cloud_datastore_viewer/controllers/filter_controller.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:meta/meta.dart';
 
+import '../controllers/filter_controller.dart' as filter_controller;
 import '../models/connection.dart';
 import '../models/entities.dart';
+import '../models/filters.dart' as filters;
 import '../data_access_objects/clouddatastore_dao.dart';
 
 final entitiesControllerProvider =
@@ -56,7 +57,7 @@ class EntitiesController {
       this.read(entityListStateProvider).state = DEFAULT_ENTITY_LIST;
       return;
     }
-    final filter = this.read(filterStateProvider).state;
+    final filter = this.read(filter_controller.filterStateProvider).state;
 
     final newEntityList = await dao.find(
       currentShowing.kind!,
@@ -66,5 +67,33 @@ class EntitiesController {
       filter,
     );
     this.read(entityListStateProvider).state = newEntityList;
+    this.read(filter_controller.filterStateProvider).state = filters.Filter(
+      null,
+      this._createNewSelectableProperties(newEntityList.entities),
+      filters.FilterType.UNSPECIFIED,
+      [filters.FilterType.UNSPECIFIED],
+      null,
+    );
+  }
+
+  List<filters.Property> _createNewSelectableProperties(
+    List<Entity?> entities,
+  ) {
+    final List<filters.Property> newProperties = entities.fold(
+      <filters.Property>{},
+      (Set<filters.Property> acc, Entity? value) {
+        final selectables = (value?.getInnerPropertyEntries(null, true) ?? [])
+            .map((
+              MapEntry<String, Type> entry,
+            ) =>
+                filters.Property(entry.key, entry.value))
+            .toSet();
+
+        acc.addAll(selectables);
+        return acc;
+      },
+    ).toList(growable: false);
+    newProperties.sort((a, b) => a.name.compareTo(b.name));
+    return newProperties;
   }
 }
