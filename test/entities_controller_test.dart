@@ -1,5 +1,4 @@
 import 'package:flutter_cloud_datastore_viewer/controllers/entities_controller.dart';
-import 'package:flutter_cloud_datastore_viewer/controllers/filter_controller.dart';
 import 'package:flutter_cloud_datastore_viewer/models/connection.dart';
 import 'package:flutter_cloud_datastore_viewer/models/entities.dart';
 import 'package:flutter_cloud_datastore_viewer/models/filters.dart' as filters;
@@ -116,7 +115,7 @@ main() {
             null,
           );
 
-          container.read(filterStateProvider).state = filters.Filter(
+          container.read(filters.filterStateProvider).state = filters.Filter(
             null,
             [
               filters.Property('booleanProperty', bool),
@@ -142,8 +141,20 @@ main() {
 
   group('onLoadEntityList', () {
     test('Query to no exists namespace', () async {
-      when(mockedDao.find('Spam', 'spam', 'Eric', 'Terry', null, limit: 50))
-          .thenAnswer((_) async => DEFAULT_ENTITY_LIST);
+      when(mockedDao.find(
+        'Spam',
+        null,
+        'Eric',
+        'Terry',
+        filters.Filter(
+          null,
+          [],
+          filters.FilterType.UNSPECIFIED,
+          [filters.FilterType.UNSPECIFIED],
+          null,
+        ),
+        limit: 50,
+      )).thenAnswer((_) async => DEFAULT_ENTITY_LIST);
 
       container.read(metadataStateProvider).state = CloudDatastoreMetadata(
         [null, 'development'],
@@ -163,17 +174,12 @@ main() {
 
       verifyNever(mockedDao.find(
         'Spam',
-        'spam',
+        null,
         'Eric',
         'Terry',
         filters.Filter(
           null,
-          [
-            filters.Property('booleanProperty', bool),
-            filters.Property('stringProperty', String),
-            filters.Property('integerProperty', int),
-            filters.Property('doubleProperty', double),
-          ],
+          [],
           filters.FilterType.UNSPECIFIED,
           [filters.FilterType.UNSPECIFIED],
           null,
@@ -284,12 +290,7 @@ main() {
         'Terry',
         filters.Filter(
           null,
-          [
-            filters.Property('booleanProperty', bool),
-            filters.Property('stringProperty', String),
-            filters.Property('integerProperty', int),
-            filters.Property('doubleProperty', double),
-          ],
+          [],
           filters.FilterType.UNSPECIFIED,
           [filters.FilterType.UNSPECIFIED],
           null,
@@ -320,12 +321,7 @@ main() {
         'Terry',
         filters.Filter(
           null,
-          [
-            filters.Property('booleanProperty', bool),
-            filters.Property('stringProperty', String),
-            filters.Property('integerProperty', int),
-            filters.Property('doubleProperty', double),
-          ],
+          [],
           filters.FilterType.UNSPECIFIED,
           [filters.FilterType.UNSPECIFIED],
           null,

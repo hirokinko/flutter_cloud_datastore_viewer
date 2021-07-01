@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
+import 'package:riverpod/riverpod.dart';
 
 const FILTER_UNSELECTABLE = [FilterType.UNSPECIFIED];
 const EQUALS_FILTER_ONLY = [FilterType.UNSPECIFIED, FilterType.EQUALS];
@@ -23,6 +24,16 @@ final defaultRangeFilterValue = RangeFilterValue(
   false,
   false,
 );
+
+final filterStateProvider = StateProvider((ref) {
+  return Filter(
+    null,
+    <Property>[],
+    FilterType.UNSPECIFIED,
+    FILTER_UNSELECTABLE,
+    null,
+  );
+});
 
 @immutable
 class Property extends Equatable {

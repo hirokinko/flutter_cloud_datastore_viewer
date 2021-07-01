@@ -1,7 +1,6 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:meta/meta.dart';
 
-import '../controllers/filter_controller.dart' as filter_controller;
 import '../models/connection.dart';
 import '../models/entities.dart';
 import '../models/filters.dart' as filters;
@@ -57,7 +56,7 @@ class EntitiesController {
       this.read(entityListStateProvider).state = DEFAULT_ENTITY_LIST;
       return;
     }
-    final filter = this.read(filter_controller.filterStateProvider).state;
+    final filter = this.read(filters.filterStateProvider).state;
 
     final newEntityList = await dao.find(
       currentShowing.kind!,
@@ -67,7 +66,7 @@ class EntitiesController {
       filter,
     );
     this.read(entityListStateProvider).state = newEntityList;
-    this.read(filter_controller.filterStateProvider).state = filters.Filter(
+    this.read(filters.filterStateProvider).state = filters.Filter(
       null,
       this._createNewSelectableProperties(newEntityList.entities),
       filters.FilterType.UNSPECIFIED,

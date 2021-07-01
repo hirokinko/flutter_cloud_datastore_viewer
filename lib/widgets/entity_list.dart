@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_cloud_datastore_viewer/controllers/filter_controller.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -14,7 +13,7 @@ class EntityListWidget extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final entityList = useProvider(entities.entityListStateProvider).state;
-    final filterState = useProvider(filterStateProvider).state;
+    final filterState = useProvider(filters.filterStateProvider).state;
     // TODO 後で見た目を整える
     if (entityList.entities.isEmpty) {
       return Column(
