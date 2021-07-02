@@ -52,6 +52,8 @@ class Property extends Equatable {
 
 abstract class FilterValue extends Equatable {
   bool get isValid;
+
+  String? toExpression(String? propertyName);
 }
 
 @immutable
@@ -87,6 +89,13 @@ class EqualsFilterValue extends FilterValue {
 
   @override
   bool get isValid => this.error == null;
+
+  @override
+  String? toExpression(String? propertyName) {
+    return propertyName != null && this.value != null
+        ? '$propertyName ＝ ${this.value}'
+        : null;
+  }
 }
 
 @immutable
@@ -188,6 +197,29 @@ class RangeFilterValue extends FilterValue {
       this.maxValueError == null &&
       this.minValueError == null &&
       this.formError == null;
+
+  @override
+  String? toExpression(String? propertyName) {
+    late final String minExpression;
+    late final String maxExpression;
+    if (propertyName == null ||
+        (this.minValue == null && this.maxValue == null)) {
+      return null;
+    }
+    if (this.minValue != null) {
+      minExpression =
+          this.containsMinValue ? '${this.minValue} ≦' : '${this.minValue} ＜';
+    } else {
+      minExpression = '';
+    }
+    if (this.maxValue != null) {
+      maxExpression =
+          this.containsMaxValue ? '≦ ${this.maxValue}' : '＜ ${this.maxValue}';
+    } else {
+      maxExpression = '';
+    }
+    return '$minExpression $propertyName $maxExpression'.trim();
+  }
 }
 
 @immutable
@@ -245,4 +277,7 @@ class Filter extends Equatable {
       this.selectedPropertyError == null &&
       this.selectedFilterTypeError == null &&
       (this.filterValue?.isValid ?? true);
+
+  String? get expression =>
+      this.filterValue?.toExpression(this.selectedProperty?.name);
 }

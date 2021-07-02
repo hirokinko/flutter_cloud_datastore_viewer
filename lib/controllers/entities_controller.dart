@@ -73,11 +73,11 @@ class EntitiesController {
 
     this.read(filters.filterStateProvider).state = filters.Filter(
       currentShowing.kind,
-      null,
+      filter.selectedProperty,
       newSelectableProperties,
-      filters.FilterType.UNSPECIFIED,
-      [filters.FilterType.UNSPECIFIED],
-      null,
+      filter.filterType,
+      filter.selectableFilterTypes,
+      filter.filterValue,
     );
   }
 

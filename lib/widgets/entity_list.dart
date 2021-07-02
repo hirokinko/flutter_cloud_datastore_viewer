@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_cloud_datastore_viewer/controllers/entities_controller.dart';
+import 'package:flutter_cloud_datastore_viewer/controllers/filter_controller.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -19,23 +21,7 @@ class EntityListWidget extends HookWidget {
     return ListView(
       padding: const EdgeInsets.all(4),
       children: [
-        ExpansionTile(
-          title: Text('フィルター'),
-          children: [],
-          trailing: IconButton(
-            icon: const Icon(Icons.add_outlined),
-            onPressed: (filterState.filterValue == null)
-                ? () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return filterWidget.FilterFormWidget();
-                      },
-                    );
-                  }
-                : null,
-          ),
-        ),
+        createFilterListTile(context, filterState),
         entityList.entities.isNotEmpty
             ? createEntityDataTable(context, entityList)
             : SizedBox.shrink(),
@@ -103,6 +89,52 @@ Widget createEntityDataTable(
         .map((String c) => DataColumn(label: Text(c)))
         .toList(growable: false),
     source: _DataSource(context, rows),
+  );
+}
+
+Widget createFilterListTile(BuildContext context, filters.Filter filter) {
+  final filterChips = filter.expression != null
+      ? <Widget>[
+          InputChip(
+            avatar: Icon(Icons.filter_list_outlined),
+            label: Text(filter.expression!),
+            onPressed: () => showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return filterWidget.FilterFormWidget();
+              },
+            ),
+            onDeleted: () async {
+              context.read(filterControllerProvider).onSubmitFilterClear();
+              await context.read(entitiesControllerProvider).onLoadEntityList(
+                    null,
+                    null,
+                  );
+            },
+          )
+        ]
+      : <Widget>[];
+
+  return ListTile(
+    leading: Text('フィルター'),
+    title: Wrap(
+      spacing: 8.0,
+      runSpacing: 4.0,
+      children: filterChips,
+    ),
+    trailing: IconButton(
+      icon: const Icon(Icons.add_outlined),
+      onPressed: (filter.filterValue == null)
+          ? () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return filterWidget.FilterFormWidget();
+                },
+              );
+            }
+          : null,
+    ),
   );
 }
 
