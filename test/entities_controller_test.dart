@@ -104,6 +104,7 @@ main() {
               [filters.FilterType.UNSPECIFIED],
               null,
             ),
+            null,
             limit: 50,
           )).thenAnswer((_) async => EntityList([], 50, null, null, null));
 
@@ -156,6 +157,7 @@ main() {
           [filters.FilterType.UNSPECIFIED],
           null,
         ),
+        null,
         limit: 50,
       )).thenAnswer((_) async => DEFAULT_ENTITY_LIST);
 
@@ -188,6 +190,7 @@ main() {
           [filters.FilterType.UNSPECIFIED],
           null,
         ),
+        null,
         limit: 50,
       ));
     });
@@ -211,6 +214,7 @@ main() {
           [filters.FilterType.UNSPECIFIED],
           null,
         ),
+        null,
         limit: 50,
       )).thenAnswer((_) async => DEFAULT_ENTITY_LIST);
 
@@ -248,6 +252,7 @@ main() {
           [filters.FilterType.UNSPECIFIED],
           null,
         ),
+        null,
         limit: 50,
       ));
     });
@@ -258,6 +263,7 @@ main() {
         null,
         'Eric',
         'Terry',
+        any,
         any,
         limit: 50,
       )).thenAnswer((_) async => DEFAULT_ENTITY_LIST);
@@ -284,6 +290,7 @@ main() {
         'Eric',
         'Terry',
         any,
+        any,
         limit: 50,
       ));
     });
@@ -302,6 +309,7 @@ main() {
           [filters.FilterType.UNSPECIFIED],
           null,
         ),
+        null,
         limit: 50,
       )).thenAnswer((_) async => EntityList([], 50, 'Eric', 'Graham', 'Terry'));
 
@@ -334,6 +342,7 @@ main() {
           [filters.FilterType.UNSPECIFIED],
           null,
         ),
+        null,
         limit: 50,
       )).called(1);
     });

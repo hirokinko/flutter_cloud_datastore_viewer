@@ -72,6 +72,7 @@ class MockCloudDatastoreDao extends _i1.Mock implements _i5.CloudDatastoreDao {
           String? startCursor,
           String? previousPageStartCursor,
           _i7.Filter? filter,
+          _i4.SortOrder? order,
           {int? limit = 50}) =>
       (super.noSuchMethod(
               Invocation.method(#find, [
@@ -79,7 +80,8 @@ class MockCloudDatastoreDao extends _i1.Mock implements _i5.CloudDatastoreDao {
                 namespace,
                 startCursor,
                 previousPageStartCursor,
-                filter
+                filter,
+                order
               ], {
                 #limit: limit
               }),
