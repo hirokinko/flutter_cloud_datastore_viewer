@@ -143,7 +143,8 @@ class CloudDatastoreDao {
     String? namespace,
     String? startCursor,
     String? previousPageStartCursor,
-    filters.Filter? filter, {
+    filters.Filter? filter,
+    models.SortOrder? order, {
     int limit = 50,
   }) async {
     // TODO filter
@@ -154,6 +155,7 @@ class CloudDatastoreDao {
       startCursor,
       limit: limit,
       filter: filter,
+      order: order,
     );
 
     final entities = response.batch?.entityResults
@@ -178,6 +180,7 @@ class CloudDatastoreDao {
     String? namespace,
     String? startCursor, {
     filters.Filter? filter,
+    models.SortOrder? order,
     int limit = 50,
   }) async {
     final partitionId = datastore_api.PartitionId()
@@ -198,6 +201,20 @@ class CloudDatastoreDao {
           filter.filterValue!,
         );
     }
+    if (order != null &&
+        (filter == null ||
+            (filter.selectedProperty == null) ||
+            (filter.selectedProperty != null &&
+                order.property == filter.selectedProperty?.name))) {
+      query
+        ..order = [
+          (datastore_api.PropertyOrder()
+            ..property =
+                (datastore_api.PropertyReference()..name = order.property)
+            ..direction = order.ascending ? 'ASCENDING' : 'DESCENDING'),
+        ];
+    }
+
     if (startCursor != null) {
       query..startCursor = startCursor;
     }
