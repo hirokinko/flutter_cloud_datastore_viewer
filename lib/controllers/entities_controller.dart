@@ -57,6 +57,7 @@ class EntitiesController {
       return;
     }
     final filter = this.read(filters.filterStateProvider).state;
+    final order = this.read(sortOrderStateProvider).state;
 
     final newEntityList = await dao.find(
       currentShowing.kind!,
@@ -64,6 +65,7 @@ class EntitiesController {
       startCursor,
       previousPageStartCursor,
       filter,
+      order,
     );
     this.read(entityListStateProvider).state = newEntityList;
     final newSelectableProperties =
@@ -100,5 +102,16 @@ class EntitiesController {
     ).toList(growable: false);
     newProperties.sort((a, b) => a.name.compareTo(b.name));
     return newProperties;
+  }
+
+  void onChangedSortOrder(String propertyName, bool ascending) {
+    final currentFilter = this.read(filters.filterStateProvider).state;
+    if (propertyName != currentFilter.selectedProperty?.name) {
+      return;
+    }
+    this.read(sortOrderStateProvider).state = SortOrder(
+      propertyName,
+      ascending: ascending,
+    );
   }
 }
