@@ -16,6 +16,7 @@ class EntityListWidget extends HookWidget {
   Widget build(BuildContext context) {
     final entityList = useProvider(entities.entityListStateProvider).state;
     final filterState = useProvider(filters.filterStateProvider).state;
+    final sortOrderState = useProvider(entities.sortOrderStateProvider).state;
 
     // TODO 後で見た目を整える
 
@@ -24,7 +25,12 @@ class EntityListWidget extends HookWidget {
       children: [
         createFilterListTile(context, filterState),
         entityList.entities.isNotEmpty
-            ? createEntityDataTable(context, entityList)
+            ? createEntityDataTable(
+                context,
+                entityList,
+                filterState,
+                sortOrderState,
+              )
             : SizedBox.shrink(),
       ],
     );
@@ -62,6 +68,8 @@ class _DataSource extends DataTableSource {
 Widget createEntityDataTable(
   BuildContext context,
   entities.EntityList entityList,
+  filters.Filter filter,
+  entities.SortOrder? order,
 ) {
   final tempTable = entityList.entities.fold(
     TempTable({}, []),
@@ -87,13 +95,16 @@ Widget createEntityDataTable(
   }).toList(growable: false);
 
   final table = DataTable(
-    columns: columnNames
-        .map((c) => DataColumn(
-                label: Text(
-              c,
-              style: TextStyle(fontWeight: FontWeight.bold),
-            )))
-        .toList(growable: false),
+    columns: columnNames.map(
+      (columnName) {
+        return DataColumn(
+          label: Text(
+            columnName,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        );
+      },
+    ).toList(growable: false),
     rows: rows,
   );
 
@@ -215,4 +226,12 @@ DataCell createDateTimeSinglePropertyDataCell(
   entities.SingleProperty property,
 ) {
   return DataCell(Text((property.value as DateTime).toIso8601String()));
+}
+
+Future<void> onSortCallback(
+    BuildContext context, String columnName, bool ascending) async {
+  context
+      .read(entitiesControllerProvider)
+      .onChangedSortOrder(columnName, !ascending);
+  await context.read(entitiesControllerProvider).onLoadEntityList(null, null);
 }
