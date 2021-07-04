@@ -16,6 +16,7 @@ class EntityListWidget extends HookWidget {
   Widget build(BuildContext context) {
     final entityList = useProvider(entities.entityListStateProvider).state;
     final filterState = useProvider(filters.filterStateProvider).state;
+
     // TODO 後で見た目を整える
 
     return ListView(
@@ -59,7 +60,9 @@ class _DataSource extends DataTableSource {
 }
 
 Widget createEntityDataTable(
-    BuildContext context, entities.EntityList entityList) {
+  BuildContext context,
+  entities.EntityList entityList,
+) {
   final tempTable = entityList.entities.fold(
     TempTable({}, []),
     (TempTable acc, entities.Entity? e) {
@@ -83,12 +86,23 @@ Widget createEntityDataTable(
     );
   }).toList(growable: false);
 
-  return PaginatedDataTable(
-    rowsPerPage: entityList.entities.length,
+  final table = DataTable(
     columns: columnNames
-        .map((String c) => DataColumn(label: Text(c)))
+        .map((c) => DataColumn(
+                label: Text(
+              c,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            )))
         .toList(growable: false),
-    source: _DataSource(context, rows),
+    rows: rows,
+  );
+
+  return SingleChildScrollView(
+    scrollDirection: Axis.vertical,
+    child: SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: table,
+    ),
   );
 }
 
