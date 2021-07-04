@@ -2,12 +2,13 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:riverpod/riverpod.dart';
 
-const DEFAULT_LIMIT = 50;
+// FIXME テーブルのフッタを作った時にリミットを変えられるようにする
+const DEFAULT_LIMIT = 0;
 const DUMMY_EMPTY_KEY = const Key('', null, '', null, null, []);
 const DEFAULT_ENTITY_LIST = EntityList([], DEFAULT_LIMIT, null, null, null);
 
-final entityListStateProvider =
-    StateProvider.autoDispose((ref) => DEFAULT_ENTITY_LIST);
+final entityListStateProvider = StateProvider((ref) => DEFAULT_ENTITY_LIST);
+final sortOrderStateProvider = StateProvider<SortOrder?>((ref) => null);
 
 @immutable
 abstract class Property<T> extends Equatable with Comparable<dynamic> {
@@ -198,4 +199,18 @@ class EntityList extends Equatable {
       ];
 
   String? get isInvalidLimit => this.limit < 0 ? "件数は正の整数を入力してください" : null;
+}
+
+@immutable
+class SortOrder extends Equatable {
+  final String property;
+  final bool ascending;
+
+  const SortOrder(
+    this.property, {
+    this.ascending = true,
+  });
+
+  @override
+  List<Object?> get props => [this.property, this.ascending];
 }
