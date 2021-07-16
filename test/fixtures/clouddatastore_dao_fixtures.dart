@@ -73,12 +73,14 @@ final toPropertyFilterFixtures = [
     bool,
     "True",
     {
-      "property": {
-        "name": "boolProperty",
-      },
-      "op": "EQUAL",
-      "value": {
-        "booleanValue": true,
+      "propertyFilter": {
+        "property": {
+          "name": "boolProperty",
+        },
+        "op": "EQUAL",
+        "value": {
+          "booleanValue": true,
+        },
       },
     },
   ),
@@ -88,12 +90,14 @@ final toPropertyFilterFixtures = [
     bool,
     "False",
     {
-      "property": {
-        "name": "boolProperty",
-      },
-      "op": "EQUAL",
-      "value": {
-        "booleanValue": false,
+      "propertyFilter": {
+        "property": {
+          "name": "boolProperty",
+        },
+        "op": "EQUAL",
+        "value": {
+          "booleanValue": false,
+        },
       },
     },
   ),
@@ -103,12 +107,14 @@ final toPropertyFilterFixtures = [
     int,
     "1",
     {
-      "property": {
-        "name": "integerProperty",
-      },
-      "op": "EQUAL",
-      "value": {
-        "integerValue": "1",
+      "propertyFilter": {
+        "property": {
+          "name": "integerProperty",
+        },
+        "op": "EQUAL",
+        "value": {
+          "integerValue": "1",
+        },
       },
     },
   ),
@@ -118,12 +124,14 @@ final toPropertyFilterFixtures = [
     int,
     "-1",
     {
-      "property": {
-        "name": "integerProperty",
-      },
-      "op": "EQUAL",
-      "value": {
-        "integerValue": "-1",
+      "propertyFilter": {
+        "property": {
+          "name": "integerProperty",
+        },
+        "op": "EQUAL",
+        "value": {
+          "integerValue": "-1",
+        },
       },
     },
   ),
@@ -133,12 +141,14 @@ final toPropertyFilterFixtures = [
     double,
     "1.0",
     {
-      "property": {
-        "name": "doubleProperty",
-      },
-      "op": "EQUAL",
-      "value": {
-        "doubleValue": 1.0,
+      "propertyFilter": {
+        "property": {
+          "name": "doubleProperty",
+        },
+        "op": "EQUAL",
+        "value": {
+          "doubleValue": 1.0,
+        },
       },
     },
   ),
@@ -148,12 +158,14 @@ final toPropertyFilterFixtures = [
     double,
     "-1.0",
     {
-      "property": {
-        "name": "doubleProperty",
-      },
-      "op": "EQUAL",
-      "value": {
-        "doubleValue": -1.0,
+      "propertyFilter": {
+        "property": {
+          "name": "doubleProperty",
+        },
+        "op": "EQUAL",
+        "value": {
+          "doubleValue": -1.0,
+        },
       },
     },
   ),
@@ -163,12 +175,14 @@ final toPropertyFilterFixtures = [
     double,
     "1.0E03",
     {
-      "property": {
-        "name": "doubleProperty",
-      },
-      "op": "EQUAL",
-      "value": {
-        "doubleValue": 1.0E03,
+      "propertyFilter": {
+        "property": {
+          "name": "doubleProperty",
+        },
+        "op": "EQUAL",
+        "value": {
+          "doubleValue": 1.0E03,
+        },
       },
     },
   ),
@@ -178,13 +192,15 @@ final toPropertyFilterFixtures = [
     double,
     "1.0E-03",
     {
-      "property": {
-        "name": "doubleProperty",
-      },
-      "op": "EQUAL",
-      "value": {
-        "doubleValue": 1.0E-03,
-      },
+      "propertyFilter": {
+        "property": {
+          "name": "doubleProperty",
+        },
+        "op": "EQUAL",
+        "value": {
+          "doubleValue": 1.0E-03,
+        },
+      }
     },
   ),
   ToPropertyFilterFixture(
@@ -193,13 +209,15 @@ final toPropertyFilterFixtures = [
     String,
     "",
     {
-      "property": {
-        "name": "stringProperty",
-      },
-      "op": "EQUAL",
-      "value": {
-        "stringValue": "",
-      },
+      "propertyFilter": {
+        "property": {
+          "name": "stringProperty",
+        },
+        "op": "EQUAL",
+        "value": {
+          "stringValue": "",
+        },
+      }
     },
   ),
   ToPropertyFilterFixture(
@@ -208,12 +226,14 @@ final toPropertyFilterFixtures = [
     String,
     "Spam",
     {
-      "property": {
-        "name": "stringProperty",
-      },
-      "op": "EQUAL",
-      "value": {
-        "stringValue": "Spam",
+      "propertyFilter": {
+        "property": {
+          "name": "stringProperty",
+        },
+        "op": "EQUAL",
+        "value": {
+          "stringValue": "Spam",
+        },
       },
     },
   ),
@@ -223,12 +243,14 @@ final toPropertyFilterFixtures = [
     DateTime,
     "2014-10-02T15:01:23.045123456Z",
     {
-      "property": {
-        "name": "timestampProperty",
-      },
-      "op": "EQUAL",
-      "value": {
-        "timestampValue": "2014-10-02T15:01:23.045123456Z",
+      "propertyFilter": {
+        "property": {
+          "name": "timestampProperty",
+        },
+        "op": "EQUAL",
+        "value": {
+          "timestampValue": "2014-10-02T15:01:23.045123456Z",
+        },
       }
     },
   ),
@@ -243,27 +265,29 @@ final toRangeFilterFixtures = [
     false,
     false,
     {
-      "op": "AND",
-      "filters": [
-        {
-          "propertyFilter": {
-            "property": {
-              "name": "integerProperty",
-            },
-            "op": "LESS_THAN",
-            "value": {"integerValue": "1"}
-          }
-        },
-        {
-          "propertyFilter": {
-            "property": {
-              "name": "integerProperty",
-            },
-            "op": "GREATER_THAN",
-            "value": {"integerValue": "0"}
-          }
-        },
-      ],
+      "compositeFilter": {
+        "op": "AND",
+        "filters": [
+          {
+            "propertyFilter": {
+              "property": {
+                "name": "integerProperty",
+              },
+              "op": "GREATER_THAN",
+              "value": {"integerValue": "0"}
+            }
+          },
+          {
+            "propertyFilter": {
+              "property": {
+                "name": "integerProperty",
+              },
+              "op": "LESS_THAN",
+              "value": {"integerValue": "1"}
+            }
+          },
+        ],
+      },
     },
   ),
   ToRangeFilterFixture(
@@ -274,27 +298,29 @@ final toRangeFilterFixtures = [
     true,
     true,
     {
-      "op": "AND",
-      "filters": [
-        {
-          "propertyFilter": {
-            "property": {
-              "name": "integerProperty",
-            },
-            "op": "LESS_THAN_OR_EQUAL",
-            "value": {"integerValue": "1"}
-          }
-        },
-        {
-          "propertyFilter": {
-            "property": {
-              "name": "integerProperty",
-            },
-            "op": "GREATER_THAN_OR_EQUAL",
-            "value": {"integerValue": "0"}
-          }
-        },
-      ],
+      "compositeFilter": {
+        "op": "AND",
+        "filters": [
+          {
+            "propertyFilter": {
+              "property": {
+                "name": "integerProperty",
+              },
+              "op": "GREATER_THAN_OR_EQUAL",
+              "value": {"integerValue": "0"}
+            }
+          },
+          {
+            "propertyFilter": {
+              "property": {
+                "name": "integerProperty",
+              },
+              "op": "LESS_THAN_OR_EQUAL",
+              "value": {"integerValue": "1"}
+            }
+          },
+        ],
+      },
     },
   ),
   ToRangeFilterFixture(
@@ -305,27 +331,29 @@ final toRangeFilterFixtures = [
     false,
     false,
     {
-      "op": "AND",
-      "filters": [
-        {
-          "propertyFilter": {
-            "property": {
-              "name": "doubleProperty",
-            },
-            "op": "LESS_THAN",
-            "value": {"doubleValue": 1.0}
-          }
-        },
-        {
-          "propertyFilter": {
-            "property": {
-              "name": "doubleProperty",
-            },
-            "op": "GREATER_THAN",
-            "value": {"doubleValue": 0.0}
-          }
-        },
-      ],
+      "compositeFilter": {
+        "op": "AND",
+        "filters": [
+          {
+            "propertyFilter": {
+              "property": {
+                "name": "doubleProperty",
+              },
+              "op": "GREATER_THAN",
+              "value": {"doubleValue": 0.0}
+            }
+          },
+          {
+            "propertyFilter": {
+              "property": {
+                "name": "doubleProperty",
+              },
+              "op": "LESS_THAN",
+              "value": {"doubleValue": 1.0}
+            }
+          },
+        ],
+      },
     },
   ),
   ToRangeFilterFixture(
@@ -336,27 +364,29 @@ final toRangeFilterFixtures = [
     true,
     true,
     {
-      "op": "AND",
-      "filters": [
-        {
-          "propertyFilter": {
-            "property": {
-              "name": "doubleProperty",
-            },
-            "op": "LESS_THAN_OR_EQUAL",
-            "value": {"doubleValue": 1.0}
-          }
-        },
-        {
-          "propertyFilter": {
-            "property": {
-              "name": "doubleProperty",
-            },
-            "op": "GREATER_THAN_OR_EQUAL",
-            "value": {"doubleValue": 0.0}
-          }
-        },
-      ],
+      "compositeFilter": {
+        "op": "AND",
+        "filters": [
+          {
+            "propertyFilter": {
+              "property": {
+                "name": "doubleProperty",
+              },
+              "op": "GREATER_THAN_OR_EQUAL",
+              "value": {"doubleValue": 0.0}
+            }
+          },
+          {
+            "propertyFilter": {
+              "property": {
+                "name": "doubleProperty",
+              },
+              "op": "LESS_THAN_OR_EQUAL",
+              "value": {"doubleValue": 1.0}
+            }
+          },
+        ],
+      },
     },
   ),
   ToRangeFilterFixture(
@@ -367,27 +397,29 @@ final toRangeFilterFixtures = [
     false,
     false,
     {
-      "op": "AND",
-      "filters": [
-        {
-          "propertyFilter": {
-            "property": {
-              "name": "stringProperty",
-            },
-            "op": "LESS_THAN",
-            "value": {"stringValue": "ん"}
-          }
-        },
-        {
-          "propertyFilter": {
-            "property": {
-              "name": "stringProperty",
-            },
-            "op": "GREATER_THAN",
-            "value": {"stringValue": "あ"}
-          }
-        },
-      ],
+      "compositeFilter": {
+        "op": "AND",
+        "filters": [
+          {
+            "propertyFilter": {
+              "property": {
+                "name": "stringProperty",
+              },
+              "op": "GREATER_THAN",
+              "value": {"stringValue": "あ"}
+            }
+          },
+          {
+            "propertyFilter": {
+              "property": {
+                "name": "stringProperty",
+              },
+              "op": "LESS_THAN",
+              "value": {"stringValue": "ん"}
+            }
+          },
+        ],
+      },
     },
   ),
   ToRangeFilterFixture(
@@ -398,27 +430,29 @@ final toRangeFilterFixtures = [
     true,
     true,
     {
-      "op": "AND",
-      "filters": [
-        {
-          "propertyFilter": {
-            "property": {
-              "name": "stringProperty",
-            },
-            "op": "LESS_THAN_OR_EQUAL",
-            "value": {"stringValue": "ん"}
-          }
-        },
-        {
-          "propertyFilter": {
-            "property": {
-              "name": "stringProperty",
-            },
-            "op": "GREATER_THAN_OR_EQUAL",
-            "value": {"stringValue": "あ"}
-          }
-        },
-      ],
+      "compositeFilter": {
+        "op": "AND",
+        "filters": [
+          {
+            "propertyFilter": {
+              "property": {
+                "name": "stringProperty",
+              },
+              "op": "GREATER_THAN_OR_EQUAL",
+              "value": {"stringValue": "あ"}
+            }
+          },
+          {
+            "propertyFilter": {
+              "property": {
+                "name": "stringProperty",
+              },
+              "op": "LESS_THAN_OR_EQUAL",
+              "value": {"stringValue": "ん"}
+            }
+          },
+        ],
+      },
     },
   ),
 ];

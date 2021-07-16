@@ -31,69 +31,6 @@ final datastoreDaoProvider = Provider<Future<CloudDatastoreDao?>>((ref) async {
   return CloudDatastoreDao(datastoreApi, currentConnection.projectId);
 });
 
-class CloudDatastoreUtils {
-  static datastore_api.Value toValue(Type type, String? value) {
-    if (value == null) {
-      return datastore_api.Value()..nullValue = "NULL_VALUE";
-    }
-    switch (type) {
-      case bool:
-        return datastore_api.Value()
-          ..booleanValue = value.toLowerCase() == 'true';
-      case int:
-        return datastore_api.Value()..integerValue = value;
-      case double:
-        return datastore_api.Value()..doubleValue = double.parse(value);
-      case String:
-        return datastore_api.Value()..stringValue = value;
-      case DateTime:
-        return datastore_api.Value()..timestampValue = value;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  static datastore_api.PropertyFilter toPropertyFilter(
-    String name,
-    String op,
-    Type type,
-    String? value,
-  ) {
-    return datastore_api.PropertyFilter()
-      ..property = (datastore_api.PropertyReference()..name = name)
-      ..op = op
-      ..value = CloudDatastoreUtils.toValue(type, value);
-  }
-
-  static datastore_api.CompositeFilter toRangeFilter(
-    String name,
-    Type type,
-    String maxValue,
-    String minValue, {
-    bool containsMaxValue: false,
-    bool containsMinValue: false,
-  }) {
-    return datastore_api.CompositeFilter()
-      ..op = "AND"
-      ..filters = [
-        datastore_api.Filter()
-          ..propertyFilter = CloudDatastoreUtils.toPropertyFilter(
-            name,
-            "LESS_THAN" + (containsMaxValue ? "_OR_EQUAL" : ""),
-            type,
-            maxValue,
-          ),
-        datastore_api.Filter()
-          ..propertyFilter = CloudDatastoreUtils.toPropertyFilter(
-            name,
-            "GREATER_THAN" + (containsMinValue ? "_OR_EQUAL" : ""),
-            type,
-            minValue,
-          ),
-      ];
-  }
-}
-
 class CloudDatastoreDao {
   datastore_api.DatastoreApi client;
   String projectId;
@@ -195,7 +132,7 @@ class CloudDatastoreDao {
         filter.selectedProperty != null &&
         filter.filterValue != null) {
       query
-        ..filter = this._toFilter(
+        ..filter = this.createFilter(
           filter.selectedProperty!,
           filter.filterType,
           filter.filterValue!,
@@ -331,20 +268,20 @@ class CloudDatastoreDao {
         : null;
   }
 
-  datastore_api.Filter _toFilter(
+  datastore_api.Filter createFilter(
     filters.Property property,
     filters.FilterType filterType,
     filters.FilterValue value,
   ) {
     switch (filterType) {
       case filters.FilterType.EQUALS:
-        return this._toPropertyFilter(
+        return this.toFilter(
           property.name,
           property.type,
-          value as filters.EqualsFilterValue,
+          (value as filters.EqualsFilterValue).value,
         );
       case filters.FilterType.RANGE:
-        return this._toCompositeFilter(
+        return this.toCompositeFilter(
           property.name,
           property.type,
           value as filters.RangeFilterValue,
@@ -354,35 +291,64 @@ class CloudDatastoreDao {
     }
   }
 
-  datastore_api.Filter _toPropertyFilter(
+  datastore_api.Filter toFilter(
     String name,
     Type type,
-    filters.EqualsFilterValue value,
-  ) {
-    datastore_api.PropertyFilter propertyFilter =
-        CloudDatastoreUtils.toPropertyFilter(
-      name,
-      "EQUAL",
-      type,
-      value.value,
-    );
+    String? value, {
+    String op: 'EQUAL',
+  }) {
+    final propertyReference = datastore_api.PropertyReference()..name = name;
+    final propertyFilter = datastore_api.PropertyFilter()
+      ..property = propertyReference
+      ..op = op
+      ..value = this.toDatastoreValue(type, value);
+
     return datastore_api.Filter()..propertyFilter = propertyFilter;
   }
 
-  datastore_api.Filter _toCompositeFilter(
+  datastore_api.Filter toCompositeFilter(
     String name,
     Type type,
     filters.RangeFilterValue value,
   ) {
-    datastore_api.CompositeFilter compositeFilter =
-        CloudDatastoreUtils.toRangeFilter(
+    final minPropertyFilter = this.toFilter(
       name,
       type,
-      value.maxValue!,
-      value.minValue!,
-      containsMaxValue: value.containsMaxValue,
-      containsMinValue: value.containsMinValue,
+      value.minValue,
+      op: 'GREATER_THAN' + (value.containsMinValue ? '_OR_EQUAL' : ''),
     );
+    final maxPropertyFilter = this.toFilter(
+      name,
+      type,
+      value.maxValue,
+      op: 'LESS_THAN' + (value.containsMaxValue ? '_OR_EQUAL' : ''),
+    );
+
+    final compositeFilter = datastore_api.CompositeFilter()
+      ..op = 'AND'
+      ..filters = [minPropertyFilter, maxPropertyFilter];
+
     return datastore_api.Filter()..compositeFilter = compositeFilter;
+  }
+
+  datastore_api.Value toDatastoreValue(Type type, String? value) {
+    if (value == null) {
+      return datastore_api.Value()..nullValue = "NULL_VALUE";
+    }
+    switch (type) {
+      case bool:
+        return datastore_api.Value()
+          ..booleanValue = value.toLowerCase() == 'true';
+      case int:
+        return datastore_api.Value()..integerValue = value;
+      case double:
+        return datastore_api.Value()..doubleValue = double.parse(value);
+      case String:
+        return datastore_api.Value()..stringValue = value;
+      case DateTime:
+        return datastore_api.Value()..timestampValue = value;
+      default:
+        throw UnimplementedError();
+    }
   }
 }
