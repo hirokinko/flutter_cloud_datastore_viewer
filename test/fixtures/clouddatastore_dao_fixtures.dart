@@ -14,16 +14,14 @@ class ToValueTestFixture<T> {
 
 @immutable
 class ToPropertyFilterFixture {
-  final String name;
+  final filters.Property property;
   final String op;
-  final Type type;
   final String? value;
   final Map<String, dynamic> expectedPropertyFilter;
 
   ToPropertyFilterFixture(
-    this.name,
+    this.property,
     this.op,
-    this.type,
     this.value,
     this.expectedPropertyFilter,
   );
@@ -31,8 +29,7 @@ class ToPropertyFilterFixture {
 
 @immutable
 class ToRangeFilterFixture {
-  final String name;
-  final Type type;
+  final filters.Property property;
   final String maxValue;
   final String minValue;
   final bool containsMax;
@@ -40,8 +37,7 @@ class ToRangeFilterFixture {
   final Map<String, dynamic> expectedPropertyFilter;
 
   ToRangeFilterFixture(
-    this.name,
-    this.type,
+    this.property,
     this.maxValue,
     this.minValue,
     this.containsMax,
@@ -91,9 +87,8 @@ final toValueTestFixtures = [
 
 final toPropertyFilterFixtures = [
   ToPropertyFilterFixture(
-    "boolProperty",
+    filters.Property('boolProperty', bool),
     "EQUAL",
-    bool,
     "True",
     {
       "propertyFilter": {
@@ -108,9 +103,8 @@ final toPropertyFilterFixtures = [
     },
   ),
   ToPropertyFilterFixture(
-    "boolProperty",
+    filters.Property('boolProperty', bool),
     "EQUAL",
-    bool,
     "False",
     {
       "propertyFilter": {
@@ -125,9 +119,8 @@ final toPropertyFilterFixtures = [
     },
   ),
   ToPropertyFilterFixture(
-    "integerProperty",
+    filters.Property('integerProperty', int),
     "EQUAL",
-    int,
     "1",
     {
       "propertyFilter": {
@@ -142,9 +135,8 @@ final toPropertyFilterFixtures = [
     },
   ),
   ToPropertyFilterFixture(
-    "integerProperty",
+    filters.Property('integerProperty', int),
     "EQUAL",
-    int,
     "-1",
     {
       "propertyFilter": {
@@ -159,9 +151,8 @@ final toPropertyFilterFixtures = [
     },
   ),
   ToPropertyFilterFixture(
-    "doubleProperty",
+    filters.Property('doubleProperty', double),
     "EQUAL",
-    double,
     "1.0",
     {
       "propertyFilter": {
@@ -176,9 +167,8 @@ final toPropertyFilterFixtures = [
     },
   ),
   ToPropertyFilterFixture(
-    "doubleProperty",
+    filters.Property('doubleProperty', double),
     "EQUAL",
-    double,
     "-1.0",
     {
       "propertyFilter": {
@@ -193,9 +183,8 @@ final toPropertyFilterFixtures = [
     },
   ),
   ToPropertyFilterFixture(
-    "doubleProperty",
+    filters.Property('doubleProperty', double),
     "EQUAL",
-    double,
     "1.0E03",
     {
       "propertyFilter": {
@@ -210,9 +199,8 @@ final toPropertyFilterFixtures = [
     },
   ),
   ToPropertyFilterFixture(
-    "doubleProperty",
+    filters.Property('doubleProperty', double),
     "EQUAL",
-    double,
     "1.0E-03",
     {
       "propertyFilter": {
@@ -227,9 +215,8 @@ final toPropertyFilterFixtures = [
     },
   ),
   ToPropertyFilterFixture(
-    "stringProperty",
+    filters.Property('stringProperty', String),
     "EQUAL",
-    String,
     "",
     {
       "propertyFilter": {
@@ -244,9 +231,8 @@ final toPropertyFilterFixtures = [
     },
   ),
   ToPropertyFilterFixture(
-    "stringProperty",
+    filters.Property('stringProperty', String),
     "EQUAL",
-    String,
     "Spam",
     {
       "propertyFilter": {
@@ -261,9 +247,8 @@ final toPropertyFilterFixtures = [
     },
   ),
   ToPropertyFilterFixture(
-    "timestampProperty",
+    filters.Property('timestampProperty', DateTime),
     "EQUAL",
-    DateTime,
     "2014-10-02T15:01:23.045123456Z",
     {
       "propertyFilter": {
@@ -281,8 +266,7 @@ final toPropertyFilterFixtures = [
 
 final toRangeFilterFixtures = [
   ToRangeFilterFixture(
-    "integerProperty",
-    int,
+    filters.Property("integerProperty", int),
     "1",
     "0",
     false,
@@ -314,8 +298,7 @@ final toRangeFilterFixtures = [
     },
   ),
   ToRangeFilterFixture(
-    "integerProperty",
-    int,
+    filters.Property("integerProperty", int),
     "1",
     "0",
     true,
@@ -347,8 +330,7 @@ final toRangeFilterFixtures = [
     },
   ),
   ToRangeFilterFixture(
-    "doubleProperty",
-    double,
+    filters.Property("doubleProperty", double),
     "1.0",
     "0.0",
     false,
@@ -380,8 +362,7 @@ final toRangeFilterFixtures = [
     },
   ),
   ToRangeFilterFixture(
-    "doubleProperty",
-    double,
+    filters.Property("doubleProperty", double),
     "1.0",
     "0.0",
     true,
@@ -413,8 +394,7 @@ final toRangeFilterFixtures = [
     },
   ),
   ToRangeFilterFixture(
-    "stringProperty",
-    String,
+    filters.Property("stringProperty", String),
     "ん",
     "あ",
     false,
@@ -446,8 +426,7 @@ final toRangeFilterFixtures = [
     },
   ),
   ToRangeFilterFixture(
-    "stringProperty",
-    String,
+    filters.Property("stringProperty", String),
     "ん",
     "あ",
     true,

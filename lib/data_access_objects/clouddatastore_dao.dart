@@ -128,16 +128,7 @@ class CloudDatastoreDao {
     if (limit > 0) {
       query..limit = limit;
     }
-    if (filter != null &&
-        filter.selectedProperty != null &&
-        filter.filterValue != null) {
-      query
-        ..filter = this.createFilter(
-          filter.selectedProperty!,
-          filter.filterType,
-          filter.filterValue!,
-        );
-    }
+    query..filter = this.createDatastoreFilter(filter);
     query..order = this.toPropertyOrder(order, filter?.selectedProperty?.name);
 
     if (startCursor != null) {
@@ -256,23 +247,20 @@ class CloudDatastoreDao {
         : null;
   }
 
-  datastore_api.Filter createFilter(
-    filters.Property property,
-    filters.FilterType filterType,
-    filters.FilterValue value,
-  ) {
-    switch (filterType) {
+  datastore_api.Filter? createDatastoreFilter(filters.Filter? filter) {
+    if (filter == null || !filter.isValid) {
+      return null;
+    }
+    switch (filter.filterType) {
       case filters.FilterType.EQUALS:
         return this.toFilter(
-          property.name,
-          property.type,
-          (value as filters.EqualsFilterValue).value,
+          filter.selectedProperty!,
+          (filter.filterValue as filters.EqualsFilterValue).value,
         );
       case filters.FilterType.RANGE:
         return this.toCompositeFilter(
-          property.name,
-          property.type,
-          value as filters.RangeFilterValue,
+          filter.selectedProperty!,
+          filter.filterValue as filters.RangeFilterValue,
         );
       default:
         throw UnsupportedError("Unsupported filter type");
@@ -280,34 +268,33 @@ class CloudDatastoreDao {
   }
 
   datastore_api.Filter toFilter(
-    String name,
-    Type type,
+    filters.Property property,
     String? value, {
     String op: 'EQUAL',
   }) {
-    final propertyReference = datastore_api.PropertyReference()..name = name;
+    final propertyReference = datastore_api.PropertyReference()
+      ..name = property.name;
     final propertyFilter = datastore_api.PropertyFilter()
       ..property = propertyReference
       ..op = op
-      ..value = this.toDatastoreValue(type, value);
+      ..value = this.toDatastoreValue(property.type, value);
 
     return datastore_api.Filter()..propertyFilter = propertyFilter;
   }
 
   datastore_api.Filter toCompositeFilter(
-    String name,
-    Type type,
+    // String name,
+    // Type type,
+    filters.Property property,
     filters.RangeFilterValue value,
   ) {
     final minPropertyFilter = this.toFilter(
-      name,
-      type,
+      property,
       value.minValue,
       op: 'GREATER_THAN' + (value.containsMinValue ? '_OR_EQUAL' : ''),
     );
     final maxPropertyFilter = this.toFilter(
-      name,
-      type,
+      property,
       value.maxValue,
       op: 'LESS_THAN' + (value.containsMaxValue ? '_OR_EQUAL' : ''),
     );

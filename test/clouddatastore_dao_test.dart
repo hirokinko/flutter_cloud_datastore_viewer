@@ -1,4 +1,3 @@
-import 'package:flutter_cloud_datastore_viewer/models/entities.dart';
 import 'package:flutter_cloud_datastore_viewer/models/filters.dart';
 import 'package:flutter_cloud_datastore_viewer/patched_datastore/v1.dart'
     as datastore_api;
@@ -72,12 +71,12 @@ void main() {
 
   toPropertyFilterFixtures.asMap().forEach((index, fixture) {
     test(
-        'CloudDatastoreDao.toFilter(${fixture.name}, ${fixture.type}, ${fixture.value}) == ${fixture.expectedPropertyFilter}',
+        'CloudDatastoreDao.toFilter(${fixture.property}, ${fixture.value}) == ${fixture.expectedPropertyFilter}',
         () {
       final datastoreApi = MockDatastoreApi();
       final projectId = 'test-project';
       final dao = CloudDatastoreDao(datastoreApi, projectId);
-      final actual = dao.toFilter(fixture.name, fixture.type, fixture.value);
+      final actual = dao.toFilter(fixture.property, fixture.value);
       expect(actual.toJson(), fixture.expectedPropertyFilter);
     });
   });
@@ -97,18 +96,17 @@ void main() {
   toRangeFilterFixtures.asMap().forEach((index, fixture) {
     test(
       'CloudDatastoreDao.toCompositeFilter('
-      '${fixture.name}, ${fixture.type},'
-      'RangeFilterValue(${fixture.type}, ${fixture.maxValue}, ${fixture.minValue}, ${fixture.containsMax}, ${fixture.containsMin}'
+      '${fixture.property}'
+      'RangeFilterValue(${fixture.property.type}, ${fixture.maxValue}, ${fixture.minValue}, ${fixture.containsMax}, ${fixture.containsMin}'
       ') == ${fixture.expectedPropertyFilter}',
       () {
         final datastoreApi = MockDatastoreApi();
         final projectId = 'test-project';
         final dao = CloudDatastoreDao(datastoreApi, projectId);
         final actual = dao.toCompositeFilter(
-          fixture.name,
-          fixture.type,
+          fixture.property,
           RangeFilterValue(
-            fixture.type,
+            fixture.property.type,
             fixture.maxValue,
             fixture.minValue,
             fixture.containsMax,
@@ -146,12 +144,8 @@ void main() {
       final datastoreApi = MockDatastoreApi();
       final projectId = 'test-project';
       final dao = CloudDatastoreDao(datastoreApi, projectId);
-      final actual = dao.createFilter(
-        fixture.filter.selectedProperty!,
-        fixture.filter.filterType,
-        fixture.filter.filterValue!,
-      );
-      expect(actual.toJson(), fixture.expectedDatastoreApiFilter);
+      final actual = dao.createDatastoreFilter(fixture.filter);
+      expect(actual?.toJson(), fixture.expectedDatastoreApiFilter);
     });
   });
 }
