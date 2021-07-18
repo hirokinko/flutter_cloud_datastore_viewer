@@ -1,3 +1,5 @@
+import 'package:flutter_cloud_datastore_viewer/models/entities.dart' as models;
+import 'package:flutter_cloud_datastore_viewer/models/filters.dart' as filters;
 import 'package:meta/meta.dart';
 import 'package:flutter_cloud_datastore_viewer/patched_datastore/v1.dart';
 
@@ -46,6 +48,27 @@ class ToRangeFilterFixture {
     this.containsMin,
     this.expectedPropertyFilter,
   );
+}
+
+@immutable
+class ToPropertyOrderFixture {
+  final models.SortOrder? order;
+  final String? filteredProperty;
+  final List<Map<String, dynamic>>? expectedPropertyOrder;
+
+  ToPropertyOrderFixture(
+    this.order,
+    this.filteredProperty,
+    this.expectedPropertyOrder,
+  );
+}
+
+@immutable
+class CreateFilterFixture {
+  final filters.Filter filter;
+  final Map<String, dynamic>? expectedDatastoreApiFilter;
+
+  CreateFilterFixture(this.filter, this.expectedDatastoreApiFilter);
 }
 
 final toValueTestFixtures = [
@@ -593,3 +616,116 @@ final findRunQueryResponse = RunQueryResponse()
               ..timestampValue = "2014-10-02T15:01:23.045123456Z",
           }),
     ]);
+
+final toPropertyOrderFixtures = [
+  ToPropertyOrderFixture(null, null, null),
+  ToPropertyOrderFixture(
+    models.SortOrder('spam', ascending: true),
+    null,
+    [
+      {
+        "property": {
+          "name": "spam",
+        },
+        "direction": "ASCENDING",
+      },
+    ],
+  ),
+  ToPropertyOrderFixture(
+    models.SortOrder('spam', ascending: true),
+    'spam',
+    [
+      {
+        "property": {
+          "name": "spam",
+        },
+        "direction": "ASCENDING",
+      },
+    ],
+  ),
+  ToPropertyOrderFixture(
+    models.SortOrder('spam', ascending: true),
+    'ham',
+    null,
+  ),
+  ToPropertyOrderFixture(
+    models.SortOrder('spam', ascending: false),
+    null,
+    [
+      {
+        "property": {
+          "name": "spam",
+        },
+        "direction": "DESCENDING",
+      },
+    ],
+  ),
+  ToPropertyOrderFixture(
+    models.SortOrder('spam', ascending: false),
+    'spam',
+    [
+      {
+        "property": {
+          "name": "spam",
+        },
+        "direction": "DESCENDING",
+      },
+    ],
+  ),
+  ToPropertyOrderFixture(
+    models.SortOrder('spam', ascending: false),
+    'ham',
+    null,
+  ),
+];
+
+final createFilterFixtures = [
+  CreateFilterFixture(
+    filters.Filter(
+      'Spam',
+      filters.Property('ham', String),
+      [filters.Property('ham', String)],
+      filters.FilterType.EQUALS,
+      [filters.FilterType.EQUALS],
+      filters.EqualsFilterValue(String, 'spam'),
+    ),
+    {
+      'propertyFilter': {
+        'op': 'EQUAL',
+        'property': {'name': 'ham'},
+        'value': {'stringValue': 'spam'},
+      },
+    },
+  ),
+  CreateFilterFixture(
+    filters.Filter(
+      'Spam',
+      filters.Property('ham', String),
+      [filters.Property('ham', String)],
+      filters.FilterType.RANGE,
+      [filters.FilterType.RANGE],
+      filters.RangeFilterValue(String, 'spam', 'ham', true, true),
+    ),
+    {
+      'compositeFilter': {
+        'filters': [
+          {
+            'propertyFilter': {
+              'op': 'GREATER_THAN_OR_EQUAL',
+              'property': {'name': 'ham'},
+              'value': {'stringValue': 'ham'},
+            }
+          },
+          {
+            'propertyFilter': {
+              'op': 'LESS_THAN_OR_EQUAL',
+              'property': {'name': 'ham'},
+              'value': {'stringValue': 'spam'},
+            }
+          },
+        ],
+        'op': 'AND',
+      }
+    },
+  ),
+];

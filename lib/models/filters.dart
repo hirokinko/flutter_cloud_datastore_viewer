@@ -274,6 +274,8 @@ class Filter extends Equatable {
       ];
 
   bool get isValid =>
+      this.selectedProperty != null &&
+      this.filterValue != null &&
       this.selectedPropertyError == null &&
       this.selectedFilterTypeError == null &&
       (this.filterValue?.isValid ?? true);

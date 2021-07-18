@@ -138,19 +138,7 @@ class CloudDatastoreDao {
           filter.filterValue!,
         );
     }
-    if (order != null &&
-        (filter == null ||
-            (filter.selectedProperty == null) ||
-            (filter.selectedProperty != null &&
-                order.property == filter.selectedProperty?.name))) {
-      query
-        ..order = [
-          (datastore_api.PropertyOrder()
-            ..property =
-                (datastore_api.PropertyReference()..name = order.property)
-            ..direction = order.ascending ? 'ASCENDING' : 'DESCENDING'),
-        ];
-    }
+    query..order = this.toPropertyOrder(order, filter?.selectedProperty?.name);
 
     if (startCursor != null) {
       query..startCursor = startCursor;
@@ -350,5 +338,22 @@ class CloudDatastoreDao {
       default:
         throw UnimplementedError();
     }
+  }
+
+  List<datastore_api.PropertyOrder>? toPropertyOrder(
+    models.SortOrder? order,
+    String? filteredProperty,
+  ) {
+    if (order == null ||
+        (filteredProperty != null && order.property != filteredProperty)) {
+      return null;
+    }
+    final propertyReference = datastore_api.PropertyReference()
+      ..name = order.property;
+    return [
+      datastore_api.PropertyOrder()
+        ..property = propertyReference
+        ..direction = order.ascending ? 'ASCENDING' : 'DESCENDING',
+    ];
   }
 }

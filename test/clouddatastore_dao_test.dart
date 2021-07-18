@@ -1,3 +1,4 @@
+import 'package:flutter_cloud_datastore_viewer/models/entities.dart';
 import 'package:flutter_cloud_datastore_viewer/models/filters.dart';
 import 'package:flutter_cloud_datastore_viewer/patched_datastore/v1.dart'
     as datastore_api;
@@ -117,5 +118,40 @@ void main() {
         expect(actual.toJson(), fixture.expectedPropertyFilter);
       },
     );
+  });
+
+  toPropertyOrderFixtures.forEach((ToPropertyOrderFixture fixture) {
+    test(
+      'CloudDatastoreDao.toPropertyOrder('
+      '${fixture.order}, '
+      '${fixture.filteredProperty}'
+      ') == ${fixture.expectedPropertyOrder}',
+      () {
+        final datastoreApi = MockDatastoreApi();
+        final projectId = 'test-project';
+        final dao = CloudDatastoreDao(datastoreApi, projectId);
+        final actual = dao
+            .toPropertyOrder(fixture.order, fixture.filteredProperty)
+            ?.map((datastore_api.PropertyOrder order) => order.toJson())
+            .toList();
+        expect(actual, fixture.expectedPropertyOrder);
+      },
+    );
+  });
+
+  createFilterFixtures.forEach((CreateFilterFixture fixture) {
+    test(
+        'CloudDatastoreDao(${fixture.filter}) == ${fixture.expectedDatastoreApiFilter}',
+        () {
+      final datastoreApi = MockDatastoreApi();
+      final projectId = 'test-project';
+      final dao = CloudDatastoreDao(datastoreApi, projectId);
+      final actual = dao.createFilter(
+        fixture.filter.selectedProperty!,
+        fixture.filter.filterType,
+        fixture.filter.filterValue!,
+      );
+      expect(actual.toJson(), fixture.expectedDatastoreApiFilter);
+    });
   });
 }
